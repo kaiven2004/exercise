@@ -35,6 +35,7 @@ class Exercise {
   final String imageSvg;
   final String difficulty;
   final String videoPath;
+  final String weight;
 
   const Exercise({
     required this.id,
@@ -48,6 +49,7 @@ class Exercise {
     this.imageSvg = 'exercise_default',
     this.difficulty = '初级',
     this.videoPath = '',
+    this.weight = '0',
   });
 }
 

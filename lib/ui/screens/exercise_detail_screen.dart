@@ -28,10 +28,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
   late int _sets = 3;
   late int _reps = 12;
   late String _restSeconds = '60';
+  late String _weight = '0';
 
   TextEditingController _setsController = TextEditingController();
   TextEditingController _repsController = TextEditingController();
   TextEditingController _restController = TextEditingController();
+  TextEditingController _weightController = TextEditingController();
 
   @override
   void initState() {
@@ -52,6 +54,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
     _setsController.text = _sets.toString();
     _repsController.text = _reps.toString();
     _restController.text = _restSeconds;
+    _weightController.text = _overrideRepo.getOverrideWeight(widget.exercise.id) ?? widget.exercise.weight;
     setState(() {
       _isFavorite = _favRepo.isFavorite(widget.exercise);
       _loading = false;
@@ -91,6 +94,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
     _setsController.dispose();
     _repsController.dispose();
     _restController.dispose();
+    _weightController.dispose();
     _videoController?.dispose();
     _chewieController?.dispose();
     super.dispose();
@@ -103,12 +107,14 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
     if (setsVal != null) _sets = setsVal;
     if (repsVal != null) _reps = repsVal;
     if (restVal != null) _restSeconds = restVal.toString();
+    _weight = _weightController.text;
     await _overrideRepo.saveOverride(
       widget.exercise.id,
       sets: _sets,
       reps: _reps,
       restSeconds: _restSeconds,
     );
+    await _overrideRepo.saveWeight(widget.exercise.id, _weight);
     setState(() => _editing = false);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -220,6 +226,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
                 _EditableInfoRow(label: '组间休息（秒）', controller: _restController)
               else
                 _InfoRow(label: '组间休息', value: '${_restSeconds} 秒'),
+              if (_editing)
+                _EditableInfoRow(label: '重量（kg）', controller: _weightController)
+              else
+                _InfoRow(label: '重量', value: _weight != '0' ? _weight + ' kg' : '—'),
             ],
           ),
           const SizedBox(height: 16),
