@@ -1,10 +1,10 @@
+﻿import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/local_repositories.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
-
 class ExerciseDetailScreen extends StatefulWidget {
   final Exercise exercise;
   const ExerciseDetailScreen({super.key, required this.exercise});
@@ -19,6 +19,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
   bool _loading = true;
   late final LocalFavoriteRepository _favRepo;
   late final LocalTrainingHistoryRepository _histRepo;
+  late final ExerciseOverrideRepository _overrideRepo;
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
   bool _hasVideo = false;
@@ -47,9 +48,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
       _isFavorite = _favRepo.isFavorite(widget.exercise);
       _loading = false;
     });
-    _sets = widget.exercise.sets;
-    _reps = widget.exercise.reps;
-    _restSeconds = widget.exercise.restSeconds;
+    await _overrideRepo.init();
+    _sets = _overrideRepo.getOverrideSets(widget.exercise.id) ?? widget.exercise.sets;
+    _reps = _overrideRepo.getOverrideReps(widget.exercise.id) ?? widget.exercise.reps;
+    _restSeconds = _overrideRepo.getOverrideRest(widget.exercise.id) ?? widget.exercise.restSeconds;
     _setsController = TextEditingController(text: _sets.toString());
     _repsController = TextEditingController(text: _reps.toString());
     _restController = TextEditingController(text: _restSeconds);
@@ -100,6 +102,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
     if (setsVal != null) _sets = setsVal;
     if (repsVal != null) _reps = repsVal;
     if (restVal != null) _restSeconds = restVal.toString();
+    _overrideRepo.saveOverride(
+      widget.exercise.id,
+      sets: _sets,
+      reps: _reps,
+      restSeconds: _restSeconds,
+    );
     setState(() => _editing = false);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('已保存修改')),
