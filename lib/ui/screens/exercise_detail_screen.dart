@@ -25,9 +25,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
   bool _hasVideo = false;
   bool _editing = false;
 
-  late int _sets;
-  late int _reps;
-  late String _restSeconds;
+  late int _sets = 3;
+  late int _reps = 12;
+  late String _restSeconds = '60';
 
   late TextEditingController _setsController;
   late TextEditingController _repsController;
