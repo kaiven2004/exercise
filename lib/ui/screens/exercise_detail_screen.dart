@@ -95,7 +95,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
     super.dispose();
   }
 
-  Future<void> _saveEdit() {
+  Future<void> _saveEdit() async ) {
     final setsVal = int.tryParse(_setsController.text);
     final repsVal = int.tryParse(_repsController.text);
     final restVal = int.tryParse(_restController.text);
