@@ -69,15 +69,20 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
         final item = CustomExerciseItem(exercise: selected, order: _exercises.length);
         _exercises.add(item);
       });
-      _syncOverrideToItem(selected);
+      _syncOverrideToItem(_exercises.last);
     }
   }
 
-  Future<void> _syncOverrideToItem(Exercise ex) async {
-    final effSets = _overrideRepo.getEffectiveSets(ex.id, ex.sets);
-    final effReps = _overrideRepo.getEffectiveReps(ex.id, ex.reps);
-    final effRest = _overrideRepo.getEffectiveRest(ex.id, ex.restSeconds);
-    _overrideRepo.saveOverride(ex.id, sets: effSets, reps: effReps, restSeconds: effRest);
+  Future<void> _syncOverrideToItem(CustomExerciseItem item) async {
+    final effSets = _overrideRepo.getEffectiveSets(item.exercise.id, item.exercise.sets);
+    final effReps = _overrideRepo.getEffectiveReps(item.exercise.id, item.exercise.reps);
+    final effRest = _overrideRepo.getEffectiveRest(item.exercise.id, item.exercise.restSeconds);
+    setState(() {
+      item.sets = effSets;
+      item.reps = effReps;
+      item.restSeconds = effRest;
+    });
+    await _overrideRepo.saveOverride(item.exercise.id, sets: effSets, reps: effReps, restSeconds: effRest);
   }
 
   void _removeExercise(int index) {
