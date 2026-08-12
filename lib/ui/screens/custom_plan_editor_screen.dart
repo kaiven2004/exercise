@@ -204,7 +204,7 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     Text(item.exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 2),
-                                    Text('${item.sets}组 × ${item.reps}次${item.weight.isNotEmpty ? ' · ${item.weight}' : ''} · 休息${item.restSeconds}s', style: theme.textTheme.bodySmall),
+                                    Text('${item.sets}组 × ${item.reps}次' + (item.weight.isNotEmpty ? ' · ' + item.weight : '') + ' · 休息${item.restSeconds}s', style: theme.textTheme.bodySmall),
                                   ]),
                                 ),
                                 IconButton(icon: const SvgIcon(assetName: 'favorite', size: 18), onPressed: () => _editExercise(index)),
