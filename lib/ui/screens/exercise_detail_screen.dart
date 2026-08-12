@@ -38,6 +38,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
     super.initState();
     _favRepo = LocalFavoriteRepository();
     _histRepo = LocalTrainingHistoryRepository();
+    _overrideRepo = ExerciseOverrideRepository();
     _initRepositories();
   }
 
