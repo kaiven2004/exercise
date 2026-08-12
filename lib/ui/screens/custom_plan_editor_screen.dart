@@ -167,6 +167,7 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
   int _effSets(CustomExerciseItem item) => _overrideRepo.getEffectiveSets(item.exercise.id, item.sets);
   int _effReps(CustomExerciseItem item) => _overrideRepo.getEffectiveReps(item.exercise.id, item.reps);
   String _effRest(CustomExerciseItem item) => _overrideRepo.getEffectiveRest(item.exercise.id, item.restSeconds);
+  String _effWeight(CustomExerciseItem item) => _overrideRepo.getOverrideWeight(item.exercise.id) ?? item.exercise.weight;
 
   void _moveExercise(int from, int to) {
     setState(() {
@@ -238,7 +239,7 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     Text(item.exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 2),
-                                    Text('${item.sets}组 × ${item.reps}次' + (item.weight.isNotEmpty ? ' · ' + item.weight : '') + ' · 休息${item.restSeconds}s', style: theme.textTheme.bodySmall),
+                                    Text('${_effSets(item)}? × ${_effReps(item)}?' + (_effWeight(item) != '0' ? ' · ' + _effWeight(item) + 'kg' : '') + ' · ??${_effRest(item)}s', style: theme.textTheme.bodySmall),
                                   ]),
                                 ),
                                 IconButton(icon: const SvgIcon(assetName: 'favorite', size: 18), onPressed: () => _editExercise(index)),

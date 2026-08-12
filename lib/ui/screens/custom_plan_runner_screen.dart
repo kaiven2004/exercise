@@ -213,8 +213,8 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
                   Expanded(child: _StatBox(label: '目标', value: '${current.sets}组')),
                   const SizedBox(width: 8),
                   Expanded(child: _StatBox(label: '次数', value: '${current.reps}次')),
-                  if (current.weight.isNotEmpty) const SizedBox(width: 8),
-                  Expanded(child: _StatBox(label: '重量', value: '${current.weight}')),
+                  if (_effWeight(current) != '0') const SizedBox(width: 8),
+                  Expanded(child: _StatBox(label: '??', value: _effWeight(current) != '0' ? _effWeight(current) + 'kg' : '?')),
                   const SizedBox(width: 8),
                   Expanded(child: _StatBox(label: '休息', value: '${current.restSeconds}s')),
                 ])),
@@ -250,6 +250,7 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
   int _effSets(CustomExerciseItem item) => _overrideRepo.getEffectiveSets(item.exercise.id, item.sets);
   int _effReps(CustomExerciseItem item) => _overrideRepo.getEffectiveReps(item.exercise.id, item.reps);
   String _effRest(CustomExerciseItem item) => _overrideRepo.getEffectiveRest(item.exercise.id, item.restSeconds);
+  String _effWeight(CustomExerciseItem item) => _overrideRepo.getOverrideWeight(item.exercise.id) ?? item.exercise.weight;
 
   String _formatDuration(Duration d) {
     final min = d.inMinutes.toString().padLeft(2, '0');
