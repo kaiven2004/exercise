@@ -142,7 +142,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
             },
           ),
           IconButton(
-            icon: SvgIcon(assetName: _editing ? 'check' : 'edit', size: 22),
+            icon: SvgIcon(assetName: _editing ? 'check' : 'edit', size: 22, color: const Color(0xFF1565C0)),
             onPressed: () {
               if (_editing) {
                 _saveEdit();
