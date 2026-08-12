@@ -1,10 +1,11 @@
 import 'package:excise/data/models/models.dart';
+import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
 
-class ExerciseListScreen extends StatelessWidget {
+class ExerciseListScreen extends StatefulWidget {
   final TrainingCategory category;
   final TrainingCategory parentCategory;
   final WorkoutSection section;
@@ -17,10 +18,25 @@ class ExerciseListScreen extends StatelessWidget {
   });
 
   @override
+  State<ExerciseListScreen> createState() => _ExerciseListScreenState();
+}
+
+class _ExerciseListScreenState extends State<ExerciseListScreen> {
+  late final SampleExerciseRepository _repo;
+  late final ExerciseOverrideRepository _overrideRepo;
+
+  @override
+  void initState() {
+    super.initState();
+    _repo = SampleExerciseRepository();
+    _overrideRepo = ExerciseOverrideRepository();
+    _overrideRepo.init();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final repo = SampleExerciseRepository();
-    final exercises = repo.getExercises(category.id);
+    final exercises = _repo.getExercises(widget.category.id);
     final path = _buildPath();
 
     return Scaffold(
@@ -30,7 +46,7 @@ class ExerciseListScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              category.name,
+              widget.category.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
@@ -47,7 +63,7 @@ class ExerciseListScreen extends StatelessWidget {
         ),
       ),
       body: exercises.isEmpty
-          ? _EmptyState(category: category)
+          ? _EmptyState(category: widget.category)
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: exercises.length,
@@ -55,6 +71,7 @@ class ExerciseListScreen extends StatelessWidget {
                 final ex = exercises[index];
                 return _ExerciseCard(
                   exercise: ex,
+                  overrideRepo: _overrideRepo,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -69,20 +86,23 @@ class ExerciseListScreen extends StatelessWidget {
 
   String _buildPath() {
     final parts = <String>[];
-    if (parentCategory.id != category.id) parts.add(parentCategory.name);
-    parts.add(category.name);
+    if (widget.parentCategory.id != widget.category.id) parts.add(widget.parentCategory.name);
+    parts.add(widget.category.name);
     return parts.join(' / ');
   }
 }
 
 class _ExerciseCard extends StatelessWidget {
   final Exercise exercise;
+  final ExerciseOverrideRepository overrideRepo;
   final VoidCallback onTap;
-  const _ExerciseCard({required this.exercise, required this.onTap});
+  const _ExerciseCard({required this.exercise, required this.overrideRepo, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final sets = overrideRepo.getEffectiveSets(exercise.id, exercise.sets);
+    final reps = overrideRepo.getEffectiveReps(exercise.id, exercise.reps);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -126,10 +146,7 @@ class _ExerciseCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        _StatChip(
-                          label: '${exercise.sets}组',
-                          value: '${exercise.reps}次',
-                        ),
+                        _StatChip(label: '$sets?', value: '$reps?'),
                         const SizedBox(width: 6),
                         _StatChip(label: exercise.difficulty),
                       ],
@@ -160,7 +177,7 @@ class _StatChip extends StatelessWidget {
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text('$label ${value ?? ''}', style: theme.textTheme.bodySmall),
+      child: Text('$label ${value ?? ' '}', style: theme.textTheme.bodySmall),
     );
   }
 }
@@ -183,14 +200,14 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            '暂无动作数据',
+            '??????',
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            '${category.name} 的动作数据将在后续更新',
+            '${category.name} ???????????',
             style: theme.textTheme.bodySmall,
             textAlign: TextAlign.center,
           ),

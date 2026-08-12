@@ -1,5 +1,6 @@
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/custom_plan_repository.dart';
+import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
@@ -17,6 +18,7 @@ class CustomPlanEditorScreen extends StatefulWidget {
 class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
   late final LocalCustomPlanRepository _repo;
   late final SampleExerciseRepository _exerciseRepo;
+  late final ExerciseOverrideRepository _overrideRepo;
   late String _planName;
   late List<CustomExerciseItem> _exercises;
   bool _saving = false;
@@ -26,6 +28,8 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
     super.initState();
     _repo = LocalCustomPlanRepository();
     _exerciseRepo = SampleExerciseRepository();
+    _overrideRepo = ExerciseOverrideRepository();
+    _overrideRepo.init();
     _planName = widget.plan?.name ?? '新计划';
     _exercises = widget.plan?.exercises.toList() ?? [];
   }
@@ -62,9 +66,18 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
     );
     if (selected != null && mounted) {
       setState(() {
-        _exercises.add(CustomExerciseItem(exercise: selected, order: _exercises.length));
+        final item = CustomExerciseItem(exercise: selected, order: _exercises.length);
+        _exercises.add(item);
       });
+      _syncOverrideToItem(selected);
     }
+  }
+
+  Future<void> _syncOverrideToItem(Exercise ex) async {
+    final effSets = _overrideRepo.getEffectiveSets(ex.id, ex.sets);
+    final effReps = _overrideRepo.getEffectiveReps(ex.id, ex.reps);
+    final effRest = _overrideRepo.getEffectiveRest(ex.id, ex.restSeconds);
+    _overrideRepo.saveOverride(ex.id, sets: effSets, reps: effReps, restSeconds: effRest);
   }
 
   void _removeExercise(int index) {
@@ -129,9 +142,18 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
       ]),
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('保存')),
+        TextButton(onPressed: () { Navigator.pop(ctx); _syncOverrideFromEdit(item); }, child: const Text('保存')),
       ],
     ));
+  }
+
+  void _syncOverrideFromEdit(CustomExerciseItem item) {
+    _overrideRepo.saveOverride(
+      item.exercise.id,
+      sets: item.sets,
+      reps: item.reps,
+      restSeconds: item.restSeconds,
+    );
   }
 
   void _moveExercise(int from, int to) {

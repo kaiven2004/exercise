@@ -21,4 +21,8 @@ class ExerciseOverrideRepository {
   int? getOverrideSets(String exerciseId) => _prefs?.getInt(_key(exerciseId, 'sets'));
   int? getOverrideReps(String exerciseId) => _prefs?.getInt(_key(exerciseId, 'reps'));
   String? getOverrideRest(String exerciseId) => _prefs?.getString(_key(exerciseId, 'rest'));
+  int getEffectiveSets(String exerciseId, int defaultSets) => getOverrideSets(exerciseId) ?? defaultSets;
+  int getEffectiveReps(String exerciseId, int defaultReps) => getOverrideReps(exerciseId) ?? defaultReps;
+  String getEffectiveRest(String exerciseId, String defaultRest) => getOverrideRest(exerciseId) ?? defaultRest;
+
 }
