@@ -77,12 +77,15 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
     final effSets = _overrideRepo.getEffectiveSets(item.exercise.id, item.exercise.sets);
     final effReps = _overrideRepo.getEffectiveReps(item.exercise.id, item.exercise.reps);
     final effRest = _overrideRepo.getEffectiveRest(item.exercise.id, item.exercise.restSeconds);
+    final effWeight = _overrideRepo.getOverrideWeight(item.exercise.id) ?? item.exercise.weight;
     setState(() {
       item.sets = effSets;
       item.reps = effReps;
       item.restSeconds = effRest;
+      item.weight = effWeight;
     });
     await _overrideRepo.saveOverride(item.exercise.id, sets: effSets, reps: effReps, restSeconds: effRest);
+    await _overrideRepo.saveWeight(item.exercise.id, effWeight);
   }
 
   void _removeExercise(int index) {
