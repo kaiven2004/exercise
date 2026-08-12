@@ -188,6 +188,15 @@ class SampleExerciseRepository implements ExerciseRepository {
 
   String _getCategoryName(String categoryId) {
     final map = {
+      // 父级部位
+      'strength_upper': '上肢训练',
+      'strength_lower': '下肢训练',
+      'strength_core': '核心训练',
+      'strength_chest': '胸部训练',
+      'strength_shoulders': '肩部训练',
+      'strength_back': '背部训练',
+      'strength_arms': '手臂训练',
+      // 肌肉细分
       'chest_upper': '上胸',
       'chest_middle': '中胸',
       'chest_lower': '下胸',
@@ -201,6 +210,15 @@ class SampleExerciseRepository implements ExerciseRepository {
       'leg_glutes': '臀部',
       'core_abs': '腹直肌',
       'core_obliques': '腹斜肌',
+      // 功能训练
+      'func_core': '核心稳定',
+      'func_balance': '平衡训练',
+      'func_agility': '灵敏训练',
+      // 瑜伽
+      'yoga_hatha': '哈他瑜伽',
+      'yoga_vinyasa': '流瑜伽',
+      'yoga_ashtanga': '阿斯汤加',
+      'yoga_restorative': '恢复瑜伽',
     };
     return map[categoryId] ?? categoryId;
   }
