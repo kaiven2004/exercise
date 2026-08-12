@@ -151,7 +151,7 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
     _restTimer?.cancel();
     setState(() {
       _resting = false;
-      if (_currentExerciseIndex < _plan.exercises.length - 1) _currentExerciseIndex++;
+      if (_completedSets[_currentExerciseIndex] >= _effSets(_plan.exercises[_currentExerciseIndex]) && _currentExerciseIndex < _plan.exercises.length - 1) _currentExerciseIndex++;
       _setElapsed = Duration.zero;
     });
     _setTimer = Timer.periodic(const Duration(seconds: 1), (_) {
