@@ -146,7 +146,7 @@ class _ExerciseCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        _StatChip(label: '$sets?', value: '$reps?'),
+                        _StatChip(label: '组', value: '欄'),
                         const SizedBox(width: 6),
                         _StatChip(label: exercise.difficulty),
                       ],
@@ -200,14 +200,14 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            '??????',
+                    '暂无动作数据',
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            '${category.name} ???????????',
+            '${category.name} 的动作数据将在后续更新',
             style: theme.textTheme.bodySmall,
             textAlign: TextAlign.center,
           ),
