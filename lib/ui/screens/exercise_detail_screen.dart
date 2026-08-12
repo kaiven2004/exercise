@@ -29,9 +29,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
   late int _reps = 12;
   late String _restSeconds = '60';
 
-  late TextEditingController _setsController;
-  late TextEditingController _repsController;
-  late TextEditingController _restController;
+  TextEditingController _setsController = TextEditingController();
+  TextEditingController _repsController = TextEditingController();
+  TextEditingController _restController = TextEditingController();
 
   @override
   void initState() {
@@ -52,9 +52,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
     _sets = _overrideRepo.getOverrideSets(widget.exercise.id) ?? widget.exercise.sets;
     _reps = _overrideRepo.getOverrideReps(widget.exercise.id) ?? widget.exercise.reps;
     _restSeconds = _overrideRepo.getOverrideRest(widget.exercise.id) ?? widget.exercise.restSeconds;
-    _setsController = TextEditingController(text: _sets.toString());
-    _repsController = TextEditingController(text: _reps.toString());
-    _restController = TextEditingController(text: _restSeconds);
+    _setsController.text = _sets.toString();
+    _repsController.text = _reps.toString();
+    _restController.text = _restSeconds;
     _loadVideo();
   }
 
