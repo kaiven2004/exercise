@@ -196,7 +196,7 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
               children: [
                 Text('动作 ${_currentExerciseIndex + 1}/${_plan.exercises.length}', style: theme.textTheme.titleSmall),
                 const Spacer(),
-                Text('第${_completedSets[_currentExerciseIndex] + 1}/${current.sets} 组', style: theme.textTheme.titleSmall),
+                Text('第${_completedSets[_currentExerciseIndex] + 1}/${_effSets(current)} 组', style: theme.textTheme.titleSmall),
               ],
             )),
             const SizedBox(height: 12),
@@ -210,7 +210,7 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
                 Text(current.exercise.categoryPath, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 20),
                 SizedBox(height: 56, child: Row(children: [
-                  Expanded(child: _StatBox(label: '目标', value: '${current.sets}组')),
+                  Expanded(child: _StatBox(label: '目标', value: '${_effSets(current)}组')),
                   const SizedBox(width: 8),
                   Expanded(child: _StatBox(label: '次数', value: '${current.reps}次')),
                   if (_effWeight(current) != '0') const SizedBox(width: 8),
