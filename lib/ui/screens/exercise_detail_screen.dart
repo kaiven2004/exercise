@@ -42,19 +42,19 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
   }
 
   Future<void> _initRepositories() async {
+    await _overrideRepo.init();
     await _favRepo.init();
     await _histRepo.init();
-    setState(() {
-      _isFavorite = _favRepo.isFavorite(widget.exercise);
-      _loading = false;
-    });
-    await _overrideRepo.init();
     _sets = _overrideRepo.getOverrideSets(widget.exercise.id) ?? widget.exercise.sets;
     _reps = _overrideRepo.getOverrideReps(widget.exercise.id) ?? widget.exercise.reps;
     _restSeconds = _overrideRepo.getOverrideRest(widget.exercise.id) ?? widget.exercise.restSeconds;
     _setsController.text = _sets.toString();
     _repsController.text = _reps.toString();
     _restController.text = _restSeconds;
+    setState(() {
+      _isFavorite = _favRepo.isFavorite(widget.exercise);
+      _loading = false;
+    });
     _loadVideo();
   }
 
@@ -109,9 +109,11 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
       restSeconds: _restSeconds,
     );
     setState(() => _editing = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('已保存修改')),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('已保存修改')),
+      );
+    }
   }
 
   @override
