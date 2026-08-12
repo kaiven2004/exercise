@@ -1,0 +1,10 @@
+const fs=require("fs");
+const fp="D:/exerciseapp/excise/lib/ui/screens/custom_plan_editor_screen.dart";
+let c=fs.readFileSync(fp,"utf-8");
+const ln=c.split("\n");
+const ol=ln[206];
+const nl=ol.replace("item.weight.isNotEmpty ? ' 胆ኟ${item.weight}' : '',"' + (item.weight.isNotEmpty ? ' 䃆� ' + item.weight : '') + "");
+console.log("matched:",ol!==nl);
+ln[206]=nl;
+fs.writeFileSync(fp,ln.join("\n"),"utf-8");
+console.log("done");

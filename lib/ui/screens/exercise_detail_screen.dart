@@ -22,6 +22,15 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
   bool _hasVideo = false;
+  bool _editing = false;
+
+  late int _sets;
+  late int _reps;
+  late String _restSeconds;
+
+  late TextEditingController _setsController;
+  late TextEditingController _repsController;
+  late TextEditingController _restController;
 
   @override
   void initState() {
@@ -38,6 +47,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
       _isFavorite = _favRepo.isFavorite(widget.exercise);
       _loading = false;
     });
+    _sets = widget.exercise.sets;
+    _reps = widget.exercise.reps;
+    _restSeconds = widget.exercise.restSeconds;
+    _setsController = TextEditingController(text: _sets.toString());
+    _repsController = TextEditingController(text: _reps.toString());
+    _restController = TextEditingController(text: _restSeconds);
     _loadVideo();
   }
 
@@ -70,9 +85,25 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
 
   @override
   void dispose() {
+    _setsController.dispose();
+    _repsController.dispose();
+    _restController.dispose();
     _videoController?.dispose();
     _chewieController?.dispose();
     super.dispose();
+  }
+
+  void _saveEdit() {
+    final setsVal = int.tryParse(_setsController.text);
+    final repsVal = int.tryParse(_repsController.text);
+    final restVal = int.tryParse(_restController.text);
+    if (setsVal != null) _sets = setsVal;
+    if (repsVal != null) _reps = repsVal;
+    if (restVal != null) _restSeconds = restVal.toString();
+    setState(() => _editing = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('已保存修改')),
+    );
   }
 
   @override
@@ -100,6 +131,16 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
             onPressed: () {
               setState(() => _isFavorite = !_isFavorite);
               _favRepo.toggleFavorite(ex);
+            },
+          ),
+          IconButton(
+            icon: SvgIcon(assetName: _editing ? 'check' : 'edit', size: 22),
+            onPressed: () {
+              if (_editing) {
+                _saveEdit();
+              } else {
+                setState(() => _editing = true);
+              }
             },
           ),
         ],
@@ -153,12 +194,21 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
             items: [
               _InfoRow(label: '锻炼部位', value: ex.categoryPath),
               _InfoRow(label: '难度', value: ex.difficulty),
-              _InfoRow(label: '组数', value: '${ex.sets} 组'),
-              _InfoRow(
-                label: '次数',
-                value: ex.reps <= 60 ? '${ex.reps} 次' : '${ex.reps} 秒',
-              ),
-              _InfoRow(label: '组间休息', value: '${ex.restSeconds} 秒'),
+              if (_editing)
+                _EditableInfoRow(label: '组数', controller: _setsController)
+              else
+                _InfoRow(label: '组数', value: '${_sets} 组'),
+              if (_editing)
+                _EditableInfoRow(label: '次数', controller: _repsController)
+              else
+                _InfoRow(
+                  label: '次数',
+                  value: ex.reps <= 60 ? '${_reps} 次' : '${_reps} 秒',
+                ),
+              if (_editing)
+                _EditableInfoRow(label: '组间休息（秒）', controller: _restController)
+              else
+                _InfoRow(label: '组间休息', value: '${_restSeconds} 秒'),
             ],
           ),
           const SizedBox(height: 16),
@@ -232,8 +282,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
       exercises: [
         ExerciseLog(
           exercise: ex,
-          completedSets: ex.sets,
-          totalReps: ex.sets * ex.reps,
+          completedSets: _editing ? _sets : ex.sets,
+          totalReps: (_editing ? _sets : ex.sets) * (_editing ? _reps : ex.reps),
         ),
       ],
     );
@@ -299,7 +349,7 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            '$label  ',
+            '${label}  ',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -311,6 +361,67 @@ class _InfoRow extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.end,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EditableInfoRow extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+  const _EditableInfoRow({required this.label, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Text(
+            '${label}  ',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outline,
+                    width: 1,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outline,
+                    width: 1,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF1565C0),
+                    width: 2,
+                  ),
+                ),
+                isDense: true,
+              ),
             ),
           ),
         ],
