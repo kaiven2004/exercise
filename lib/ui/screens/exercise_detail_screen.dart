@@ -102,7 +102,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
     if (setsVal != null) _sets = setsVal;
     if (repsVal != null) _reps = repsVal;
     if (restVal != null) _restSeconds = restVal.toString();
-    _overrideRepo.saveOverride(
+    await _overrideRepo.saveOverride(
       widget.exercise.id,
       sets: _sets,
       reps: _reps,
