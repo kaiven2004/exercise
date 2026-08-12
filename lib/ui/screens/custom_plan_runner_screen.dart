@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/local_repositories.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
@@ -27,8 +27,6 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
   bool _resting = false;
   Duration _restRemaining = Duration.zero;
   Timer? _restTimer;
-  late final AnimationController _restAnimController;
-  late final Animation<double> _restAnim;
   late final CustomPlan _plan;
   late final LocalTrainingHistoryRepository _histRepo;
 
@@ -41,9 +39,6 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
     _setTimers = List.generate(_plan.exercises.length, (_) => null);
     _setDurations = List.generate(_plan.exercises.length, (_) => Duration.zero);
     _histRepo.init();
-    _restAnimController = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
-    _restAnim = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _restAnimController, curve: Curves.easeInOut));
-    _restAnim.addListener(() => setState(() {}));
   }
 
   @override
@@ -52,7 +47,6 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
     _setTimer?.cancel();
     _restTimer?.cancel();
     for (final t in _setTimers) t?.cancel();
-    _restAnimController.dispose();
     super.dispose();
   }
 
@@ -99,10 +93,12 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
     });
     _restTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() {
+        if (_restRemaining.inSeconds <= 0) return;
         _restRemaining = _restRemaining - const Duration(seconds: 1);
         if (_restRemaining.inSeconds <= 0) {
+          _restRemaining = Duration.zero;
           _restTimer?.cancel();
-          _onRestFinished();
+          if (mounted) _onRestFinished();
         }
       });
     });
@@ -140,8 +136,8 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
     _histRepo.addSession(session);
     if (mounted) {
       showDialog(context: context, builder: (ctx) => AlertDialog(
-        title: const Text('训练完成！'),
-        content: Text('《{_plan.name}》已完成，总用时 {_formatDuration(_totalElapsed)}'),
+        title: const Text('训练完成'),
+        content: Text('《${_plan.name}》已完成，总用时${_formatDuration(_totalElapsed)}'),
         actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('确定'))],
       ));
     }
@@ -194,9 +190,9 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
             LinearProgressIndicator(value: progress, backgroundColor: theme.colorScheme.surfaceContainerHighest, valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1565C0))),
             Padding(padding: const EdgeInsets.fromLTRB(16, 12, 16, 0), child: Row(
               children: [
-                Text('动作 {_currentExerciseIndex + 1}/{_plan.exercises.length}', style: theme.textTheme.titleSmall),
+                Text('动作 ${_currentExerciseIndex + 1}/${_plan.exercises.length}', style: theme.textTheme.titleSmall),
                 const Spacer(),
-                Text('第{_completedSets[_currentExerciseIndex] + 1}/{current.sets} 组', style: theme.textTheme.titleSmall),
+                Text('第${_completedSets[_currentExerciseIndex] + 1}/${current.sets} 组', style: theme.textTheme.titleSmall),
               ],
             )),
             const SizedBox(height: 12),
@@ -210,11 +206,11 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
                 Text(current.exercise.categoryPath, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 20),
                 SizedBox(height: 56, child: Row(children: [
-                  Expanded(child: _StatBox(label: '目标', value: '\${current.sets}组')),
+                  Expanded(child: _StatBox(label: '目标', value: '${current.sets}组')),
                   const SizedBox(width: 8),
-                  Expanded(child: _StatBox(label: '次数', value: '\${current.reps}次')),
+                  Expanded(child: _StatBox(label: '次数', value: '${current.reps}次')),
                   const SizedBox(width: 8),
-                  Expanded(child: _StatBox(label: '休息', value: '\${current.restSeconds}s')),
+                  Expanded(child: _StatBox(label: '休息', value: '${current.restSeconds}s')),
                 ])),
               ])),
             )),
@@ -227,15 +223,15 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
             if (_resting) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Column(children: [
               Text('组间休息', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               const SizedBox(height: 4),
-              AnimatedBuilder(animation: _restAnim, builder: (ctx, child) {
-                final remaining = _restRemaining.inSeconds;
-                final total = int.tryParse(current.restSeconds) ?? 60;
-                return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  SizedBox(width: 160, height: 6, child: LinearProgressIndicator(value: remaining / total, backgroundColor: Colors.grey.shade300, valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFF9800)))),
-                  const SizedBox(width: 12),
-                  Text('$remaining秒', style: theme.textTheme.titleLarge?.copyWith(color: const Color(0xFFFF9800), fontWeight: FontWeight.bold)),
-                ]);
-              }),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                SizedBox(width: 160, height: 6, child: LinearProgressIndicator(
+                  value: _restRemaining.inSeconds / (int.tryParse(current.restSeconds) ?? 1),
+                  backgroundColor: Colors.grey.shade300,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFF9800))),
+                ),
+                const SizedBox(width: 12),
+                Text('${_restRemaining.inSeconds}秒', style: theme.textTheme.titleLarge?.copyWith(color: const Color(0xFFFF9800), fontWeight: FontWeight.bold)),
+              ]),
             ])),
             _buildButton(),
             const SizedBox(height: 88),
