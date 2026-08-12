@@ -214,7 +214,7 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
                   const SizedBox(width: 8),
                   Expanded(child: _StatBox(label: '次数', value: '${current.reps}次')),
                   if (_effWeight(current) != '0') const SizedBox(width: 8),
-                  Expanded(child: _StatBox(label: '??', value: _effWeight(current) != '0' ? _effWeight(current) + 'kg' : '?')),
+                  Expanded(child: _StatBox(label: '重量', value: _effWeight(current) != '0' ? _effWeight(current) + 'kg' : '—')),
                   const SizedBox(width: 8),
                   Expanded(child: _StatBox(label: '休息', value: '${current.restSeconds}s')),
                 ])),
