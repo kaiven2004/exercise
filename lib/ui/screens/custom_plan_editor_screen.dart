@@ -74,10 +74,10 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
   }
 
   Future<void> _syncOverrideToItem(CustomExerciseItem item) async {
-    final effSets = _overrideRepo.getEffectiveSets(item.exercise.id, item.exercise.sets);
-    final effReps = _overrideRepo.getEffectiveReps(item.exercise.id, item.exercise.reps);
-    final effRest = _overrideRepo.getEffectiveRest(item.exercise.id, item.exercise.restSeconds);
-    final effWeight = _overrideRepo.getOverrideWeight(item.exercise.id) ?? item.exercise.weight;
+    final effSets = _overrideRepo.getEffectiveSets(item.exercise.id, item.sets);
+    final effReps = _overrideRepo.getEffectiveReps(item.exercise.id, item.reps);
+    final effRest = _overrideRepo.getEffectiveRest(item.exercise.id, item.restSeconds);
+    final effWeight = _overrideRepo.getOverrideWeight(item.exercise.id) ?? item.weight;
     setState(() {
       item.sets = effSets;
       item.reps = effReps;
@@ -239,7 +239,7 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     Text(item.exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 2),
-                                    Text('${_effSets(item)}? × ${_effReps(item)}?' + (_effWeight(item) != '0' ? ' · ' + _effWeight(item) + 'kg' : '') + ' · ??${_effRest(item)}s', style: theme.textTheme.bodySmall),
+                                    Text('${_effSets(item)}组 × ${_effReps(item)}�xac�' + (_effWeight(item) != '0' ? ' · ' + _effWeight(item) + 'kg' : '') + ' · 休息${_effRest(item)}s', style: theme.textTheme.bodySmall),
                                   ]),
                                 ),
                                 IconButton(icon: const SvgIcon(assetName: 'favorite', size: 18), onPressed: () => _editExercise(index)),
