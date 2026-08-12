@@ -115,6 +115,17 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
             controller: TextEditingController(text: item.restSeconds),
           )),
         ]),
+        const SizedBox(height: 10),
+        Row(children: [
+          const SizedBox(width: 60, child: Text('重量', style: TextStyle(color: Colors.white70))),
+          Expanded(child: TextField(
+            keyboardType: TextInputType.text,
+            textAlign: TextAlign.center,
+            decoration: const InputDecoration(hintText: '如 50kg', border: OutlineInputBorder()),
+            onChanged: (v) => item.weight = v,
+            controller: TextEditingController(text: item.weight),
+          )),
+        ]),
       ]),
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
@@ -193,7 +204,7 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     Text(item.exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 2),
-                                    Text('${item.sets}组 × ${item.reps}次 · 休息${item.restSeconds}s', style: theme.textTheme.bodySmall),
+                                    Text('${item.sets}组 × ${item.reps}次${item.weight.isNotEmpty ? ' · ${item.weight}' : ''} · 休息${item.restSeconds}s', style: theme.textTheme.bodySmall),
                                   ]),
                                 ),
                                 IconButton(icon: const SvgIcon(assetName: 'favorite', size: 18), onPressed: () => _editExercise(index)),

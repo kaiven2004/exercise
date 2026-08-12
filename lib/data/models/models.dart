@@ -57,6 +57,7 @@ class CustomExerciseItem {
   int sets;
   int reps;
   String restSeconds;
+  String weight;
   final int order;
 
   CustomExerciseItem({
@@ -64,15 +65,17 @@ class CustomExerciseItem {
     this.sets = 3,
     this.reps = 12,
     this.restSeconds = '60',
+    this.weight = '',
     this.order = 0,
   });
 
-  CustomExerciseItem copyWith({int? sets, int? reps, String? restSeconds, int? order}) {
+  CustomExerciseItem copyWith({int? sets, int? reps, String? restSeconds, String? weight, int? order}) {
     return CustomExerciseItem(
       exercise: exercise,
       sets: sets ?? this.sets,
       reps: reps ?? this.reps,
       restSeconds: restSeconds ?? this.restSeconds,
+      weight: weight ?? this.weight,
       order: order ?? this.order,
     );
   }

@@ -72,6 +72,7 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
         'sets': e.sets,
         'reps': e.reps,
         'restSeconds': e.restSeconds,
+        'weight': e.weight,
         'order': e.order,
       }).toList(),
     };
@@ -91,6 +92,7 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
         sets: exJson['sets'] as int,
         reps: exJson['reps'] as int,
         restSeconds: exJson['restSeconds'] as String,
+        weight: exJson['weight'] as String? ?? '',
         order: exJson['order'] as int,
       );
     }).toList();
