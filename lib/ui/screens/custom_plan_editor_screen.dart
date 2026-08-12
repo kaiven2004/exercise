@@ -156,6 +156,10 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
     );
   }
 
+  int _effSets(CustomExerciseItem item) => _overrideRepo.getEffectiveSets(item.exercise.id, item.sets);
+  int _effReps(CustomExerciseItem item) => _overrideRepo.getEffectiveReps(item.exercise.id, item.reps);
+  String _effRest(CustomExerciseItem item) => _overrideRepo.getEffectiveRest(item.exercise.id, item.restSeconds);
+
   void _moveExercise(int from, int to) {
     setState(() {
       final item = _exercises.removeAt(from);

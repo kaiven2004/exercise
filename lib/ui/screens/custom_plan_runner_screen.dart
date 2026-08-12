@@ -1,5 +1,6 @@
 ﻿import 'dart:async';
 import 'package:excise/data/models/models.dart';
+import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/local_repositories.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
   Timer? _restTimer;
   late final CustomPlan _plan;
   late final LocalTrainingHistoryRepository _histRepo;
+  late final ExerciseOverrideRepository _overrideRepo;
 
   @override
   void initState() {
@@ -39,6 +41,8 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
     _setTimers = List.generate(_plan.exercises.length, (_) => null);
     _setDurations = List.generate(_plan.exercises.length, (_) => Duration.zero);
     _histRepo.init();
+    _overrideRepo = ExerciseOverrideRepository();
+    _overrideRepo.init();
   }
 
   @override
@@ -73,14 +77,14 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
     _setTimers[_currentExerciseIndex]?.cancel();
     _setDurations[_currentExerciseIndex] = _setElapsed;
     setState(() => _completedSets[_currentExerciseIndex]++);
-    if (_completedSets[_currentExerciseIndex] >= _plan.exercises[_currentExerciseIndex].sets) {
+    if (_completedSets[_currentExerciseIndex] >= _effSets(_plan.exercises[_currentExerciseIndex])) {
       if (_currentExerciseIndex < _plan.exercises.length - 1) {
-        _startRest(_plan.exercises[_currentExerciseIndex].restSeconds);
+        _startRest(_effRest(_plan.exercises[_currentExerciseIndex]));
       } else {
         _finishPlan();
       }
     } else {
-      _startRest(_plan.exercises[_currentExerciseIndex].restSeconds);
+      _startRest(_effRest(_plan.exercises[_currentExerciseIndex]));
     }
   }
 
@@ -130,7 +134,7 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
       exercises: _plan.exercises.map((item) => ExerciseLog(
         exercise: item.exercise,
         completedSets: _completedSets[_plan.exercises.indexOf(item)],
-        totalReps: _completedSets[_plan.exercises.indexOf(item)] * item.reps,
+        totalReps: _completedSets[_plan.exercises.indexOf(item)] * _effReps(item),
       )).toList(),
     );
     _histRepo.addSession(session);
@@ -181,7 +185,7 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
       return Scaffold(appBar: AppBar(title: Text(_plan.name)), body: const Center(child: Text('计划中没有动作，请先编辑计划')));
     }
     final current = _plan.exercises[_currentExerciseIndex];
-    final progress = _completedSets[_currentExerciseIndex] / current.sets;
+    final progress = _completedSets[_currentExerciseIndex] / _effSets(current);
     return Scaffold(
       appBar: AppBar(title: Text(_plan.name)),
       body: SingleChildScrollView(
@@ -242,6 +246,10 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
       ),
     );
   }
+
+  int _effSets(CustomExerciseItem item) => _overrideRepo.getEffectiveSets(item.exercise.id, item.sets);
+  int _effReps(CustomExerciseItem item) => _overrideRepo.getEffectiveReps(item.exercise.id, item.reps);
+  String _effRest(CustomExerciseItem item) => _overrideRepo.getEffectiveRest(item.exercise.id, item.restSeconds);
 
   String _formatDuration(Duration d) {
     final min = d.inMinutes.toString().padLeft(2, '0');
