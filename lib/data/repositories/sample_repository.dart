@@ -1,4 +1,4 @@
-import '../models/models.dart';
+﻿import '../models/models.dart';
 import 'exercise_repository.dart';
 
 class SampleExerciseRepository implements ExerciseRepository {
@@ -158,6 +158,7 @@ class SampleExerciseRepository implements ExerciseRepository {
 
   @override
   List<Exercise> getExercises(String categoryId) {
+    if (categoryId == 'all') return List.from(_exercises);
     return _exercises
         .where((e) => e.categoryPath.contains(_getCategoryName(categoryId)))
         .toList();
