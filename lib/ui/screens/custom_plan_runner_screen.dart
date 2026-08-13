@@ -203,7 +203,9 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
             Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Card(
               child: Padding(padding: const EdgeInsets.all(20), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(width: 100, height: 100, decoration: BoxDecoration(color: const Color(0xFFE3F2FD), borderRadius: BorderRadius.circular(20)),
-                  child: SvgIcon(assetName: current.exercise.imageSvg, size: 56, color: const Color(0xFF1565C0))),
+                  child: current.exercise.imageUrl.isNotEmpty
+                    ? Image.asset(current.exercise.imageUrl, width: 56, height: 56, fit: BoxFit.cover)
+                    : SvgIcon(assetName: current.exercise.imageSvg, size: 56, color: const Color(0xFF1565C0))),
                 const SizedBox(height: 16),
                 Text(current.exercise.name, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 6),

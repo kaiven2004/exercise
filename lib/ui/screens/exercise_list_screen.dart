@@ -119,11 +119,13 @@ class _ExerciseCard extends StatelessWidget {
                   color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: SvgIcon(
-                  assetName: exercise.imageSvg,
-                  size: 36,
-                  color: theme.colorScheme.primary,
-                ),
+                child: exercise.imageUrl.isNotEmpty
+                    ? Image.asset(exercise.imageUrl, width: 36, height: 36, fit: BoxFit.cover)
+                    : SvgIcon(
+                        assetName: exercise.imageSvg,
+                        size: 36,
+                        color: theme.colorScheme.primary,
+                      ),
               ),
               const SizedBox(width: 14),
               Expanded(

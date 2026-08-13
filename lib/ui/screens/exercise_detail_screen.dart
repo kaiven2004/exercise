@@ -197,11 +197,13 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
-                child: SvgIcon(
-                  assetName: ex.imageSvg,
-                  size: 100,
-                  color: theme.colorScheme.primary,
-                ),
+                child: ex.imageUrl.isNotEmpty
+                    ? Image.asset(ex.imageUrl, width: 100, height: 100, fit: BoxFit.cover)
+                    : SvgIcon(
+                        assetName: ex.imageSvg,
+                        size: 100,
+                        color: theme.colorScheme.primary,
+                      ),
               ),
             ),
             const SizedBox(height: 16),
