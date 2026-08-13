@@ -1,7 +1,7 @@
 name: excise
 description: "健身训练应用 - 力量/功能/瑜伽三大板块"
 publish_to: "none"
-version: 1.0.0+1
+version: 1.0.0+4002
 
 environment:
   sdk: "^3.12.0"
@@ -24,3 +24,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/svgs/
+    - assets/images/

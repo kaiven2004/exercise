@@ -347,7 +347,9 @@ class _ExercisePickerState extends State<_ExercisePicker> {
                       final excluded = widget.excludeIds.contains(ex.id);
                       return ListTile(
                         leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
-                          child: Center(child: SvgIcon(assetName: ex.imageSvg, size: 22, color: theme.colorScheme.primary))),
+                          child: Center(child: ex.imageUrl.isNotEmpty
+                              ? Image.asset(ex.imageUrl, width: 22, height: 22, fit: BoxFit.cover)
+                              : SvgIcon(assetName: ex.imageSvg, size: 22, color: theme.colorScheme.primary))),
                         title: Text(ex.name),
                         subtitle: Text(ex.categoryPath),
                         trailing: excluded ? const Text('已添加', style: TextStyle(color: Colors.grey)): null,

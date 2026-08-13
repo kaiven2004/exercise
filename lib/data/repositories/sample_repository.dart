@@ -89,14 +89,14 @@ class SampleExerciseRepository implements ExerciseRepository {
 
   static const List<Exercise> _exercises = [
     // 上胸
-    Exercise(id: '1', name: '上斜杠铃卧推', categoryPath: '力量训练 / 上肢 / 胸部训练 / 上胸', description: '仰卧于上斜凳（30-45度），双手握杠略宽于肩，下放至胸上部，推起时呼气。', tips: ['杠铃下放至乳头连线上方', '肘部与身体呈45度角', '核心收紧避免弓腰'], sets: 4, reps: 8, restSeconds: '90', difficulty: '中级', imageSvg: 'chest_upper', videoPath: ''),
-    Exercise(id: '2', name: '上斜哑铃卧推', categoryPath: '力量训练 / 上肢 / 胸部训练 / 上胸', description: '仰卧于上斜凳，双手持哑铃，从胸部两侧推至头顶，缓慢下放。', tips: ['哑铃不要碰撞', '下放时感受胸部拉伸', '核心收紧'], sets: 3, reps: 10, restSeconds: '60', difficulty: '初级', imageSvg: 'chest_upper', videoPath: ''),
+    Exercise(id: '1', name: '上斜杠铃卧推', categoryPath: '力量训练 / 上肢 / 胸部训练 / 上胸', description: '仰卧于上斜凳（30-45度），双手握杠略宽于肩，下放至胸上部，推起时呼气。', tips: ['杠铃下放至乳头连线上方', '肘部与身体呈45度角', '核心收紧避免弓腰'], sets: 4, reps: 8, restSeconds: '90', difficulty: '中级', imageSvg: 'chest_upper', imageUrl: 'assets/images/上斜杠铃卧推.png', videoPath: ''),
+    Exercise(id: '2', name: '上斜哑铃卧推', categoryPath: '力量训练 / 上肢 / 胸部训练 / 上胸', description: '仰卧于上斜凳，双手持哑铃，从胸部两侧推至头顶，缓慢下放。', tips: ['哑铃不要碰撞', '下放时感受胸部拉伸', '核心收紧'], sets: 3, reps: 10, restSeconds: '60', difficulty: '初级', imageSvg: 'chest_upper', imageUrl: 'assets/images/上斜哑铃卧推.png', videoPath: ''),
     // 中胸
     Exercise(id: '3', name: '平板杠铃卧推', categoryPath: '力量训练 / 上肢 / 胸部训练 / 中胸', description: '仰卧平凳，双手握杠略宽于肩，下放至胸中部，推起时呼气。', tips: ['杠铃下放至胸中部', '肩胛骨收紧下沉', '脚踩实地面'], sets: 4, reps: 8, restSeconds: '90', difficulty: '中级', imageSvg: 'chest', videoPath: ''),
     Exercise(id: '4', name: '平板哑铃卧推', categoryPath: '力量训练 / 上肢 / 胸部训练 / 中胸', description: '仰卧平凳，双手持哑铃，从胸部两侧推至头顶，缓慢下放。', tips: ['哑铃不要碰撞', '下放时感受胸部拉伸', '核心收紧'], sets: 3, reps: 10, restSeconds: '60', difficulty: '初级', imageSvg: 'chest', videoPath: ''),
     Exercise(id: '5', name: '哑铃飞鸟', categoryPath: '力量训练 / 上肢 / 胸部训练 / 中胸', description: '仰卧平凳，双手持哑铃向上伸直，向两侧打开至胸部有拉伸感，然后还原。', tips: ['肘部微屈', '感受胸部拉伸', '不要下放太低'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: 'chest', videoPath: ''),
     // 下胸
-    Exercise(id: '6', name: '双杠臂屈伸', categoryPath: '力量训练 / 上肢 / 胸部训练 / 下胸', description: '双手撑双杠，身体前倾，屈肘下放至肩部与手平齐，推起。', tips: ['身体前倾更刺激胸部', '下放深度适中', '核心收紧'], sets: 3, reps: 10, restSeconds: '60', difficulty: '中级', imageSvg: 'chest_lower', videoPath: ''),
+    Exercise(id: '6', name: '双杠臂屈伸', categoryPath: '力量训练 / 上肢 / 胸部训练 / 下胸', description: '双手撑双杠，身体前倾，屈肘下放至肩部与手平齐，推起。', tips: ['身体前倾更刺激胸部', '下放深度适中', '核心收紧'], sets: 3, reps: 10, restSeconds: '60', difficulty: '中级', imageSvg: 'chest_lower', imageUrl: 'assets/images/双杠臂屈伸.png', videoPath: ''),
     Exercise(id: '7', name: '俯卧撑', categoryPath: '力量训练 / 上肢 / 胸部训练 / 下胸', description: '双手撑地与肩同宽，身体保持直线，屈肘下放至胸部接近地面，推起。', tips: ['身体保持直线', '下放时吸气', '推起时呼气'], sets: 3, reps: 15, restSeconds: '45', difficulty: '初级', imageSvg: 'chest_lower', videoPath: ''),
     // 前束
     Exercise(id: '8', name: '哑铃前平举', categoryPath: '力量训练 / 上肢 / 肩部训练 / 前束', description: '站立，双手持哑铃于大腿前，向前举起至与肩同高，缓慢下放。', tips: ['不要耸肩', '举起时呼气', '控制下放速度'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: 'shoulder_front', videoPath: ''),

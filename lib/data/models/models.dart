@@ -33,6 +33,7 @@ class Exercise {
   final int reps;
   final String restSeconds;
   final String imageSvg;
+  final String imageUrl;
   final String difficulty;
   final String videoPath;
   final String weight;
@@ -47,6 +48,7 @@ class Exercise {
     this.reps = 12,
     this.restSeconds = '60',
     this.imageSvg = 'exercise_default',
+    this.imageUrl = '',
     this.difficulty = '初级',
     this.videoPath = '',
     this.weight = '0',
