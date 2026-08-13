@@ -1,4 +1,4 @@
-import 'package:excise/data/models/models.dart';
+﻿import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/custom_plan_repository.dart';
 import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
@@ -162,6 +162,8 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
       reps: item.reps,
       restSeconds: item.restSeconds,
     );
+    _overrideRepo.saveWeight(item.exercise.id, item.weight);
+    setState(() {});
   }
 
   int _effSets(CustomExerciseItem item) => _overrideRepo.getEffectiveSets(item.exercise.id, item.sets);
@@ -239,7 +241,7 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     Text(item.exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 2),
-                                    Text('${_effSets(item)}组 × ${_effReps(item)}欄' + (_effWeight(item) != '0' ? ' · ' + _effWeight(item) + 'kg' : '') + ' · 休息${_effRest(item)}s', style: theme.textTheme.bodySmall),
+                                    Text('${_effSets(item)}组 × ${_effReps(item)}次' + (_effWeight(item) != '0' ? ' · ' + _effWeight(item) + 'kg' : '') + ' · 休息${_effRest(item)}s', style: theme.textTheme.bodySmall),
                                   ]),
                                 ),
                                 IconButton(icon: const SvgIcon(assetName: 'favorite', size: 18), onPressed: () => _editExercise(index)),

@@ -1,4 +1,4 @@
-import 'package:excise/data/models/models.dart';
+﻿import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
@@ -143,13 +143,12 @@ class _ExerciseCard extends StatelessWidget {
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        _StatChip(label: '组', value: '欄'),
-                        const SizedBox(width: 6),
-                        _StatChip(label: exercise.difficulty),
-                      ],
+                    const SizedBox(height: 4),
+                    Text(
+                      '训练部位  ' + exercise.categoryPath.split(' / ').last,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),

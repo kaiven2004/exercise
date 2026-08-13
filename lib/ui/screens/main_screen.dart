@@ -1,4 +1,4 @@
-import 'package:excise/data/models/models.dart';
+﻿import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:excise/ui/screens/category_screen.dart';
@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen>
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverAppBar(
-            expandedHeight: 140,
+            expandedHeight: 170,
             floating: true,
             backgroundColor: theme.scaffoldBackgroundColor,
             foregroundColor: theme.colorScheme.onSurface,
@@ -46,7 +46,7 @@ class _MainScreenState extends State<MainScreen>
                 'EXCISE',
                 style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
               ),
-              titlePadding: const EdgeInsets.only(left: 16, bottom: 20),
+              titlePadding: const EdgeInsets.only(left: 16, bottom: 50),
             ),
             actions: [
               IconButton(

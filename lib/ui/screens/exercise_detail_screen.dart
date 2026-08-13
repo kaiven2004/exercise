@@ -150,8 +150,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
               _favRepo.toggleFavorite(ex);
             },
           ),
-          IconButton(
-            icon: SvgIcon(assetName: _editing ? 'check' : 'edit', size: 22, color: const Color(0xFF1565C0)),
+          TextButton(
             onPressed: () {
               if (_editing) {
                 _saveEdit();
@@ -159,6 +158,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
                 setState(() => _editing = true);
               }
             },
+            child: Text(_editing ? '保存' : '修改', style: const TextStyle(color: Color(0xFF1565C0), fontWeight: FontWeight.w500)),
           ),
         ],
       ),
