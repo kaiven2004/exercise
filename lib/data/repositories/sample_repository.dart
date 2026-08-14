@@ -29,6 +29,7 @@ class SampleExerciseRepository implements ExerciseRepository {
             TrainingCategory(id: 'shoulder_front', name: '前束', section: WorkoutSection.strength, svgIcon: 'shoulder_front'),
             TrainingCategory(id: 'shoulder_mid', name: '中束', section: WorkoutSection.strength, svgIcon: 'shoulder_mid'),
             TrainingCategory(id: 'shoulder_rear', name: '后束', section: WorkoutSection.strength, svgIcon: 'shoulder_rear'),
+            TrainingCategory(id: 'shoulder_rotator', name: '肩袖肌群', section: WorkoutSection.strength, svgIcon: 'shoulder_rotator'),
           ],
         ),
         TrainingCategory(
@@ -166,6 +167,28 @@ class SampleExerciseRepository implements ExerciseRepository {
     Exercise(id: '10050', name: '慢离心下斜卧推', categoryPath: '力量训练 / 胸部训练 / 下胸', description: '不增加重量，拉长离心时间，3-4秒下放，强化下胸肌纤维刺激，增肌周期优先。', tips: ['不增加重量','3-4秒缓慢下放','强化下胸肌纤维','增肌周期优先'], sets: 3, reps: 10, restSeconds: '60', difficulty: '高级', imageSvg: '下胸', imageUrl: '', videoPath: '', weight: '0'),
     Exercise(id: '10051', name: '下斜哑铃旋转飞鸟', categoryPath: '力量训练 / 胸部训练 / 下胸', description: '下放掌心朝下，合拢时掌心相对，增加胸肌旋转收缩，强化下胸中缝。', tips: ['凳调至15-25度下斜','下放掌心朝下','合拢时掌心转为相对','强化下胸中缝'], sets: 3, reps: 12, restSeconds: '45', difficulty: '中级', imageSvg: '下胸', imageUrl: '', videoPath: '', weight: '0'),
 
+    Exercise(id: '10052', name: '站姿杠铃推举', categoryPath: '力量训练 / 肩部训练 / 前束', description: '站姿，杠铃锁骨位置起，垂直向上推起。复合动作，前束主导，兼顾中束，全身参与，提升肩部整体力量。', tips: ['杠铃放锁骨位置','垂直向上推起','前束主导兼顾中束','不要过度后仰'], sets: 4, reps: 8, restSeconds: '60', difficulty: '中级', imageSvg: '前束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10053', name: '坐姿哑铃推举', categoryPath: '力量训练 / 肩部训练 / 前束', description: '坐姿，哑铃从肩两侧向上推。相比杠铃活动更自由，左右平衡，前束占比很高。', tips: ['坐姿背部贴紧','哑铃从肩两侧向上推','左右平衡修正','前束占比很高'], sets: 3, reps: 10, restSeconds: '60', difficulty: '中级', imageSvg: '前束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10054', name: '杠铃前平举', categoryPath: '力量训练 / 肩部训练 / 前束', description: '握距与肩同宽，杠铃沿身体前侧抬到眼睛高度，缓慢下放。孤立前束，不要甩腰借力。', tips: ['握距与肩同宽','抬到眼睛高度','缓慢下放','不要甩腰借力'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '前束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10055', name: '哑铃前平举', categoryPath: '力量训练 / 肩部训练 / 前束', description: '单/双手，哑铃由大腿前方向上抬至肩高。可以交替做，减少身体摆动。', tips: ['哑铃由大腿前方向上抬','抬至肩高即可','可交替进行','减少身体摆动'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '前束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10056', name: '坐姿器械肩推', categoryPath: '力量训练 / 肩部训练 / 前束', description: '固定轨迹，把手落在锁骨高度，向上推。安全冲重量，减少核心代偿，前束参与高。', tips: ['把手对齐锁骨高度','固定轨迹安全','减少核心代偿','前束参与高'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '前束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10057', name: '绳索前平举', categoryPath: '力量训练 / 肩部训练 / 前束', description: '滑轮调最低，站姿，握把手向前抬至肩高。全程持续张力，孤立打磨前束。', tips: ['滑轮调至最低位','向前抬至肩高','全程持续张力','孤立打磨前束'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '前束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10058', name: '哑铃侧平举', categoryPath: '力量训练 / 肩部训练 / 中束', description: '站姿，轻-中等重量，手肘微弯固定，向两侧抬起至肩高，缓慢控制下放。不要耸肩、不要甩惯性。中束标杆孤立动作，决定肩宽。', tips: ['手肘微弯固定','抬至肩高即可不要过耳','不要耸肩','不要甩惯性'], sets: 4, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '中束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10059', name: '俯身30度哑铃侧平举', categoryPath: '力量训练 / 肩部训练 / 中束', description: '身体微微前倾，大臂略微向前，进一步把发力锁定中束，减少斜方代偿。', tips: ['身体前倾30度','大臂略微向前','锁定中束发力','减少斜方代偿'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '中束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10060', name: '哑铃阿诺德推举', categoryPath: '力量训练 / 肩部训练 / 中束', description: '坐姿，哑铃在肩前掌心朝自己，推起同时外旋手腕。推举复合同时强化中束，兼顾一点前束。', tips: ['坐姿','推起时外旋手腕','掌心从朝己到朝前','强化中束兼顾前束'], sets: 3, reps: 10, restSeconds: '60', difficulty: '中级', imageSvg: '中束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10061', name: '绳索侧平举', categoryPath: '力量训练 / 肩部训练 / 中束', description: '滑轮调至最低，站在器械侧面，握把手向侧上方抬至肩高。下放也有持续张力，底部不会卸力，增肌效果优于哑铃。', tips: ['滑轮调至最低','站在器械侧面','抬至肩高','下放也有持续张力'], sets: 3, reps: 12, restSeconds: '45', difficulty: '中级', imageSvg: '中束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10062', name: '器械侧平举', categoryPath: '力量训练 / 肩部训练 / 中束', description: '坐姿固定，大臂托在靠垫上，向两侧打开。强制轨迹，极大抑制斜方上束借力，弱侧中束补强神器。', tips: ['坐姿大臂托在靠垫上','向两侧打开','强制轨迹抑制斜方','弱侧补强神器'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '中束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10063', name: '单臂绳索侧平举', categoryPath: '力量训练 / 肩部训练 / 中束', description: '单侧训练，修正左右肩膀不对称。', tips: ['单侧训练','滑轮调至最低','身体站直','修正左右不对称'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '中束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10064', name: '俯身哑铃反向飞鸟', categoryPath: '力量训练 / 肩部训练 / 后束', description: '上半身俯身接近平行地面，腰背平直，手肘微弯，哑铃向两侧向后打开，感受肩膀后侧收缩，慢下放。不要抬哑铃过高。后束经典标杆动作。', tips: ['上半身俯身接近平行地面','腰背平直','向两侧向后打开','不要抬过高'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '后束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10065', name: '俯卧上斜凳反向飞鸟', categoryPath: '力量训练 / 肩部训练 / 后束', description: '趴在45度上斜凳上做反向飞鸟，身体被凳子固定，杜绝弯腰借力，后束感受极强。', tips: ['趴在45度上斜凳','身体被固定杜绝借力','后束感受极强','反向飞鸟轨迹'], sets: 3, reps: 12, restSeconds: '45', difficulty: '中级', imageSvg: '后束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10066', name: '哑铃面拉（自由版）', categoryPath: '力量训练 / 肩部训练 / 后束', description: '坐姿，哑铃从下颌位置向两侧拉开，肘部向外向后。', tips: ['坐姿','哑铃从下颌向两侧拉开','肘部向外向后','强化后束'], sets: 3, reps: 12, restSeconds: '45', difficulty: '中级', imageSvg: '后束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10067', name: '绳索面拉', categoryPath: '力量训练 / 肩部训练 / 后束', description: '滑轮调至额头高度，绳索握把拉向额头，肘高于手，肘部向两侧向后打开。不光练后束，同时强化冈下肌，保护肩关节，预防肩撞击。后束+肩袖之王，必练动作。', tips: ['滑轮调至额头高度','拉向额头肘高于手','肘部向两侧向后打开','保护肩关节预防撞击'], sets: 3, reps: 15, restSeconds: '30', difficulty: '中级', imageSvg: '后束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10068', name: '器械反向飞鸟', categoryPath: '力量训练 / 肩部训练 / 后束', description: '蝴蝶机把手调高位，面对机器坐，双手向后做开胸动作。固定轨迹，容易找后束发力，新手老手都适用。', tips: ['把手调至高位','面对机器坐','双手向后开胸','固定轨迹易找发力'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '后束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10069', name: '单臂绳索反向飞鸟', categoryPath: '力量训练 / 肩部训练 / 后束', description: '单侧，站姿俯身，单握绳索把手向后外展开，纠正后束左右差距。', tips: ['单侧训练','站姿俯身','向后外展开','纠正左右差距'], sets: 3, reps: 12, restSeconds: '45', difficulty: '中级', imageSvg: '后束', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10070', name: '绳索外旋', categoryPath: '力量训练 / 肩部训练 / 肩袖肌群', description: '大臂贴紧身体，手肘夹紧肋骨不动，小臂向外旋转打开。强化冈下肌、小圆肌，保护肩关节。', tips: ['大臂贴紧身体','手肘夹紧肋骨','小臂向外旋转打开','轻重量高次数'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '肩袖肌群', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10071', name: '绳索内旋', categoryPath: '力量训练 / 肩部训练 / 肩袖肌群', description: '大臂贴身体，小臂向内旋转。强化肩胛下肌，平衡肩袖肌群。', tips: ['大臂贴紧身体','小臂向内旋转','强化肩胛下肌','轻重量'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '肩袖肌群', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10072', name: '空罐动作', categoryPath: '力量训练 / 肩部训练 / 肩袖肌群', description: '哑铃，拇指朝下，手臂斜向上抬30度，轻重量，康复强化冈上肌。', tips: ['拇指朝下','手臂斜向上抬30度','轻重量','强化冈上肌'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '肩袖肌群', imageUrl: '', videoPath: '', weight: '0'),
+
   ];
 
   @override
@@ -217,7 +240,7 @@ class SampleExerciseRepository implements ExerciseRepository {
       'strength_upper': '上肢训练', 'strength_lower': '下肢训练', 'strength_core': '核心训练',
       'strength_chest': '胸部训练', 'strength_shoulders': '肩部训练', 'strength_back': '背部训练', 'strength_arms': '手臂训练',
       'chest_upper': '上胸', 'chest_middle': '中胸', 'chest_lower': '下胸',
-      'shoulder_front': '前束', 'shoulder_mid': '中束', 'shoulder_rear': '后束',
+      'shoulder_front': '前束', 'shoulder_mid': '中束', 'shoulder_rear': '后束', 'shoulder_rotator': '肩袖肌群',
       'back_lats': '背阔肌', 'back_traps': '斜方肌',
       'arms_biceps': '肱二头肌', 'arms_triceps': '肱三头肌',
       'leg_quads': '股四头肌', 'leg_hamstrings': '腘绳肌', 'leg_glutes': '臀部', 'leg_calves': '小腿',
