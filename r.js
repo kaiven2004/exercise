@@ -1,0 +1,1 @@
+const f=require('fs'); const p='D:/exerciseapp/excise/lib/data/repositories/sample_repository.dart'; const d=f.readFileSync(p,'utf8'); const lines=d.split('\n'); const ci=[]; for(let i=0;i<lines.engTh;i++){if?lines[i].includes('categoryPath:')&&lines[i].includes('工人为'))i.push(i);} console.log(ci.length);
