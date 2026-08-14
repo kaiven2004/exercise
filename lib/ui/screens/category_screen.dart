@@ -40,130 +40,58 @@ class CategoryScreen extends StatelessWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
-        children: [
-          if (category.subCategories.isNotEmpty) ...[
-            ...category.subCategories.map((sub) {
-              final exercises = repo.getExercises(sub.id);
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: CategoryCard(
-                  icon: sub.svgIcon,
-                  name: sub.name,
-                  exerciseCount: exercises.length,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ExerciseListScreen(
-                        category: sub,
-                        parentCategory: category,
-                        section: section,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ] else ...[
-            const SizedBox(height: 20),
-            Center(
-              child: Column(
-                children: [
-                  SvgIcon(
-                    assetName: category.svgIcon,
-                    size: 64,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '${category.name} - 暂无细分动作',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text('点击此处查看全部动作', style: theme.textTheme.bodySmall),
-                  const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ExerciseListScreen(
-                          category: category,
-                          parentCategory: category,
-                          section: section,
-                        ),
-                      ),
-                    ),
-                    icon: const SvgIcon(assetName: 'strength', size: 18),
-                    label: const Text('查看动作'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
+        children: _buildItems(context, theme, repo),
       ),
     );
   }
-}
 
-
-class _ExerciseCard extends StatelessWidget {
-  final Exercise exercise;
-  final VoidCallback onTap;
-  const _ExerciseCard({required this.exercise, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SvgIcon(
-                  assetName: exercise.imageSvg,
-                  size: 36,
-                  color: theme.colorScheme.primary,
+  List<Widget> _buildItems(BuildContext context, ThemeData theme, SampleExerciseRepository repo) {
+    if (category.subCategories.isNotEmpty) {
+      return category.subCategories.map((sub) {
+        final exercises = repo.getExercises(sub.id);
+        if (exercises.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: CategoryCard(
+            icon: sub.svgIcon,
+            name: sub.name,
+            exerciseCount: exercises.length,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ExerciseListScreen(
+                  category: sub,
+                  parentCategory: category,
+                  section: section,
                 ),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      exercise.name,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      exercise.categoryPath,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SvgIcon(assetName: '''arrow_right''', size: 18),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
+      }).toList();
+    } else {
+      final exercises = repo.getExercises(category.id);
+      if (exercises.isEmpty) return [];
+      return exercises.map((ex) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: CategoryCard(
+            icon: ex.imageSvg,
+            name: ex.name,
+            exerciseCount: 1,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ExerciseListScreen(
+                  category: category,
+                  parentCategory: category,
+                  section: section,
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList();
+    }
   }
 }

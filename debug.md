@@ -192,3 +192,9 @@
 - 修复CategoryScreen：有动作但没有子分类时，直接显示动作列表，不再显示"暂无细分动作"的空白提示页
 - 单侧力量、髋功能等功能训练分类点击后直接进入动作列表
 
+
+## v16 - 2026-08-15 02:13:44
+- 修复 category_screen.dart 重复 _ExerciseCard 类
+- 删除 CategoryScreen 中无子分类时的内联动作展示，改为直接跳转 ExerciseListScreen
+- 去掉无动作时的「暂无数据」提示
+- 复用 svg_icons.dart 中已有的 CategoryCard 组件（避免命名冲突）
