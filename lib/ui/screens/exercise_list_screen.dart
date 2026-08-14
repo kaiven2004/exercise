@@ -2,6 +2,7 @@
 import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
+import 'package:excise/ui/screens/category_screen.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -62,25 +63,50 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: exercises.isEmpty
-          ? _EmptyState(category: widget.category)
-          : ListView.builder(
+      body: widget.category.subCategories.isNotEmpty
+          ? ListView(
               padding: const EdgeInsets.all(16),
-              itemCount: exercises.length,
-              itemBuilder: (context, index) {
-                final ex = exercises[index];
-                return _ExerciseCard(
-                  exercise: ex,
-                  overrideRepo: _overrideRepo,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ExerciseDetailScreen(exercise: ex),
+              children: widget.category.subCategories.map((sub) {
+                final exercises = _repo.getExercises(sub.id);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: CategoryCard(
+                    icon: sub.svgIcon,
+                    name: sub.name,
+                    exerciseCount: exercises.length,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ExerciseListScreen(
+                          category: sub,
+                          parentCategory: widget.category,
+                          section: widget.section,
+                        ),
+                      ),
                     ),
                   ),
                 );
-              },
-            ),
+              }).toList(),
+            )
+          : exercises.isEmpty
+              ? _EmptyState(category: widget.category)
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: exercises.length,
+                  itemBuilder: (context, index) {
+                    final ex = exercises[index];
+                    return _ExerciseCard(
+                      exercise: ex,
+                      overrideRepo: _overrideRepo,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ExerciseDetailScreen(exercise: ex),
+                        ),
+                      ),
+                    );
+                  },
+                ),
     );
   }
 
