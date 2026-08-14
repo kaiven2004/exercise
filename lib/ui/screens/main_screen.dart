@@ -1,7 +1,8 @@
-﻿import 'package:excise/data/models/models.dart';
+import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:excise/ui/screens/category_screen.dart';
+import 'package:excise/ui/screens/exercise_list_screen.dart';
 import 'package:excise/ui/screens/search_screen.dart';
 import 'package:excise/ui/screens/favorites_screen.dart';
 import 'package:excise/ui/screens/history_screen.dart';
@@ -140,7 +141,22 @@ class _SectionTabView extends StatelessWidget {
                   icon: cat.svgIcon,
                   name: cat.name,
                   exerciseCount: _countExercises(repo, cat),
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CategoryScreen(category: cat, section: section))),
+                  onTap: () {
+                    if (cat.subCategories.isEmpty) {
+                      // 无子分类，直接跳转动作列表
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => ExerciseListScreen(
+                          category: cat,
+                          parentCategory: cat,
+                          section: section,
+                        ),
+                      ));
+                    } else {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => CategoryScreen(category: cat, section: section),
+                      ));
+                    }
+                  },
                 ),
               ),
         ]

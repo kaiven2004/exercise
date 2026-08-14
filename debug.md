@@ -198,3 +198,8 @@
 - 删除 CategoryScreen 中无子分类时的内联动作展示，改为直接跳转 ExerciseListScreen
 - 去掉无动作时的「暂无数据」提示
 - 复用 svg_icons.dart 中已有的 CategoryCard 组件（避免命名冲突）
+
+## v17 - 2026-08-15 02:25
+- 修改 main_screen.dart 导航逻辑
+- 无子分类的板块（如功能训练的\"单侧力量\"等）点击后直接跳转 ExerciseListScreen（动作列表），不再经过 CategoryScreen 中间层
+- 有子分类的板块（如力量训练的\"胸部\"）仍正常进入 CategoryScreen 子分类页
