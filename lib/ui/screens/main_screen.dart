@@ -131,18 +131,19 @@ class _SectionTabView extends StatelessWidget {
             ],
           ),
         ),
-        ...categories.map((cat) {
-          final count = _countExercises(repo, cat);
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: CategoryCard(
-              icon: cat.svgIcon,
-              name: cat.name,
-              exerciseCount: count,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CategoryScreen(category: cat, section: section))),
-            ),
-          );
-        }),
+        ...[
+          for (final cat in categories)
+            if (_countExercises(repo, cat) > 0)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: CategoryCard(
+                  icon: cat.svgIcon,
+                  name: cat.name,
+                  exerciseCount: _countExercises(repo, cat),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CategoryScreen(category: cat, section: section))),
+                ),
+              ),
+        ]
       ],
     );
   }
