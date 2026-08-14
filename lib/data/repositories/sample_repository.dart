@@ -52,6 +52,7 @@ class SampleExerciseRepository implements ExerciseRepository {
           subCategories: [
             TrainingCategory(id: 'arms_biceps', name: '肱二头肌', section: WorkoutSection.strength, svgIcon: 'biceps'),
             TrainingCategory(id: 'arms_triceps', name: '肱三头肌', section: WorkoutSection.strength, svgIcon: 'triceps'),
+            TrainingCategory(id: 'arms_forearm', name: '前臂', section: WorkoutSection.strength, svgIcon: 'forearm'),
           ],
         ),
       ],
@@ -214,6 +215,26 @@ class SampleExerciseRepository implements ExerciseRepository {
     Exercise(id: '10093', name: '早安式躬身', categoryPath: '力量训练 / 背部训练 / 下背/竖脊肌', description: '杠铃置于上背，膝盖微屈，臀部向后坐，躯干向前俯身再回正，强化下背稳定。', tips: ['杠铃置于上背','膝盖微屈臀部后坐','躯干向前俯身再回正','强化下背稳定'], sets: 3, reps: 12, restSeconds: '45', difficulty: '中级', imageSvg: '下背/竖脊肌', imageUrl: '', videoPath: '', weight: '0'),
     Exercise(id: '10094', name: '45度背伸器械', categoryPath: '力量训练 / 背部训练 / 下背/竖脊肌', description: '固定轨迹山羊挺身，限制过度后伸，安全做高次数，强化竖脊肌。', tips: ['固定轨迹限制过度后伸','安全做高次数','强化竖脊肌','45度背伸器械'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '下背/竖脊肌', imageUrl: '', videoPath: '', weight: '0'),
 
+    Exercise(id: '10095', name: '杠铃站姿弯举', categoryPath: '力量训练 / 手臂训练 / 肱二头肌', description: '站姿，大臂夹紧身体不动，只弯小臂，把杠铃举到胸前，慢下放。大臂不要前后甩。二头王牌动作，侧重短头。', tips: ['大臂夹紧身体不动','只弯小臂','举到胸前慢下放','大臂不要前后甩'], sets: 4, reps: 10, restSeconds: '60', difficulty: '初级', imageSvg: '肱二头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10096', name: '哑铃交替弯举', categoryPath: '力量训练 / 手臂训练 / 肱二头肌', description: '双手哑铃交替弯举，可以轻微旋转手腕，顶峰掌心朝上，纠正左右力量差。', tips: ['双手交替弯举','顶峰掌心朝上','轻微旋转手腕','纠正左右力量差'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '肱二头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10097', name: '牧师凳弯举', categoryPath: '力量训练 / 手臂训练 / 肱二头肌', description: '上臂贴在牧师凳斜垫上，大臂被固定，完全杜绝借力，短头刺激极强。', tips: ['上臂贴牧师凳斜垫','大臂被固定杜绝借力','短头刺激极强','孤立弯举'], sets: 3, reps: 10, restSeconds: '45', difficulty: '初级', imageSvg: '肱二头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10098', name: '上斜凳哑铃弯举', categoryPath: '力量训练 / 手臂训练 / 肱二头肌', description: '躺在30-45度上斜凳，大臂垂向身体后方做弯举。大臂向后，长头被拉开，专门强化二头肌长头，很多人二头尖弱就靠它。', tips: ['躺在30-45度上斜凳','大臂垂向身体后方','长头被充分拉伸','强化二头肌长头'], sets: 3, reps: 10, restSeconds: '45', difficulty: '中级', imageSvg: '肱二头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10099', name: '绳索杠铃弯举', categoryPath: '力量训练 / 手臂训练 / 肱二头肌', description: '滑轮低位，直杆，站姿弯举。全程持续张力，底部不会卸力，增肌效果优秀。', tips: ['滑轮调至最低位','直杆握把','全程持续张力','底部不卸力'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '肱二头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10100', name: '绳索锤式弯举', categoryPath: '力量训练 / 手臂训练 / 肱二头肌', description: '握对握把手，掌心相对，不旋转手腕。重点练肱肌（二头下方，让手臂围度变大的关键肌肉），同时刺激肱桡肌。', tips: ['对握把手掌心相对','不旋转手腕','重点练肱肌','增加手臂围度'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '肱二头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10101', name: '器械二头弯举机', categoryPath: '力量训练 / 手臂训练 / 肱二头肌', description: '固定轨迹，适合力竭组，不用平衡，安全冲容量。', tips: ['固定轨迹安全','适合力竭组','不用平衡','安全冲容量'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '肱二头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10102', name: '窄距杠铃卧推', categoryPath: '力量训练 / 手臂训练 / 肱三头肌', description: '握距略窄于肩，平板凳。既是胸辅助动作，也是三头大重量复合，可以上大重量堆围度。侧重外侧和内侧头。', tips: ['握距略窄于肩','平板凳','三头大重量复合','侧重外侧内侧头'], sets: 4, reps: 8, restSeconds: '60', difficulty: '中级', imageSvg: '肱三头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10103', name: '哑铃颈后臂屈伸', categoryPath: '力量训练 / 手臂训练 / 肱三头肌', description: '坐姿/站姿，单/双手，哑铃举过头顶，向颈后下放，再向上伸直。长头必练动作，想要手臂后侧饱满不能少。', tips: ['哑铃举过头顶','向颈后下放','再向上伸直','长头必练动作'], sets: 3, reps: 12, restSeconds: '45', difficulty: '中级', imageSvg: '肱三头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10104', name: '俯身哑铃臂屈伸（单臂）', categoryPath: '力量训练 / 手臂训练 / 肱三头肌', description: '身体俯身，大臂抬至与地面平行固定，小臂向后伸。孤立外侧、内侧头。', tips: ['身体俯身大臂平行地面','大臂固定不动','小臂向后伸','孤立外侧内侧头'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '肱三头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10105', name: '绳索下压（直杆）', categoryPath: '力量训练 / 手臂训练 / 肱三头肌', description: '滑轮高位，大臂夹紧肋骨不动，只做小臂向下压，顶峰手臂几乎打直但不锁死。最常用三头动作，外侧头为主。', tips: ['滑轮调至高位','大臂夹紧肋骨','小臂向下压','顶峰不锁死'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '肱三头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10106', name: '绳索V把下压', categoryPath: '力量训练 / 手臂训练 / 肱三头肌', description: 'V型把手，手腕略微内扣，侧重内侧头，改善手肘上方那块薄弱。', tips: ['V型把手手腕内扣','侧重内侧头','改善手肘上方薄弱','三头标杆动作'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '肱三头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10107', name: '绳索过头臂屈伸', categoryPath: '力量训练 / 手臂训练 / 肱三头肌', description: '滑轮调最低，背对器械，双手抓绳索举过头顶，向脑后弯曲再伸直。长头持续张力，效果优于哑铃颈后臂屈伸。', tips: ['滑轮调至最低','背对器械双手举过头顶','向脑后弯曲再伸直','长头持续张力'], sets: 3, reps: 12, restSeconds: '45', difficulty: '中级', imageSvg: '肱三头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10108', name: '双杠臂屈伸（三头版）', categoryPath: '力量训练 / 手臂训练 / 肱三头肌', description: '身体垂直、手肘贴紧身体，就是练三头。自重，可腰间挂负重片。', tips: ['身体保持垂直','手肘贴紧身体','练三头不是胸','可挂负重片'], sets: 3, reps: 10, restSeconds: '60', difficulty: '中级', imageSvg: '肱三头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10109', name: '器械三头屈伸机', categoryPath: '力量训练 / 手臂训练 / 肱三头肌', description: '坐姿固定轨迹，适合力竭收尾。', tips: ['坐姿固定轨迹','适合力竭组','安全冲容量','三头收尾动作'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '肱三头肌', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10110', name: '杠铃坐姿腕弯举', categoryPath: '力量训练 / 手臂训练 / 前臂', description: '前臂放在凳上，手腕悬空，只活动手腕向上卷。练小臂内侧屈肌。', tips: ['前臂放凳上','手腕悬空','向上卷腕','练小臂内侧屈肌'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '前臂', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10111', name: '反向腕弯举', categoryPath: '力量训练 / 手臂训练 / 前臂', description: '掌心朝下握杠铃，手腕向上抬。练小臂伸肌，平衡避免网球肘。', tips: ['掌心朝下握杠','手腕向上抬','练小臂伸肌','平衡避免网球肘'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '前臂', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10112', name: '农夫行走', categoryPath: '力量训练 / 手臂训练 / 前臂', description: '双手握重哑铃/杠铃片行走，整体增厚小臂，同时强化握力。', tips: ['双手握重物行走','整体增厚小臂','强化握力','保持躯干稳定'], sets: 3, reps: 20, restSeconds: '60', difficulty: '中级', imageSvg: '前臂', imageUrl: '', videoPath: '', weight: '0'),
+    Exercise(id: '10113', name: '锤式弯举', categoryPath: '力量训练 / 手臂训练 / 前臂', description: '掌心相对握哑铃做弯举，顺带大量刺激肱桡肌（小臂外侧大块）。', tips: ['掌心相对握哑铃','做弯举动作','刺激肱桡肌','小臂外侧增厚'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '前臂', imageUrl: '', videoPath: '', weight: '0'),
+
   ];
 
   @override
@@ -267,7 +288,7 @@ class SampleExerciseRepository implements ExerciseRepository {
       'chest_upper': '上胸', 'chest_middle': '中胸', 'chest_lower': '下胸',
       'shoulder_front': '前束', 'shoulder_mid': '中束', 'shoulder_rear': '后束', 'shoulder_rotator': '肩袖肌群',
       'back_lats': '背阔肌', 'back_upper': '上背厚度', 'back_traps_lower': '斜方下束', 'back_lower': '下背/竖脊肌',
-      'arms_biceps': '肱二头肌', 'arms_triceps': '肱三头肌',
+      'arms_biceps': '肱二头肌', 'arms_triceps': '肱三头肌', 'arms_forearm': '前臂',
       'leg_quads': '股四头肌', 'leg_hamstrings': '腘绳肌', 'leg_glutes': '臀部', 'leg_calves': '小腿',
       'core_abs': '腹直肌', 'core_obliques': '腹斜肌',
       'func_core': '核心稳定', 'func_balance': '平衡训练', 'func_agility': '灵敏训练',
