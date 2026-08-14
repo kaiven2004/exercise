@@ -157,8 +157,12 @@ class _SectionTabView extends StatelessWidget {
 
   int _countExercises(SampleExerciseRepository repo, TrainingCategory cat) {
     int count = 0;
-    for (final sub in cat.subCategories) {
-      count += repo.getExercises(sub.id).length;
+    if (cat.subCategories.isNotEmpty) {
+      for (final sub in cat.subCategories) {
+        count += repo.getExercises(sub.id).length;
+      }
+    } else {
+      count = repo.getExercises(cat.id).length;
     }
     return count;
   }
