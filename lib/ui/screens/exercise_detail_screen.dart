@@ -198,7 +198,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
               ),
               child: Center(
                 child: ex.imageUrl.isNotEmpty
-                    ? (ex.imageUrl.startsWith("assets/")
+                    ? (ex.imageUrl.startsWith("http")
                         ? Image.asset(ex.imageUrl, width: 100, height: 100, fit: BoxFit.cover)
                         : Image.network(ex.imageUrl, width: 100, height: 100, fit: BoxFit.cover, errorBuilder: (_, __, ___) => SvgIcon(assetName: ex.imageSvg, size: 100, color: theme.colorScheme.primary)))
                     : SvgIcon(

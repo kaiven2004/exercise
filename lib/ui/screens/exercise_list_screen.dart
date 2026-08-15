@@ -146,7 +146,7 @@ class _ExerciseCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: exercise.imageUrl.isNotEmpty
-                    ? (exercise.imageUrl.startsWith("assets/")
+                    ? (exercise.imageUrl.startsWith("http")
                         ? Image.asset(exercise.imageUrl, width: 36, height: 36, fit: BoxFit.cover)
                         : Image.network(exercise.imageUrl, width: 36, height: 36, fit: BoxFit.cover, errorBuilder: (_, __, ___) => SvgIcon(assetName: exercise.imageSvg, size: 36, color: theme.colorScheme.primary)))
                     : SvgIcon(

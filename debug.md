@@ -210,3 +210,9 @@
 - 覆盖全部力量训练、功能训练板块的动作
 - 无子分类的板块点击后直接跳转动作列表（跳过中间分类页）
 - 修复 category_screen.dart 重复 _ExerciseCard 类问题
+
+## v19 - 2026-08-15 13:30
+- 修复图片加载逻辑：所有屏幕统一改为 startsWith('http') 判断网络图片
+- custom_plan_editor_screen.dart 原来把所有imageUrl都当本地资源加载（导致红叉）
+- exercise_list_screen.dart 原来用 assets/ 判断，改为 http 判断
+- exercise_detail_screen.dart 同样改为 http 判断
