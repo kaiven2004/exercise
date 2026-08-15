@@ -229,7 +229,7 @@ class _FavoriteCard extends StatelessWidget {
               ),
               if (!isMultiSelect)
                 IconButton(
-                  icon: const SvgIcon(assetName: 'favorite', size: 18),
+                  icon: const SvgIcon(assetName: 'history', size: 18),
                   onPressed: onAddToPlan,
                 ),
               IconButton(
