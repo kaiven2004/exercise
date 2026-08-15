@@ -221,7 +221,7 @@ class _FavoriteCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '\${exercise.categoryPath}  \${exercise.sets}\u7EC4 x \${exercise.reps}\u6B21',
+                      '${exercise.categoryPath}  ${exercise.sets}\u7EC4 x ${exercise.reps}\u6B21',
                       style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
                   ],
@@ -275,7 +275,7 @@ class _PlanSelectorState extends State<_PlanSelector> {
               const SizedBox(height: 8),
               ...widget.planList.map((p) => RadioListTile<String>(
                 title: Text(p.name),
-                subtitle: Text('\${p.exercises.length} \u4E2A\u52A8\u4F5C'),
+                subtitle: Text('${p.exercises.length} \u4E2A\u52A8\u4F5C'),
                 value: p.id,
                 groupValue: _selectedPlanId,
                 onChanged: (v) => setState(() => _selectedPlanId = v!),
