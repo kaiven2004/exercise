@@ -216,3 +216,9 @@
 - custom_plan_editor_screen.dart 原来把所有imageUrl都当本地资源加载（导致红叉）
 - exercise_list_screen.dart 原来用 assets/ 判断，改为 http 判断
 - exercise_detail_screen.dart 同样改为 http 判断
+
+## v20 - 2026-08-15 13:40
+- 将所有182个动作的图片URL从失效的 muscleandstrength CDN 替换为真实可访问的 Pexels 图片
+- 7个缺失的动作使用通用健身图片补充
+- 图片来源: pexels.com 免费商用健身图片
+- 网络图片加载失败时自动 fallback 到 SVG 图标
