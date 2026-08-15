@@ -1,0 +1,1325 @@
+[
+  {
+    "id": "10001",
+    "name": "上斜杠铃卧推",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10001.gif"
+  },
+  {
+    "id": "10002",
+    "name": "上斜史密斯机卧推",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10002.gif"
+  },
+  {
+    "id": "10003",
+    "name": "反握杠铃卧推",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10003.gif"
+  },
+  {
+    "id": "10004",
+    "name": "上斜反握杠铃卧推",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10004.gif"
+  },
+  {
+    "id": "10005",
+    "name": "窄握上斜杠铃卧推",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10005.gif"
+  },
+  {
+    "id": "10006",
+    "name": "上斜哑铃卧推",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10006.gif"
+  },
+  {
+    "id": "10007",
+    "name": "上斜哑铃飞鸟",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10007.gif"
+  },
+  {
+    "id": "10008",
+    "name": "上斜哑铃锤式推举",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10008.gif"
+  },
+  {
+    "id": "10009",
+    "name": "上斜哑铃挤压推举",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10009.gif"
+  },
+  {
+    "id": "10010",
+    "name": "单臂上斜哑铃卧推",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10010.gif"
+  },
+  {
+    "id": "10011",
+    "name": "低位绳索夹胸",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10011.gif"
+  },
+  {
+    "id": "10012",
+    "name": "上斜绳索推胸",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10012.gif"
+  },
+  {
+    "id": "10013",
+    "name": "上斜器械推胸",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10013.gif"
+  },
+  {
+    "id": "10014",
+    "name": "蝴蝶机夹胸",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10014.gif"
+  },
+  {
+    "id": "10015",
+    "name": "站姿杠铃推举",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10015.gif"
+  },
+  {
+    "id": "10016",
+    "name": "下斜俯卧撑",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10016.gif"
+  },
+  {
+    "id": "10017",
+    "name": "反握俯卧撑",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10017.gif"
+  },
+  {
+    "id": "10018",
+    "name": "药球上斜俯卧撑",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10018.gif"
+  },
+  {
+    "id": "10019",
+    "name": "扎切尔俯卧撑",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10019.gif"
+  },
+  {
+    "id": "10020",
+    "name": "地雷管上斜推举",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10020.gif"
+  },
+  {
+    "id": "10021",
+    "name": "地雷管上斜推举（单臂）",
+    "path": "力量训练 / 胸部训练 / 上胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10021.gif"
+  },
+  {
+    "id": "10022",
+    "name": "地板杠铃卧推",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10022.gif"
+  },
+  {
+    "id": "10023",
+    "name": "宽握平板卧推",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10023.gif"
+  },
+  {
+    "id": "10024",
+    "name": "窄握平板卧推",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10024.gif"
+  },
+  {
+    "id": "10025",
+    "name": "平板哑铃卧推",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10025.gif"
+  },
+  {
+    "id": "10026",
+    "name": "平板哑铃飞鸟",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10026.gif"
+  },
+  {
+    "id": "10027",
+    "name": "地板哑铃飞鸟",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10027.gif"
+  },
+  {
+    "id": "10028",
+    "name": "负重平板俯卧撑",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10028.gif"
+  },
+  {
+    "id": "10029",
+    "name": "平板器械推胸",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10029.gif"
+  },
+  {
+    "id": "10030",
+    "name": "哈克推胸（平板模式）",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10030.gif"
+  },
+  {
+    "id": "10031",
+    "name": "蝴蝶机夹胸（中位把手）",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10031.gif"
+  },
+  {
+    "id": "10032",
+    "name": "中位绳索夹胸",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10032.gif"
+  },
+  {
+    "id": "10033",
+    "name": "低位绳索平板推胸",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10033.gif"
+  },
+  {
+    "id": "10034",
+    "name": "单臂中位绳索夹胸",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10034.gif"
+  },
+  {
+    "id": "10035",
+    "name": "平板卧推底部停顿",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10035.gif"
+  },
+  {
+    "id": "10036",
+    "name": "慢离心平板卧推",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10036.gif"
+  },
+  {
+    "id": "10037",
+    "name": "哑铃旋转平板飞鸟",
+    "path": "力量训练 / 胸部训练 / 中胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10037.gif"
+  },
+  {
+    "id": "10038",
+    "name": "下斜杠铃卧推（15-25度）",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10038.gif"
+  },
+  {
+    "id": "10039",
+    "name": "窄握下斜杠铃卧推",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10039.gif"
+  },
+  {
+    "id": "10040",
+    "name": "下斜哑铃卧推",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10040.gif"
+  },
+  {
+    "id": "10041",
+    "name": "下斜哑铃飞鸟",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10041.gif"
+  },
+  {
+    "id": "10042",
+    "name": "脚抬高负重俯卧撑",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10042.gif"
+  },
+  {
+    "id": "10043",
+    "name": "下斜器械推胸",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10043.gif"
+  },
+  {
+    "id": "10044",
+    "name": "哈克推胸（下胸模式）",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10044.gif"
+  },
+  {
+    "id": "10045",
+    "name": "蝴蝶机夹胸（低位把手）",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10045.gif"
+  },
+  {
+    "id": "10046",
+    "name": "低位绳索夹胸",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10046.gif"
+  },
+  {
+    "id": "10047",
+    "name": "高位绳索下斜推胸",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10047.gif"
+  },
+  {
+    "id": "10048",
+    "name": "单臂低位绳索夹胸",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10048.gif"
+  },
+  {
+    "id": "10049",
+    "name": "下斜卧推底部停顿",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10049.gif"
+  },
+  {
+    "id": "10050",
+    "name": "慢离心下斜卧推",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10050.gif"
+  },
+  {
+    "id": "10051",
+    "name": "下斜哑铃旋转飞鸟",
+    "path": "力量训练 / 胸部训练 / 下胸",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10051.gif"
+  },
+  {
+    "id": "10052",
+    "name": "站姿杠铃推举",
+    "path": "力量训练 / 肩部训练 / 前束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10052.gif"
+  },
+  {
+    "id": "10053",
+    "name": "坐姿哑铃推举",
+    "path": "力量训练 / 肩部训练 / 前束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10053.gif"
+  },
+  {
+    "id": "10054",
+    "name": "杠铃前平举",
+    "path": "力量训练 / 肩部训练 / 前束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10054.gif"
+  },
+  {
+    "id": "10055",
+    "name": "哑铃前平举",
+    "path": "力量训练 / 肩部训练 / 前束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10055.gif"
+  },
+  {
+    "id": "10056",
+    "name": "坐姿器械肩推",
+    "path": "力量训练 / 肩部训练 / 前束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10056.gif"
+  },
+  {
+    "id": "10057",
+    "name": "绳索前平举",
+    "path": "力量训练 / 肩部训练 / 前束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10057.gif"
+  },
+  {
+    "id": "10058",
+    "name": "哑铃侧平举",
+    "path": "力量训练 / 肩部训练 / 中束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10058.gif"
+  },
+  {
+    "id": "10059",
+    "name": "俯身30度哑铃侧平举",
+    "path": "力量训练 / 肩部训练 / 中束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10059.gif"
+  },
+  {
+    "id": "10060",
+    "name": "哑铃阿诺德推举",
+    "path": "力量训练 / 肩部训练 / 中束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10060.gif"
+  },
+  {
+    "id": "10061",
+    "name": "绳索侧平举",
+    "path": "力量训练 / 肩部训练 / 中束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10061.gif"
+  },
+  {
+    "id": "10062",
+    "name": "器械侧平举",
+    "path": "力量训练 / 肩部训练 / 中束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10062.gif"
+  },
+  {
+    "id": "10063",
+    "name": "单臂绳索侧平举",
+    "path": "力量训练 / 肩部训练 / 中束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10063.gif"
+  },
+  {
+    "id": "10064",
+    "name": "俯身哑铃反向飞鸟",
+    "path": "力量训练 / 肩部训练 / 后束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10064.gif"
+  },
+  {
+    "id": "10065",
+    "name": "俯卧上斜凳反向飞鸟",
+    "path": "力量训练 / 肩部训练 / 后束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10065.gif"
+  },
+  {
+    "id": "10066",
+    "name": "哑铃面拉（自由版）",
+    "path": "力量训练 / 肩部训练 / 后束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10066.gif"
+  },
+  {
+    "id": "10067",
+    "name": "绳索面拉",
+    "path": "力量训练 / 肩部训练 / 后束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10067.gif"
+  },
+  {
+    "id": "10068",
+    "name": "器械反向飞鸟",
+    "path": "力量训练 / 肩部训练 / 后束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10068.gif"
+  },
+  {
+    "id": "10069",
+    "name": "单臂绳索反向飞鸟",
+    "path": "力量训练 / 肩部训练 / 后束",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10069.gif"
+  },
+  {
+    "id": "10070",
+    "name": "绳索外旋",
+    "path": "力量训练 / 肩部训练 / 肩袖肌群",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10070.gif"
+  },
+  {
+    "id": "10071",
+    "name": "绳索内旋",
+    "path": "力量训练 / 肩部训练 / 肩袖肌群",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10071.gif"
+  },
+  {
+    "id": "10072",
+    "name": "空罐动作",
+    "path": "力量训练 / 肩部训练 / 肩袖肌群",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10072.gif"
+  },
+  {
+    "id": "10073",
+    "name": "宽握引体向上",
+    "path": "力量训练 / 背部训练 / 背阔肌",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10073.gif"
+  },
+  {
+    "id": "10074",
+    "name": "窄握对握引体向上",
+    "path": "力量训练 / 背部训练 / 背阔肌",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10074.gif"
+  },
+  {
+    "id": "10075",
+    "name": "反手引体向上",
+    "path": "力量训练 / 背部训练 / 背阔肌",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10075.gif"
+  },
+  {
+    "id": "10076",
+    "name": "宽握高位下拉",
+    "path": "力量训练 / 背部训练 / 背阔肌",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10076.gif"
+  },
+  {
+    "id": "10077",
+    "name": "窄握对握高位下拉",
+    "path": "力量训练 / 背部训练 / 背阔肌",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10077.gif"
+  },
+  {
+    "id": "10078",
+    "name": "直臂绳索下压",
+    "path": "力量训练 / 背部训练 / 背阔肌",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10078.gif"
+  },
+  {
+    "id": "10079",
+    "name": "单臂绳索下拉",
+    "path": "力量训练 / 背部训练 / 背阔肌",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10079.gif"
+  },
+  {
+    "id": "10080",
+    "name": "俯身杠铃划船",
+    "path": "力量训练 / 背部训练 / 上背厚度",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10080.gif"
+  },
+  {
+    "id": "10081",
+    "name": "俯身哑铃单臂划船",
+    "path": "力量训练 / 背部训练 / 上背厚度",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10081.gif"
+  },
+  {
+    "id": "10082",
+    "name": "T杠划船（地雷管划船）",
+    "path": "力量训练 / 背部训练 / 上背厚度",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10082.gif"
+  },
+  {
+    "id": "10083",
+    "name": "俯身哑铃双哑铃划船",
+    "path": "力量训练 / 背部训练 / 上背厚度",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10083.gif"
+  },
+  {
+    "id": "10084",
+    "name": "坐姿绳索划船",
+    "path": "力量训练 / 背部训练 / 上背厚度",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10084.gif"
+  },
+  {
+    "id": "10085",
+    "name": "高位坐姿划船器械",
+    "path": "力量训练 / 背部训练 / 上背厚度",
+    "imageSvg": "",
+    "imageUrl": "assets/images/10085.gif"
+  },
+  {
+    "id": "10086",
+    "name": "单臂绳索划船",
+    "path": "力量训练 / 背部训练 / 上背厚度",
+    "imageSvg": "上背厚度",
+    "imageUrl": "assets/images/10086.jpg"
+  },
+  {
+    "id": "10087",
+    "name": "海豹划船（俯卧器械划船）",
+    "path": "力量训练 / 背部训练 / 上背厚度",
+    "imageSvg": "上背厚度",
+    "imageUrl": "assets/images/10087.jpg"
+  },
+  {
+    "id": "10088",
+    "name": "坐姿器械划船机",
+    "path": "力量训练 / 背部训练 / 上背厚度",
+    "imageSvg": "上背厚度",
+    "imageUrl": "assets/images/10088.jpg"
+  },
+  {
+    "id": "10089",
+    "name": "俯身Y字飞鸟（哑铃）",
+    "path": "力量训练 / 背部训练 / 斜方下束",
+    "imageSvg": "斜方下束",
+    "imageUrl": "assets/images/10089.jpg"
+  },
+  {
+    "id": "10090",
+    "name": "绳索Y型下拉",
+    "path": "力量训练 / 背部训练 / 斜方下束",
+    "imageSvg": "斜方下束",
+    "imageUrl": "assets/images/10090.jpg"
+  },
+  {
+    "id": "10091",
+    "name": "传统硬拉 / 罗马尼亚硬拉RDL",
+    "path": "力量训练 / 背部训练 / 下背/竖脊肌",
+    "imageSvg": "下背/竖脊肌",
+    "imageUrl": "assets/images/10091.jpg"
+  },
+  {
+    "id": "10092",
+    "name": "山羊挺身（背屈伸）",
+    "path": "力量训练 / 背部训练 / 下背/竖脊肌",
+    "imageSvg": "下背/竖脊肌",
+    "imageUrl": "assets/images/10092.jpg"
+  },
+  {
+    "id": "10093",
+    "name": "早安式躬身",
+    "path": "力量训练 / 背部训练 / 下背/竖脊肌",
+    "imageSvg": "下背/竖脊肌",
+    "imageUrl": "assets/images/10093.jpg"
+  },
+  {
+    "id": "10094",
+    "name": "45度背伸器械",
+    "path": "力量训练 / 背部训练 / 下背/竖脊肌",
+    "imageSvg": "下背/竖脊肌",
+    "imageUrl": "assets/images/10094.jpg"
+  },
+  {
+    "id": "10095",
+    "name": "杠铃站姿弯举",
+    "path": "力量训练 / 手臂训练 / 肱二头肌",
+    "imageSvg": "肱二头肌",
+    "imageUrl": "assets/images/10095.jpg"
+  },
+  {
+    "id": "10096",
+    "name": "哑铃交替弯举",
+    "path": "力量训练 / 手臂训练 / 肱二头肌",
+    "imageSvg": "肱二头肌",
+    "imageUrl": "assets/images/10096.jpg"
+  },
+  {
+    "id": "10097",
+    "name": "牧师凳弯举",
+    "path": "力量训练 / 手臂训练 / 肱二头肌",
+    "imageSvg": "肱二头肌",
+    "imageUrl": "assets/images/10097.jpg"
+  },
+  {
+    "id": "10098",
+    "name": "上斜凳哑铃弯举",
+    "path": "力量训练 / 手臂训练 / 肱二头肌",
+    "imageSvg": "肱二头肌",
+    "imageUrl": "assets/images/10098.jpg"
+  },
+  {
+    "id": "10099",
+    "name": "绳索杠铃弯举",
+    "path": "力量训练 / 手臂训练 / 肱二头肌",
+    "imageSvg": "肱二头肌",
+    "imageUrl": "assets/images/10099.jpg"
+  },
+  {
+    "id": "10100",
+    "name": "绳索锤式弯举",
+    "path": "力量训练 / 手臂训练 / 肱二头肌",
+    "imageSvg": "肱二头肌",
+    "imageUrl": "assets/images/10100.jpg"
+  },
+  {
+    "id": "10101",
+    "name": "器械二头弯举机",
+    "path": "力量训练 / 手臂训练 / 肱二头肌",
+    "imageSvg": "肱二头肌",
+    "imageUrl": "assets/images/10101.jpg"
+  },
+  {
+    "id": "10102",
+    "name": "窄距杠铃卧推",
+    "path": "力量训练 / 手臂训练 / 肱三头肌",
+    "imageSvg": "肱三头肌",
+    "imageUrl": "assets/images/10102.jpg"
+  },
+  {
+    "id": "10103",
+    "name": "哑铃颈后臂屈伸",
+    "path": "力量训练 / 手臂训练 / 肱三头肌",
+    "imageSvg": "肱三头肌",
+    "imageUrl": "assets/images/10103.jpg"
+  },
+  {
+    "id": "10104",
+    "name": "俯身哑铃臂屈伸（单臂）",
+    "path": "力量训练 / 手臂训练 / 肱三头肌",
+    "imageSvg": "肱三头肌",
+    "imageUrl": "assets/images/10104.jpg"
+  },
+  {
+    "id": "10105",
+    "name": "绳索下压（直杆）",
+    "path": "力量训练 / 手臂训练 / 肱三头肌",
+    "imageSvg": "肱三头肌",
+    "imageUrl": "assets/images/10105.jpg"
+  },
+  {
+    "id": "10106",
+    "name": "绳索V把下压",
+    "path": "力量训练 / 手臂训练 / 肱三头肌",
+    "imageSvg": "肱三头肌",
+    "imageUrl": "assets/images/10106.jpg"
+  },
+  {
+    "id": "10107",
+    "name": "绳索过头臂屈伸",
+    "path": "力量训练 / 手臂训练 / 肱三头肌",
+    "imageSvg": "肱三头肌",
+    "imageUrl": "assets/images/10107.jpg"
+  },
+  {
+    "id": "10108",
+    "name": "双杠臂屈伸（三头版）",
+    "path": "力量训练 / 手臂训练 / 肱三头肌",
+    "imageSvg": "肱三头肌",
+    "imageUrl": "assets/images/10108.jpg"
+  },
+  {
+    "id": "10109",
+    "name": "器械三头屈伸机",
+    "path": "力量训练 / 手臂训练 / 肱三头肌",
+    "imageSvg": "肱三头肌",
+    "imageUrl": "assets/images/10109.jpg"
+  },
+  {
+    "id": "10110",
+    "name": "杠铃坐姿腕弯举",
+    "path": "力量训练 / 手臂训练 / 前臂",
+    "imageSvg": "前臂",
+    "imageUrl": "assets/images/10110.jpg"
+  },
+  {
+    "id": "10111",
+    "name": "反向腕弯举",
+    "path": "力量训练 / 手臂训练 / 前臂",
+    "imageSvg": "前臂",
+    "imageUrl": "assets/images/10111.jpg"
+  },
+  {
+    "id": "10112",
+    "name": "农夫行走",
+    "path": "力量训练 / 手臂训练 / 前臂",
+    "imageSvg": "前臂",
+    "imageUrl": "assets/images/10112.jpg"
+  },
+  {
+    "id": "10113",
+    "name": "锤式弯举",
+    "path": "力量训练 / 手臂训练 / 前臂",
+    "imageSvg": "前臂",
+    "imageUrl": "assets/images/10113.jpg"
+  },
+  {
+    "id": "10114",
+    "name": "杠铃背深蹲",
+    "path": "力量训练 / 下肢训练 / 股四头肌",
+    "imageSvg": "股四头肌",
+    "imageUrl": "assets/images/10114.jpg"
+  },
+  {
+    "id": "10115",
+    "name": "杠铃前深蹲",
+    "path": "力量训练 / 下肢训练 / 股四头肌",
+    "imageSvg": "股四头肌",
+    "imageUrl": "assets/images/10115.jpg"
+  },
+  {
+    "id": "10116",
+    "name": "高脚杯深蹲",
+    "path": "力量训练 / 下肢训练 / 股四头肌",
+    "imageSvg": "股四头肌",
+    "imageUrl": "assets/images/10116.jpg"
+  },
+  {
+    "id": "10117",
+    "name": "哑铃箭本蹲",
+    "path": "力量训练 / 下肢训练 / 股四头肌",
+    "imageSvg": "股四头肌",
+    "imageUrl": "assets/images/10117.jpg"
+  },
+  {
+    "id": "10118",
+    "name": "保加利亚分腿蹲",
+    "path": "力量训练 / 下肢训练 / 股四头肌",
+    "imageSvg": "股四头肌",
+    "imageUrl": "assets/images/10118.jpg"
+  },
+  {
+    "id": "10119",
+    "name": "哈克深蹲",
+    "path": "力量训练 / 下肢训练 / 股四头肌",
+    "imageSvg": "股四头肌",
+    "imageUrl": "assets/images/10119.jpg"
+  },
+  {
+    "id": "10120",
+    "name": "腿举机",
+    "path": "力量训练 / 下肢训练 / 股四头肌",
+    "imageSvg": "股四头肌",
+    "imageUrl": "assets/images/10120.jpg"
+  },
+  {
+    "id": "10121",
+    "name": "器械箭本蹲机",
+    "path": "力量训练 / 下肢训练 / 股四头肌",
+    "imageSvg": "股四头肌",
+    "imageUrl": "assets/images/10121.jpg"
+  },
+  {
+    "id": "10122",
+    "name": "坐姿腿屈伸",
+    "path": "力量训练 / 下肢训练 / 股四头肌",
+    "imageSvg": "股四头肌",
+    "imageUrl": "assets/images/10122.jpg"
+  },
+  {
+    "id": "10123",
+    "name": "罗马尼亚硬拉RDL",
+    "path": "力量训练 / 下肢训练 / 腘绳肌",
+    "imageSvg": "腘绳肌",
+    "imageUrl": "assets/images/10123.jpg"
+  },
+  {
+    "id": "10124",
+    "name": "直腿硬拉",
+    "path": "力量训练 / 下肢训练 / 腘绳肌",
+    "imageSvg": "腘绳肌",
+    "imageUrl": "assets/images/10124.jpg"
+  },
+  {
+    "id": "10125",
+    "name": "俯卧腿弯举",
+    "path": "力量训练 / 下肢训练 / 腘绳肌",
+    "imageSvg": "腘绳肌",
+    "imageUrl": "assets/images/10125.jpg"
+  },
+  {
+    "id": "10126",
+    "name": "坐姿腿弯举",
+    "path": "力量训练 / 下肢训练 / 腘绳肌",
+    "imageSvg": "腘绳肌",
+    "imageUrl": "assets/images/10126.jpg"
+  },
+  {
+    "id": "10127",
+    "name": "45度背伸器械",
+    "path": "力量训练 / 下肢训练 / 腘绳肌",
+    "imageSvg": "腘绳肌",
+    "imageUrl": "assets/images/10127.jpg"
+  },
+  {
+    "id": "10128",
+    "name": "杠铃臀推",
+    "path": "力量训练 / 下肢训练 / 臀部训练",
+    "imageSvg": "臀部训练",
+    "imageUrl": "assets/images/10128.jpg"
+  },
+  {
+    "id": "10129",
+    "name": "单腿哑铃髋桥",
+    "path": "力量训练 / 下肢训练 / 臀部训练",
+    "imageSvg": "臀部训练",
+    "imageUrl": "assets/images/10129.jpg"
+  },
+  {
+    "id": "10130",
+    "name": "自由相扑深蹲",
+    "path": "力量训练 / 下肢训练 / 臀部训练",
+    "imageSvg": "臀部训练",
+    "imageUrl": "assets/images/10130.jpg"
+  },
+  {
+    "id": "10131",
+    "name": "哈克深蹲臀主导高脚位",
+    "path": "力量训练 / 下肢训练 / 臀部训练",
+    "imageSvg": "臀部训练",
+    "imageUrl": "assets/images/10131.jpg"
+  },
+  {
+    "id": "10132",
+    "name": "相扑哈克深蹲",
+    "path": "力量训练 / 下肢训练 / 臀部训练",
+    "imageSvg": "臀部训练",
+    "imageUrl": "assets/images/10132.jpg"
+  },
+  {
+    "id": "10133",
+    "name": "哈克臀推",
+    "path": "力量训练 / 下肢训练 / 臀部训练",
+    "imageSvg": "臀部训练",
+    "imageUrl": "assets/images/10133.jpg"
+  },
+  {
+    "id": "10134",
+    "name": "专用器械臀推机",
+    "path": "力量训练 / 下肢训练 / 臀部训练",
+    "imageSvg": "臀部训练",
+    "imageUrl": "assets/images/10134.jpg"
+  },
+  {
+    "id": "10135",
+    "name": "绳索跪姿后踢腿",
+    "path": "力量训练 / 下肢训练 / 臀部训练",
+    "imageSvg": "臀部训练",
+    "imageUrl": "assets/images/10135.jpg"
+  },
+  {
+    "id": "10136",
+    "name": "坐姿髋内收器械",
+    "path": "力量训练 / 下肢训练 / 内收肌群",
+    "imageSvg": "内收肌群",
+    "imageUrl": "assets/images/10136.jpg"
+  },
+  {
+    "id": "10137",
+    "name": "站姿哑铃提踵",
+    "path": "力量训练 / 下肢训练 / 小腿训练",
+    "imageSvg": "小腿训练",
+    "imageUrl": "assets/images/10137.jpg"
+  },
+  {
+    "id": "10138",
+    "name": "站姿提踵机",
+    "path": "力量训练 / 下肢训练 / 小腿训练",
+    "imageSvg": "小腿训练",
+    "imageUrl": "assets/images/10138.jpg"
+  },
+  {
+    "id": "10139",
+    "name": "哈克提踵",
+    "path": "力量训练 / 下肢训练 / 小腿训练",
+    "imageSvg": "小腿训练",
+    "imageUrl": "assets/images/10139.jpg"
+  },
+  {
+    "id": "10140",
+    "name": "坐姿提踵机",
+    "path": "力量训练 / 下肢训练 / 小腿训练",
+    "imageSvg": "小腿训练",
+    "imageUrl": "assets/images/10140.jpg"
+  },
+  {
+    "id": "10141",
+    "name": "传统硬拉",
+    "path": "力量训练 / 下肢训练 / 后侧链综合",
+    "imageSvg": "后侧链综合",
+    "imageUrl": "assets/images/10141.jpg"
+  },
+  {
+    "id": "10142",
+    "name": "悬垂举腿",
+    "path": "力量训练 / 核心训练 / 腹直肌",
+    "imageSvg": "腹直肌",
+    "imageUrl": "assets/images/10142.jpg"
+  },
+  {
+    "id": "10143",
+    "name": "卷腹",
+    "path": "力量训练 / 核心训练 / 腹直肌",
+    "imageSvg": "腹直肌",
+    "imageUrl": "assets/images/10143.jpg"
+  },
+  {
+    "id": "10144",
+    "name": "仰卧反向卷腹",
+    "path": "力量训练 / 核心训练 / 腹直肌",
+    "imageSvg": "腹直肌",
+    "imageUrl": "assets/images/10144.jpg"
+  },
+  {
+    "id": "10145",
+    "name": "龙旗",
+    "path": "力量训练 / 核心训练 / 腹直肌",
+    "imageSvg": "腹直肌",
+    "imageUrl": "assets/images/10145.jpg"
+  },
+  {
+    "id": "10146",
+    "name": "绳索卷腹",
+    "path": "力量训练 / 核心训练 / 腹直肌",
+    "imageSvg": "腹直肌",
+    "imageUrl": "assets/images/10146.jpg"
+  },
+  {
+    "id": "10147",
+    "name": "俄罗斯转体",
+    "path": "力量训练 / 核心训练 / 腹斜肌",
+    "imageSvg": "腹斜肌",
+    "imageUrl": "assets/images/10147.jpg"
+  },
+  {
+    "id": "10148",
+    "name": "单臂农夫行走",
+    "path": "力量训练 / 核心训练 / 腹斜肌",
+    "imageSvg": "腹斜肌",
+    "imageUrl": "assets/images/10148.jpg"
+  },
+  {
+    "id": "10149",
+    "name": "绳索伐木",
+    "path": "力量训练 / 核心训练 / 腹斜肌",
+    "imageSvg": "腹斜肌",
+    "imageUrl": "assets/images/10149.jpg"
+  },
+  {
+    "id": "10150",
+    "name": "平板支撑",
+    "path": "力量训练 / 核心训练 / 深层核心",
+    "imageSvg": "深层核心",
+    "imageUrl": "assets/images/10150.jpg"
+  },
+  {
+    "id": "10151",
+    "name": "侧平板支撑",
+    "path": "力量训练 / 核心训练 / 深层核心",
+    "imageSvg": "深层核心",
+    "imageUrl": "assets/images/10151.jpg"
+  },
+  {
+    "id": "10152",
+    "name": "死虫式",
+    "path": "力量训练 / 核心训练 / 深层核心",
+    "imageSvg": "深层核心",
+    "imageUrl": "assets/images/10152.jpg"
+  },
+  {
+    "id": "10153",
+    "name": "悬垂平板L支撑",
+    "path": "力量训练 / 核心训练 / 抗伸展",
+    "imageSvg": "抗伸展",
+    "imageUrl": "assets/images/10153.jpg"
+  },
+  {
+    "id": "10154",
+    "name": "药球抗伸展俯卧撑",
+    "path": "力量训练 / 核心训练 / 抗伸展",
+    "imageSvg": "抗伸展",
+    "imageUrl": "assets/images/10154.jpg"
+  },
+  {
+    "id": "10155",
+    "name": "北欧降（北欧离心卷腹）",
+    "path": "力量训练 / 核心训练 / 抗伸展",
+    "imageSvg": "抗伸展",
+    "imageUrl": "assets/images/10155.jpg"
+  },
+  {
+    "id": "10156",
+    "name": "鸟狗式",
+    "path": "力量训练 / 核心训练 / 后链核心",
+    "imageSvg": "后链核心",
+    "imageUrl": "assets/images/10156.jpg"
+  },
+  {
+    "id": "10157",
+    "name": "单腿罗马尼亚硬拉",
+    "path": "功能训练 / 单侧力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10157.jpg"
+  },
+  {
+    "id": "10158",
+    "name": "单腿箱式深蹲",
+    "path": "功能训练 / 单侧力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10158.jpg"
+  },
+  {
+    "id": "10159",
+    "name": "偏移负载高脚杯深蹲",
+    "path": "功能训练 / 单侧力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10159.jpg"
+  },
+  {
+    "id": "10160",
+    "name": "分腿蹲离心下放",
+    "path": "功能训练 / 单侧力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10160.jpg"
+  },
+  {
+    "id": "10161",
+    "name": "单臂过顶负重行走",
+    "path": "功能训练 / 单侧力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10161.jpg"
+  },
+  {
+    "id": "10162",
+    "name": "单臂农夫行走",
+    "path": "功能训练 / 单侧力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10162.jpg"
+  },
+  {
+    "id": "10163",
+    "name": "90-90髋旋转",
+    "path": "功能训练 / 髋功能",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10163.jpg"
+  },
+  {
+    "id": "10164",
+    "name": "弹力带抗旋转跪姿髋推",
+    "path": "功能训练 / 髋功能",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10164.jpg"
+  },
+  {
+    "id": "10165",
+    "name": "侧步蹲",
+    "path": "功能训练 / 髋功能",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10165.jpg"
+  },
+  {
+    "id": "10166",
+    "name": "跳跃落地训练",
+    "path": "功能训练 / 髋功能",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10166.jpg"
+  },
+  {
+    "id": "10167",
+    "name": "跪姿旋转髋铰链",
+    "path": "功能训练 / 髋功能",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10167.jpg"
+  },
+  {
+    "id": "10168",
+    "name": "怪兽行走进阶",
+    "path": "功能训练 / 髋功能",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10168.jpg"
+  },
+  {
+    "id": "10169",
+    "name": "弹力带动态胸椎旋转",
+    "path": "功能训练 / 胸椎肩胛",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10169.jpg"
+  },
+  {
+    "id": "10170",
+    "name": "俯卧Y-T-W序列",
+    "path": "功能训练 / 胸椎肩胛",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10170.jpg"
+  },
+  {
+    "id": "10171",
+    "name": "墙面天使负重版",
+    "path": "功能训练 / 胸椎肩胛",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10171.jpg"
+  },
+  {
+    "id": "10172",
+    "name": "悬吊肩胛回缩",
+    "path": "功能训练 / 胸椎肩胛",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10172.jpg"
+  },
+  {
+    "id": "10173",
+    "name": "侧躺肩外旋",
+    "path": "功能训练 / 胸椎肩胛",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10173.jpg"
+  },
+  {
+    "id": "10174",
+    "name": "药球胸椎旋转推送",
+    "path": "功能训练 / 胸椎肩胛",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10174.jpg"
+  },
+  {
+    "id": "10175",
+    "name": "毛巾悬挂",
+    "path": "功能训练 / 悬吊抓握",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10175.jpg"
+  },
+  {
+    "id": "10176",
+    "name": "悬吊交替举腿",
+    "path": "功能训练 / 悬吊抓握",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10176.jpg"
+  },
+  {
+    "id": "10177",
+    "name": "单臂悬吊维持",
+    "path": "功能训练 / 悬吊抓握",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10177.jpg"
+  },
+  {
+    "id": "10178",
+    "name": "卷腕器动态训练",
+    "path": "功能训练 / 悬吊抓握",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10178.jpg"
+  },
+  {
+    "id": "10179",
+    "name": "沙袋拖拽悬挂",
+    "path": "功能训练 / 悬吊抓握",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10179.jpg"
+  },
+  {
+    "id": "10180",
+    "name": "熊爬进阶",
+    "path": "功能训练 / 动物流",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10180.jpg"
+  },
+  {
+    "id": "10181",
+    "name": "鳄鱼爬",
+    "path": "功能训练 / 动物流",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10181.jpg"
+  },
+  {
+    "id": "10182",
+    "name": "猩猩走",
+    "path": "功能训练 / 动物流",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10182.jpg"
+  },
+  {
+    "id": "10183",
+    "name": "猫驼动态流动",
+    "path": "功能训练 / 动物流",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10183.jpg"
+  },
+  {
+    "id": "10184",
+    "name": "雪橇推拉组合",
+    "path": "功能训练 / 代谢力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10184.jpg"
+  },
+  {
+    "id": "10185",
+    "name": "药球旋转砸地",
+    "path": "功能训练 / 代谢力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10185.jpg"
+  },
+  {
+    "id": "10186",
+    "name": "沙袋各类负载模式",
+    "path": "功能训练 / 代谢力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10186.jpg"
+  },
+  {
+    "id": "10187",
+    "name": "负重carries大杂烩",
+    "path": "功能训练 / 代谢力量",
+    "imageSvg": "functional",
+    "imageUrl": "assets/images/10187.jpg"
+  },
+  {
+    "id": "10188",
+    "name": "90-90呼吸",
+    "path": "功能训练 / 呼吸训练",
+    "imageSvg": "breath",
+    "imageUrl": "assets/images/10188.jpg"
+  },
+  {
+    "id": "10189",
+    "name": "负重腹式呼吸",
+    "path": "功能训练 / 呼吸训练",
+    "imageSvg": "breath",
+    "imageUrl": "assets/images/10189.jpg"
+  }
+]
