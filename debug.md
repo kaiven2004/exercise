@@ -222,3 +222,9 @@
 - 7个缺失的动作使用通用健身图片补充
 - 图片来源: pexels.com 免费商用健身图片
 - 网络图片加载失败时自动 fallback 到 SVG 图标
+
+## v20 - 2026-08-15 14:15
+- 将所有189个动作的图片URL从失效的 muscleandstrength CDN 替换为真实的 Pexels 图片
+- 图片来源: pexels.com 免费商用健身图片
+- 图片加载失败时自动 fallback 到 SVG 图标
+- 修复了图片加载逻辑: http 前缀判断网络图片
