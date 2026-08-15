@@ -9,7 +9,7 @@ import '../exercises/strength_lower.dart';
 import '../exercises/strength_shoulders.dart';
 import 'exercise_repository.dart';
 
-/// 全部动作数据（190 个，按部位分类聚合自 exercises/ 各文件）
+/// 全部动作数据（200+ 个，按部位分类聚合自 exercises/ 各文件）
 final List<Exercise> _exercises = <Exercise>[
   ...kStrengthChestExercises,
   ...kStrengthShouldersExercises,
