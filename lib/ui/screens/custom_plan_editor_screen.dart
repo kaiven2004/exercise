@@ -348,7 +348,7 @@ class _ExercisePickerState extends State<_ExercisePicker> {
                       return ListTile(
                         leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
                           child: Center(child: ex.imageUrl.isNotEmpty
-                              ? ex.imageUrl.startsWith('http') ? Image.network(ex.imageUrl, width: 22, height: 22, fit: BoxFit.cover, errorBuilder: (_, __, ___) => SvgIcon(assetName: ex.imageSvg, size: 22, color: theme.colorScheme.primary)) : ex.imageUrl.startsWith('http') ? Image.network(ex.imageUrl, width: 22, height: 22, fit: BoxFit.cover, errorBuilder: (_, __, ___) => SvgIcon(assetName: ex.imageSvg, size: 22, color: theme.colorScheme.primary)) : Image.asset(ex.imageUrl, width: 22, height: 22, fit: BoxFit.cover)
+                              ? Image.asset(ex.imageUrl, width: 22, height: 22, fit: BoxFit.cover)
                               : SvgIcon(assetName: ex.imageSvg, size: 22, color: theme.colorScheme.primary))),
                         title: Text(ex.name),
                         subtitle: Text(ex.categoryPath),
