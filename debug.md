@@ -203,3 +203,10 @@
 - 修改 main_screen.dart 导航逻辑
 - 无子分类的板块（如功能训练的\"单侧力量\"等）点击后直接跳转 ExerciseListScreen（动作列表），不再经过 CategoryScreen 中间层
 - 有子分类的板块（如力量训练的\"胸部\"）仍正常进入 CategoryScreen 子分类页
+
+## v18 - 2026-08-15 13:26
+- 为全部189个训练动作添加网络图片URL（imageUrl字段）
+- 图片来源于 muscleandstrength.com 等健身网站
+- 覆盖全部力量训练、功能训练板块的动作
+- 无子分类的板块点击后直接跳转动作列表（跳过中间分类页）
+- 修复 category_screen.dart 重复 _ExerciseCard 类问题
