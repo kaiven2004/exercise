@@ -1,0 +1,29 @@
+import "../models/models.dart";
+
+/// 瑜伽训练：力量瑜伽 (10191-10195) + 流瑜伽 (10196-10201) + 哈他瑜伽 (10202-10205) + 阴瑜伽 (10206-10210)
+const List<Exercise> kYogaExercises = [
+  // 力量瑜伽
+  Exercise(id: '10191', name: '幻椅式', categoryPath: '瑜伽训练 / 力量瑜伽', description: '双腿并拢，屈膝下蹲像坐在椅子上，双手举过头顶。主练大腿、臀部和肩部耐力，对稳定膝盖很有帮助。', tips: ['双腿并拢屈膝下蹲', '双手举过头顶', '大腿与地面平行', '保持呼吸均匀'], sets: 3, reps: 10, restSeconds: '30', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10192', name: '船式', categoryPath: '瑜伽训练 / 力量瑜伽', description: '坐姿，双腿抬起与地面成45度角，双臂前平举，保持背部挺直。王牌核心动作，能彻底刺激下腹肌。', tips: ['坐姿双腿抬起45度', '双臂前平举', '背部挺直', '核心收紧'], sets: 3, reps: 8, restSeconds: '30', difficulty: '中级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10193', name: '侧板式', categoryPath: '瑜伽训练 / 力量瑜伽', description: '单手撑地，身体侧向支撑，上方手向上伸展。强化侧腹和肩袖稳定性，对改善圆肩很有用。', tips: ['单手撑地身体侧倾', '上方手向上伸展', '身体成一条直线', '核心收紧'], sets: 3, reps: 8, restSeconds: '30', difficulty: '中级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10194', name: '战士三式', categoryPath: '瑜伽训练 / 力量瑜伽', description: '单腿站立，身体前倾与地面平行，后腿抬高，双臂前伸。极度考验平衡和臀腿力量，能有效强化臀中肌。', tips: ['单腿站立身体前倾', '后腿抬高与地面平行', '双臂前伸', '核心收紧保持平衡'], sets: 3, reps: 8, restSeconds: '30', difficulty: '高级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10195', name: '四柱支撑', categoryPath: '瑜伽训练 / 力量瑜伽', description: '俯身，手肘夹紧身体，身体下沉至离地面一拳距离。自重版的肱三头肌和胸肌训练，相当于一个慢速俯卧撑。', tips: ['手肘夹紧身体', '下沉至离地一拳', '身体成直线', '控制节奏'], sets: 3, reps: 8, restSeconds: '45', difficulty: '高级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  // 流瑜伽
+  Exercise(id: '10196', name: '下犬式', categoryPath: '瑜伽训练 / 流瑜伽', description: '全身拉伸，重点伸展背部和小腿。是流瑜伽串联的基础体式。', tips: ['双手双脚撑地', '臀部向上提起', '脚跟尽量踩地', '背部延展'], sets: 1, reps: 5, restSeconds: '15', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10197', name: '平板式', categoryPath: '瑜伽训练 / 流瑜伽', description: '核心收紧，身体成一条直线。强化核心稳定性和肩部力量。', tips: ['身体成一条直线', '核心收紧', '肩膀远离耳朵', '不要塌腰'], sets: 1, reps: 5, restSeconds: '15', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10198', name: '八体投地式', categoryPath: '瑜伽训练 / 流瑜伽', description: '膝盖、胸腔、下巴贴地，缓冲关节压力。是流瑜伽串联中的过渡体式。', tips: ['膝盖胸腔下巴贴地', '缓冲关节压力', '保持呼吸', '流畅过渡'], sets: 1, reps: 5, restSeconds: '15', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10199', name: '眼镜蛇式', categoryPath: '瑜伽训练 / 流瑜伽', description: '打开胸腔，拉伸胸肌和腹直肌。与下犬式组成经典串联。', tips: ['双手撑地推起上半身', '打开胸腔', '肩膀下沉', '拉伸腹部'], sets: 1, reps: 5, restSeconds: '15', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10200', name: '战士一式', categoryPath: '瑜伽训练 / 流瑜伽', description: '前腿屈膝，后腿伸直，双臂上举。深度打开髋部，锻炼腿部耐力。', tips: ['前腿屈膝90度', '后腿伸直', '双臂上举', '髋部正对前方'], sets: 1, reps: 5, restSeconds: '15', difficulty: '中级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10201', name: '战士二式', categoryPath: '瑜伽训练 / 流瑜伽', description: '双腿大开，前膝弯曲，双臂向两侧伸展。增强腿部力量和髋部灵活性。', tips: ['双腿大开站立', '前膝弯曲', '双臂向两侧伸展', '目光看向前手'], sets: 1, reps: 5, restSeconds: '15', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  // 哈他瑜伽
+  Exercise(id: '10202', name: '山式', categoryPath: '瑜伽训练 / 哈他瑜伽', description: '双脚并拢站立，全身向上延展。不是简单的站立，它能帮你找到沉肩收腹、骨盆中立的正确站姿，是所有杠铃动作的基础。', tips: ['双脚并拢站立', '全身向上延展', '沉肩收腹', '骨盆中立'], sets: 1, reps: 5, restSeconds: '15', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10203', name: '三角式', categoryPath: '瑜伽训练 / 哈他瑜伽', description: '双腿分开，身体向侧方弯下，一手触地一手向上。极致拉伸侧腰和腹股沟，对缓解久坐腰酸非常有效。', tips: ['双腿分开站立', '身体向侧方弯下', '一手触地一手上举', '拉伸侧腰'], sets: 1, reps: 5, restSeconds: '15', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10204', name: '桥式', categoryPath: '瑜伽训练 / 哈他瑜伽', description: '仰卧屈膝，臀部发力向上抬起。自重臀桥，能精准激活臀大肌，适合放在深蹲前做臀部唤醒。', tips: ['仰卧屈膝双脚踩地', '臀部发力向上抬', '肩胛骨内收', '顶峰夹紧臀部'], sets: 3, reps: 12, restSeconds: '30', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10205', name: '猫牛式', categoryPath: '瑜伽训练 / 哈他瑜伽', description: '四足支撑，吸气塌腰抬头，呼气拱背低头。灵活整条脊柱，是大重量硬拉前必做的热身动作。', tips: ['四足支撑', '吸气塌腰抬头', '呼气拱背低头', '灵活脊柱'], sets: 1, reps: 10, restSeconds: '15', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  // 阴瑜伽
+  Exercise(id: '10206', name: '蝴蝶式', categoryPath: '瑜伽训练 / 阴瑜伽', description: '脚心相对，膝盖向两侧下沉，身体前屈。深度打开髋关节，缓解深蹲后的髋部紧张。', tips: ['脚心相对膝盖下沉', '身体前屈', '深呼吸放松', '保持3-5分钟'], sets: 1, reps: 1, restSeconds: '180', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10207', name: '毛毛虫式', categoryPath: '瑜伽训练 / 阴瑜伽', description: '坐立双腿并拢前屈，双手抓脚。极致拉伸大腿后侧腘绳肌，硬拉后必做。', tips: ['坐立双腿并拢', '身体前屈双手抓脚', '头部自然下垂', '拉伸大腿后侧'], sets: 1, reps: 1, restSeconds: '180', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10208', name: '婴儿式', categoryPath: '瑜伽训练 / 阴瑜伽', description: '跪坐，额头贴地，双手向前伸展。放松下背部竖脊肌，做完划船或硬拉后做这个特别舒服。', tips: ['跪坐额头贴地', '双手向前伸展', '放松下背部', '深呼吸'], sets: 1, reps: 1, restSeconds: '180', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10209', name: '仰卧扭转式', categoryPath: '瑜伽训练 / 阴瑜伽', description: '仰卧，单腿跨过身体扭转脊柱。释放下背部压力，缓解深蹲和硬拉后脊椎的压缩感。', tips: ['仰卧单腿跨身体', '头部转向相反方向', '释放下背部', '保持3-5分钟'], sets: 1, reps: 1, restSeconds: '180', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10210', name: '香蕉式', categoryPath: '瑜伽训练 / 阴瑜伽', description: '仰卧，双腿和上半身同时向一侧弯曲，呈香蕉状。拉伸侧腰和腋窝，改善练背日之后的侧链紧张。', tips: ['仰卧双腿和上半身同侧弯曲', '呈香蕉状', '拉伸侧腰腋窝', '保持3-5分钟'], sets: 1, reps: 1, restSeconds: '180', difficulty: '初级', imageSvg: 'yoga', imageUrl: '', videoPath: '', weight: '0'),
+];

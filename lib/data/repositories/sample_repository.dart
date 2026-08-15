@@ -7,6 +7,7 @@ import '../exercises/strength_chest.dart';
 import '../exercises/strength_core.dart';
 import '../exercises/strength_lower.dart';
 import '../exercises/strength_shoulders.dart';
+import '../exercises/yoga.dart';
 import 'exercise_repository.dart';
 
 /// 全部动作数据（200+ 个，按部位分类聚合自 exercises/ 各文件）
@@ -18,6 +19,7 @@ final List<Exercise> _exercises = <Exercise>[
   ...kStrengthLowerExercises,
   ...kStrengthCoreExercises,
   ...kFunctionalExercises,
+  ...kYogaExercises,
 ];
 
 class SampleExerciseRepository implements ExerciseRepository {
@@ -76,7 +78,7 @@ class SampleExerciseRepository implements ExerciseRepository {
       'leg_quads': '股四头肌', 'leg_hamstrings': '腘绳肌', 'leg_glutes': '臀部', 'leg_calves': '小腿', 'leg_adductors': '内收肌群',
       'core_abs': '腹直肌', 'core_obliques': '腹斜肌', 'core_deep': '深层核心', 'core_antiflex': '抗伸展',
       'func_core': '核心稳定', 'func_balance': '平衡训练', 'func_agility': '灵敏训练', 'func_unilateral': '单侧力量', 'func_hip': '髋功能', 'func_thoracic': '胸椎肩胛', 'func_grip': '悬吊抓握', 'func_flow': '动物流', 'func_metabolic': '代谢力量', 'func_breath': '呼吸训练',
-      'yoga_hatha': '哈他瑜伽', 'yoga_vinyasa': '流瑜伽', 'yoga_ashtanga': '阿斯汤加', 'yoga_restorative': '恢复瑜伽',
+      'yoga_power': '力量瑜伽', 'yoga_vinyasa': '流瑜伽', 'yoga_hatha': '哈他瑜伽', 'yoga_yin': '阴瑜伽',
     };
     return map[categoryId] ?? categoryId;
   }

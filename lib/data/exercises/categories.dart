@@ -96,10 +96,34 @@ const List<TrainingCategory> kFunctionalCategories = [
   TrainingCategory(id: 'func_breath', name: '呼吸训练', section: WorkoutSection.functional, svgIcon: 'breath', subCategories: []),
 ];
 
-/// 瑜伽分类（一级，目前动作数据为空，仅占位）
+/// 瑜伽分类（含子分类）
 const List<TrainingCategory> kYogaCategories = [
-  TrainingCategory(id: 'yoga_hatha', name: '哈他瑜伽', section: WorkoutSection.yoga, svgIcon: 'yoga_hatha', subCategories: []),
-  TrainingCategory(id: 'yoga_vinyasa', name: '流瑜伽', section: WorkoutSection.yoga, svgIcon: 'yoga_vinyasa', subCategories: []),
-  TrainingCategory(id: 'yoga_ashtanga', name: '阿斯汤加', section: WorkoutSection.yoga, svgIcon: 'yoga_ashtanga', subCategories: []),
-  TrainingCategory(id: 'yoga_restorative', name: '恢复瑜伽', section: WorkoutSection.yoga, svgIcon: 'yoga_restorative', subCategories: []),
+  TrainingCategory(
+    id: 'yoga_power',
+    name: '力量瑜伽',
+    section: WorkoutSection.yoga,
+    svgIcon: 'yoga',
+    subCategories: [],
+  ),
+  TrainingCategory(
+    id: 'yoga_vinyasa',
+    name: '流瑜伽',
+    section: WorkoutSection.yoga,
+    svgIcon: 'yoga_vinyasa',
+    subCategories: [],
+  ),
+  TrainingCategory(
+    id: 'yoga_hatha',
+    name: '哈他瑜伽',
+    section: WorkoutSection.yoga,
+    svgIcon: 'yoga_hatha',
+    subCategories: [],
+  ),
+  TrainingCategory(
+    id: 'yoga_yin',
+    name: '阴瑜伽',
+    section: WorkoutSection.yoga,
+    svgIcon: 'yoga_restorative',
+    subCategories: [],
+  ),
 ];
