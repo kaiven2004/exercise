@@ -214,11 +214,11 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
                 SizedBox(height: 56, child: Row(children: [
                   Expanded(child: _StatBox(label: '目标', value: '${_effSets(current)}组')),
                   const SizedBox(width: 8),
-                  Expanded(child: _StatBox(label: '次数', value: '${current.reps}次')),
+                  Expanded(child: _StatBox(label: '次数', value: '${_effCurrentReps(current)}次')),
                   if (_effWeight(current) != '0') const SizedBox(width: 8),
-                  Expanded(child: _StatBox(label: '重量', value: _effWeight(current) != '0' ? _effWeight(current) + 'kg' : '—')),
+                  Expanded(child: _StatBox(label: '重量', value: _effCurrentWeight(current))),
                   const SizedBox(width: 8),
-                  Expanded(child: _StatBox(label: '休息', value: '${current.restSeconds}s')),
+                  Expanded(child: _StatBox(label: '休息', value: _effRest(current) + "s")),
                 ])),
               ])),
             ),
@@ -233,7 +233,7 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
               const SizedBox(height: 4),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SizedBox(width: 160, height: 6, child: LinearProgressIndicator(
-                  value: _restRemaining.inSeconds / (int.tryParse(current.restSeconds) ?? 1),
+                  value: _restRemaining.inSeconds / (int.tryParse(current.restSeconds) ?? 60),
                   backgroundColor: Colors.grey.shade300,
                   valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFF9800))),
                 ),
@@ -251,9 +251,30 @@ class _CustomPlanRunnerScreenState extends State<CustomPlanRunnerScreen>
 
   int _effSets(CustomExerciseItem item) => _overrideRepo.getEffectiveSets(item.exercise.id, item.sets);
   int _effReps(CustomExerciseItem item) => _overrideRepo.getEffectiveReps(item.exercise.id, item.reps);
-  String _effRest(CustomExerciseItem item) => _overrideRepo.getEffectiveRest(item.exercise.id, item.restSeconds);
+  String _effRest(CustomExerciseItem item) { final o = _overrideRepo.getOverrideRest(item.exercise.id); return o != null && o.isNotEmpty ? o : item.restSeconds; }
+
   String _effWeight(CustomExerciseItem item) => _overrideRepo.getOverrideWeight(item.exercise.id) ?? item.exercise.weight;
 
+
+  String _effCurrentWeight(CustomExerciseItem item) {
+    final idx = _plan.exercises.indexOf(item);
+    final setIdx = _completedSets[idx];
+    if (item.setConfigs != null && setIdx < item.setConfigs!.length) {
+      final w = item.setConfigs![setIdx].weight;
+      return w > 0 ? '${w.toInt()}kg' : '—';
+    }
+    final w = _effWeight(item);
+    return w != '0' ? w + 'kg' : '—';
+  }
+
+  int _effCurrentReps(CustomExerciseItem item) {
+    final idx = _plan.exercises.indexOf(item);
+    final setIdx = _completedSets[idx];
+    if (item.setConfigs != null && setIdx < item.setConfigs!.length) {
+      return item.setConfigs![setIdx].reps;
+    }
+    return _effReps(item);
+  }
   String _formatDuration(Duration d) {
     final min = d.inMinutes.toString().padLeft(2, '0');
     final sec = (d.inSeconds % 60).toString().padLeft(2, '0');
@@ -296,3 +317,4 @@ class _StatBox extends StatelessWidget {
     ]));
   }
 }
+

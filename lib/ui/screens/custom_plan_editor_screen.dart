@@ -76,8 +76,8 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
   Future<void> _syncOverrideToItem(CustomExerciseItem item) async {
     final effSets = _overrideRepo.getEffectiveSets(item.exercise.id, item.sets);
     final effReps = _overrideRepo.getEffectiveReps(item.exercise.id, item.reps);
-    final effRest = _overrideRepo.getEffectiveRest(item.exercise.id, item.restSeconds);
-    final effWeight = _overrideRepo.getOverrideWeight(item.exercise.id) ?? item.weight;
+    final effRest = item.restSeconds;
+    final effWeight = item.weight;
     setState(() {
       item.sets = effSets;
       item.reps = effReps;
@@ -88,10 +88,15 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
     await _overrideRepo.saveWeight(item.exercise.id, effWeight);
   }
 
+  Future<void> _saveOverride(CustomExerciseItem item) async {
+    await _overrideRepo.saveOverride(item.exercise.id, sets: item.sets, reps: item.reps, restSeconds: item.restSeconds);
+    await _overrideRepo.saveWeight(item.exercise.id, item.weight);
+  }
+
   void _removeExercise(int index) {
     showDialog(context: context, builder: (ctx) => AlertDialog(
       title: const Text('删除动作'),
-      content: Text('确定要从计划中移除「${_exercises[index].exercise.name}」吗？'),
+      content: Text('确定要从计划中移除${_exercises[index].exercise.name}吗？'),
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
         TextButton(onPressed: () { Navigator.pop(ctx); setState(() => _exercises.removeAt(index)); }, child: const Text('删除', style: TextStyle(color: Colors.red))),
@@ -127,134 +132,193 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
         ]),
         const SizedBox(height: 10),
         Row(children: [
-          const SizedBox(width: 60, child: Text('休息(秒)', style: TextStyle(color: Colors.white70))),
-          Expanded(child: TextField(
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            decoration: const InputDecoration(hintText: '休息', border: OutlineInputBorder()),
-            onChanged: (v) => item.restSeconds = v,
-            controller: TextEditingController(text: item.restSeconds),
-          )),
-        ]),
-        const SizedBox(height: 10),
-        Row(children: [
           const SizedBox(width: 60, child: Text('重量', style: TextStyle(color: Colors.white70))),
           Expanded(child: TextField(
-            keyboardType: TextInputType.text,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             textAlign: TextAlign.center,
-            decoration: const InputDecoration(hintText: '如 50kg', border: OutlineInputBorder()),
+            decoration: const InputDecoration(hintText: 'kg', border: OutlineInputBorder()),
             onChanged: (v) => item.weight = v,
             controller: TextEditingController(text: item.weight),
           )),
         ]),
+        const SizedBox(height: 10),
+        Row(children: [
+          const SizedBox(width: 60, child: Text('休息', style: TextStyle(color: Colors.white70))),
+          Expanded(child: TextField(
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            decoration: const InputDecoration(hintText: '秒', border: OutlineInputBorder()),
+            onChanged: (v) => item.restSeconds = v,
+            controller: TextEditingController(text: item.restSeconds),
+          )),
+        ]),
+        const SizedBox(height: 16),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.tune, size: 18),
+          label: const Text('高级设置（逐组配置）'),
+          onPressed: () {
+            Navigator.pop(ctx);
+            _openSetConfigEditor(index);
+          },
+        ),
       ]),
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
-        TextButton(onPressed: () { Navigator.pop(ctx); _syncOverrideFromEdit(item); }, child: const Text('保存')),
+        TextButton(onPressed: () async { Navigator.pop(ctx); await _saveOverride(item); }, child: const Text('保存', style: TextStyle(color: Color(0xFF1565C0)))),
       ],
     ));
   }
 
-  void _syncOverrideFromEdit(CustomExerciseItem item) {
-    _overrideRepo.saveOverride(
-      item.exercise.id,
-      sets: item.sets,
-      reps: item.reps,
-      restSeconds: item.restSeconds,
+  void _openSetConfigEditor(int itemIndex) {
+    final item = _exercises[itemIndex];
+    final sets = item.sets;
+    final defaultReps = item.reps;
+    final defaultWeight = item.weight;
+
+    List<SetConfig> configs = item.setConfigs != null && item.setConfigs!.length == sets
+        ? List.from(item.setConfigs!)
+        : List.generate(sets, (i) => SetConfig(weight: double.tryParse(defaultWeight) ?? 0, reps: defaultReps));
+
+    while (configs.length < sets) {
+      configs.add(SetConfig(weight: double.tryParse(defaultWeight) ?? 0, reps: defaultReps));
+    }
+    if (configs.length > sets) {
+      configs = configs.sublist(0, sets);
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => _SetConfigDialog(
+        itemName: item.exercise.name,
+        sets: sets,
+        configs: configs,
+        onSave: (newConfigs) {
+          setState(() {
+            _exercises[itemIndex] = item.copyWith(setConfigs: newConfigs);
+          });
+        },
+      ),
     );
-    _overrideRepo.saveWeight(item.exercise.id, item.weight);
-    setState(() {});
-  }
-
-  int _effSets(CustomExerciseItem item) => _overrideRepo.getEffectiveSets(item.exercise.id, item.sets);
-  int _effReps(CustomExerciseItem item) => _overrideRepo.getEffectiveReps(item.exercise.id, item.reps);
-  String _effRest(CustomExerciseItem item) => _overrideRepo.getEffectiveRest(item.exercise.id, item.restSeconds);
-  String _effWeight(CustomExerciseItem item) => _overrideRepo.getOverrideWeight(item.exercise.id) ?? item.exercise.weight;
-
-  void _moveExercise(int from, int to) {
-    setState(() {
-      final item = _exercises.removeAt(from);
-      _exercises.insert(to, item);
-      for (int i = 0; i < _exercises.length; i++) _exercises[i] = _exercises[i].copyWith(order: i);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.plan == null ? '新建计划' : '编辑计划')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              decoration: const InputDecoration(labelText: '计划名称', prefixIcon: SvgIcon(assetName: 'favorite', size: 16)),
-              controller: TextEditingController(text: _planName),
-              onChanged: (v) => _planName = v,
-            ),
+      appBar: AppBar(
+        title: const Text('编辑计划', style: TextStyle(color: Colors.white)),
+        backgroundColor: theme.colorScheme.primary,
+        leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Navigator.pop(context)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save, color: Colors.white),
+            onPressed: _saving ? null : _save,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Text('${_exercises.length} 个动作', style: theme.textTheme.titleSmall),
-                const Spacer(),
-                TextButton.icon(
-                  icon: const SvgIcon(assetName: 'favorite', size: 14),
-                  label: const Text('添加动作'),
-                  onPressed: _addExercise,
-                ),
-              ],
+        ],
+      ),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: Column(children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: '计划名称',
+              hintStyle: const TextStyle(color: Colors.grey),
+              filled: true,
+              fillColor: theme.colorScheme.surfaceContainerHighest,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            onChanged: (v) => _planName = v,
+            controller: TextEditingController(text: _planName),
           ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: _exercises.isEmpty
-                ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    SvgIcon(assetName: 'strength', size: 56, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(height: 12),
-                    const Text('还没有动作\n点击「添加动作」开始创建'),
-                  ]))
-                : ReorderableListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _exercises.length,
-                    onReorder: (oldIndex, newIndex) => _moveExercise(oldIndex, newIndex),
-                    itemBuilder: (context, index) {
-                      final item = _exercises[index];
-                      return Card(
-                        key: ValueKey(item.exercise.id),
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: InkWell(
-                          onTap: () => Navigator.push(context, MaterialPageRoute(
-                            builder: (_) => ExerciseDetailScreen(exercise: item.exercise),
-                          )),
-                          borderRadius: BorderRadius.circular(12),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Row(
-                              children: [
-                                Container(width: 36, height: 36, decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
-                                  child: Center(child: SvgIcon(assetName: item.exercise.imageSvg, size: 20, color: theme.colorScheme.primary))),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                    Text(item.exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
-                                    const SizedBox(height: 2),
-                                    Text('${_effSets(item)}组 × ${_effReps(item)}次' + (_effWeight(item) != '0' ? ' · ' + _effWeight(item) + 'kg' : '') + ' · 休息${_effRest(item)}s', style: theme.textTheme.bodySmall),
-                                  ]),
-                                ),
-                                IconButton(icon: const SvgIcon(assetName: 'favorite', size: 18), onPressed: () => _editExercise(index)),
-                                IconButton(icon: const SvgIcon(assetName: 'history', size: 18), onPressed: () => _removeExercise(index)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Text('${_exercises.length} 个动作', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+              const Spacer(),
+              TextButton.icon(
+                icon: const SvgIcon(assetName: 'favorite', size: 16),
+                label: const Text('添加动作'),
+                onPressed: _addExercise,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: _exercises.isEmpty
+              ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  const SvgIcon(assetName: 'strength', size: 64),
+                  const SizedBox(height: 12),
+                  const Text('还没有动作，点击"添加动作"开始'),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    icon: const SvgIcon(assetName: 'favorite', size: 18),
+                    label: const Text('添加动作'),
+                    onPressed: _addExercise,
+                    style: ElevatedButton.styleFrom(backgroundColor: theme.colorScheme.primary),
                   ),
-          ),
-          SafeArea(child: Padding(
+                ]))
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: _exercises.length,
+                  itemBuilder: (context, index) {
+                    final item = _exercises[index];
+                    final hasSetConfigs = item.setConfigs != null && item.setConfigs!.isNotEmpty;
+                    return Card(
+                      elevation: 1,
+                      margin: const EdgeInsets.only(bottom: 10),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        leading: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: item.exercise.imageUrl.isNotEmpty
+                              ? ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.asset(item.exercise.imageUrl, width: 28, height: 28, fit: BoxFit.cover))
+                              : SvgIcon(assetName: item.exercise.imageSvg, size: 28, color: theme.colorScheme.primary),
+                        ),
+                        title: Text(item.exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                        subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(
+                            _formatDisplay(item, hasSetConfigs),
+                            style: theme.textTheme.bodySmall,
+                          ),
+                          if (hasSetConfigs)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Text(
+                                '逐组配置',
+                                style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.primary),
+                              ),
+                            ),
+                        ]),
+                        trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                          if (hasSetConfigs)
+                            Container(
+                              margin: const EdgeInsets.only(right: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
+                              child: const Text('各组不同', style: TextStyle(fontSize: 10, color: Color(0xFF1565C0))),
+                            ),
+                          IconButton(icon: const SvgIcon(assetName: 'favorite', size: 18), onPressed: () => _editExercise(index)),
+                          IconButton(icon: const SvgIcon(assetName: 'history', size: 18), onPressed: () => _removeExercise(index)),
+                        ]),
+                      ),
+                    );
+                  },
+                ),
+        ),
+        SafeArea(
+          child: Padding(
             padding: const EdgeInsets.all(16),
             child: SizedBox(
               width: double.infinity,
@@ -266,13 +330,125 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
                     : const Text('保存计划', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ),
             ),
-          )),
-        ],
-      ),
+          ),
+        ),
+      ]),
     );
+  }
+
+  String _formatDisplay(CustomExerciseItem item, bool hasSetConfigs) {
+    if (hasSetConfigs && item.setConfigs != null) {
+      final parts = item.setConfigs!.map((s) => '${s.weight.toInt()}kg x ${s.reps}次').join(' · ');
+      return parts;
+    }
+    return '${item.sets}组 x ${item.reps}次' + (item.weight != '0' && item.weight.isNotEmpty ? ' · ' + item.weight + 'kg' : '') + ' · 休息${item.restSeconds}s';
   }
 }
 
+class _SetConfigDialog extends StatefulWidget {
+  final String itemName;
+  final int sets;
+  final List<SetConfig> configs;
+  final Function(List<SetConfig>) onSave;
+  const _SetConfigDialog({required this.itemName, required this.sets, required this.configs, required this.onSave});
+
+  @override
+  State<_SetConfigDialog> createState() => _SetConfigDialogState();
+}
+
+class _SetConfigDialogState extends State<_SetConfigDialog> {
+  late List<TextEditingController> _weightControllers;
+  late List<TextEditingController> _repsControllers;
+
+  @override
+  void initState() {
+    super.initState();
+    _weightControllers = widget.configs.map((c) => TextEditingController(text: c.weight.toInt().toString())).toList();
+    _repsControllers = widget.configs.map((c) => TextEditingController(text: c.reps.toString())).toList();
+  }
+
+  @override
+  void dispose() {
+    for (final c in _weightControllers) c.dispose();
+    for (final c in _repsControllers) c.dispose();
+    super.dispose();
+  }
+
+  void _onSave() {
+    final newConfigs = List.generate(widget.sets, (i) {
+      final w = double.tryParse(_weightControllers[i].text) ?? 0;
+      final r = int.tryParse(_repsControllers[i].text) ?? widget.configs[i].reps;
+      return SetConfig(weight: w, reps: r);
+    });
+    widget.onSave(newConfigs);
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AlertDialog(
+      title: Text('逐组设置 -- ${widget.itemName}'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const SizedBox(height: 8),
+          Row(children: [
+            Expanded(flex: 1, child: Text('组', style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center)),
+            const SizedBox(width: 8),
+            Expanded(flex: 2, child: Text('重量 (kg)', style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center)),
+            const SizedBox(width: 8),
+            Expanded(flex: 2, child: Text('次数', style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center)),
+          ]),
+          const Divider(height: 16),
+          ...List.generate(widget.sets, (i) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(children: [
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    '第${i + 1}组',
+                    style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: _weightControllers[i],
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8)),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: _repsControllers[i],
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8)),
+                  ),
+                ),
+              ]),
+            );
+          }),
+        ]),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
+        TextButton(
+          onPressed: _onSave,
+          style: TextButton.styleFrom(backgroundColor: theme.colorScheme.primary),
+          child: const Text('保存', style: TextStyle(color: Colors.white)),
+        ),
+      ],
+    );
+  }
+}
 class _ExercisePicker extends StatefulWidget {
   final Set<String> excludeIds;
   const _ExercisePicker({required this.excludeIds});
@@ -347,9 +523,7 @@ class _ExercisePickerState extends State<_ExercisePicker> {
                       final excluded = widget.excludeIds.contains(ex.id);
                       return ListTile(
                         leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
-                          child: Center(child: ex.imageUrl.isNotEmpty
-                              ? Image.asset(ex.imageUrl, width: 22, height: 22, fit: BoxFit.cover)
-                              : SvgIcon(assetName: ex.imageSvg, size: 22, color: theme.colorScheme.primary))),
+                          child: Center(child: SvgIcon(assetName: ex.imageSvg, size: 22, color: theme.colorScheme.primary))),
                         title: Text(ex.name),
                         subtitle: Text(ex.categoryPath),
                         trailing: excluded ? const Text('已添加', style: TextStyle(color: Colors.grey)): null,

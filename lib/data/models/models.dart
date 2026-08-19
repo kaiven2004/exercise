@@ -1,4 +1,4 @@
-/// 训练板块枚举
+﻿/// 训练板块枚举
 enum WorkoutSection {
   strength, // 力量训练
   functional, // 功能训练
@@ -55,6 +55,16 @@ class Exercise {
   });
 }
 
+/// 逐组配置：每组的重量和次数
+class SetConfig {
+  final double weight;
+  final int reps;
+  const SetConfig({this.weight = 0, this.reps = 12});
+  Map<String, dynamic> toJson() => {'weight': weight, 'reps': reps};
+  factory SetConfig.fromJson(Map<String, dynamic> json) =>
+      SetConfig(weight: (json['weight'] as num).toDouble(), reps: json['reps'] as int);
+}
+
 /// 自定义计划中的动作条目（可覆盖默认组数/次数/休息）
 class CustomExerciseItem {
   final Exercise exercise;
@@ -63,6 +73,7 @@ class CustomExerciseItem {
   String restSeconds;
   String weight;
   final int order;
+  final List<SetConfig>? setConfigs;
 
   CustomExerciseItem({
     required this.exercise,
@@ -71,9 +82,10 @@ class CustomExerciseItem {
     this.restSeconds = '60',
     this.weight = '',
     this.order = 0,
+    this.setConfigs,
   });
 
-  CustomExerciseItem copyWith({int? sets, int? reps, String? restSeconds, String? weight, int? order}) {
+  CustomExerciseItem copyWith({int? sets, int? reps, String? restSeconds, String? weight, int? order, List<SetConfig>? setConfigs}) {
     return CustomExerciseItem(
       exercise: exercise,
       sets: sets ?? this.sets,
@@ -81,6 +93,7 @@ class CustomExerciseItem {
       restSeconds: restSeconds ?? this.restSeconds,
       weight: weight ?? this.weight,
       order: order ?? this.order,
+      setConfigs: setConfigs ?? this.setConfigs,
     );
   }
 }

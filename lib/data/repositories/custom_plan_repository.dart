@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
 import 'repositories.dart';
@@ -75,6 +75,7 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
         'restSeconds': e.restSeconds,
         'weight': e.weight,
         'order': e.order,
+        'setConfigs': e.setConfigs?.map((s) => s.toJson()).toList(),
       }).toList(),
     };
   }
@@ -82,6 +83,10 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
   CustomPlan _fromJson(Map<String, dynamic> json) {
     final exercises = (json['exercises'] as List<dynamic>).map((e) {
       final exJson = e as Map<String, dynamic>;
+      final setConfigsRaw = exJson['setConfigs'] as List<dynamic>?;
+      final setConfigs = setConfigsRaw != null
+          ? setConfigsRaw.map((s) => SetConfig.fromJson(s as Map<String, dynamic>)).toList()
+          : null;
       return CustomExerciseItem(
         exercise: Exercise(
           id: exJson['exerciseId'] as String,
@@ -96,6 +101,7 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
         restSeconds: exJson['restSeconds'] as String,
         weight: exJson['weight'] as String? ?? '',
         order: exJson['order'] as int,
+        setConfigs: setConfigs,
       );
     }).toList();
     return CustomPlan(
