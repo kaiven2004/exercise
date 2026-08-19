@@ -1,3 +1,4 @@
+﻿import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
 import 'repositories.dart';
@@ -46,15 +47,7 @@ class LocalTrainingHistoryRepository implements TrainingHistoryRepository {
   List<TrainingSession> getHistory() {
     final jsons = _prefs?.getStringList(_key) ?? [];
     return jsons
-        .map(
-          (s) => TrainingSession(
-            id: s,
-            date: DateTime.now(),
-            sectionName: '',
-            categoryPath: '',
-            exercises: [],
-          ),
-        )
+        .map((s) => TrainingSession.fromJson(jsonDecode(s) as Map<String, dynamic>))
         .toList();
   }
 
@@ -63,7 +56,7 @@ class LocalTrainingHistoryRepository implements TrainingHistoryRepository {
     if (_prefs == null) return;
     final list = getHistory();
     list.insert(0, session);
-    await _prefs!.setStringList(_key, list.map((s) => s.id).toList());
+    await _prefs!.setStringList(_key, list.map((s) => jsonEncode(s.toJson())).toList());
   }
 
   @override

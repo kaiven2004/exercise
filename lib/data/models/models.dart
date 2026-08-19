@@ -1,11 +1,10 @@
-﻿/// 训练板块枚举
+/// 训练板块枚举
 enum WorkoutSection {
-  strength, // 力量训练
-  functional, // 功能训练
-  yoga, // 瑜伽训练
+  strength,
+  functional,
+  yoga,
 }
 
-/// 训练分类（部位/肌肉分组）
 class TrainingCategory {
   final String id;
   final String name;
@@ -22,7 +21,6 @@ class TrainingCategory {
   });
 }
 
-/// 训练动作
 class Exercise {
   final String id;
   final String name;
@@ -53,9 +51,40 @@ class Exercise {
     this.videoPath = '',
     this.weight = '0',
   });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'categoryPath': categoryPath,
+        'description': description,
+        'tips': tips,
+        'sets': sets,
+        'reps': reps,
+        'restSeconds': restSeconds,
+        'imageSvg': imageSvg,
+        'imageUrl': imageUrl,
+        'difficulty': difficulty,
+        'videoPath': videoPath,
+        'weight': weight,
+      };
+
+  factory Exercise.fromJson(Map<String, dynamic> json) => Exercise(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        categoryPath: json['categoryPath'] as String,
+        description: json['description'] as String,
+        tips: (json['tips'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
+        sets: json['sets'] as int? ?? 3,
+        reps: json['reps'] as int? ?? 12,
+        restSeconds: json['restSeconds'] as String? ?? '60',
+        imageSvg: json['imageSvg'] as String? ?? 'exercise_default',
+        imageUrl: json['imageUrl'] as String? ?? '',
+        difficulty: json['difficulty'] as String? ?? '初级',
+        videoPath: json['videoPath'] as String? ?? '',
+        weight: json['weight'] as String? ?? '0',
+      );
 }
 
-/// 逐组配置：每组的重量和次数
 class SetConfig {
   final double weight;
   final int reps;
@@ -65,7 +94,6 @@ class SetConfig {
       SetConfig(weight: (json['weight'] as num).toDouble(), reps: json['reps'] as int);
 }
 
-/// 自定义计划中的动作条目（可覆盖默认组数/次数/休息）
 class CustomExerciseItem {
   final Exercise exercise;
   int sets;
@@ -98,7 +126,6 @@ class CustomExerciseItem {
   }
 }
 
-/// 自定义训练计划
 class CustomPlan {
   final String id;
   final String name;
@@ -125,7 +152,6 @@ class CustomPlan {
   }
 }
 
-/// 训练记录（历史）
 class TrainingSession {
   final String id;
   final DateTime date;
@@ -140,9 +166,26 @@ class TrainingSession {
     required this.categoryPath,
     required this.exercises,
   });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'date': date.toIso8601String(),
+        'sectionName': sectionName,
+        'categoryPath': categoryPath,
+        'exercises': exercises.map((e) => e.toJson()).toList(),
+      };
+
+  factory TrainingSession.fromJson(Map<String, dynamic> json) => TrainingSession(
+        id: json['id'] as String,
+        date: DateTime.parse(json['date'] as String),
+        sectionName: json['sectionName'] as String,
+        categoryPath: json['categoryPath'] as String,
+        exercises: (json['exercises'] as List<dynamic>)
+            .map((e) => ExerciseLog.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
 }
 
-/// 单次动作记录
 class ExerciseLog {
   final Exercise exercise;
   final int completedSets;
@@ -153,4 +196,16 @@ class ExerciseLog {
     required this.completedSets,
     required this.totalReps,
   });
+
+  Map<String, dynamic> toJson() => {
+        'exercise': exercise.toJson(),
+        'completedSets': completedSets,
+        'totalReps': totalReps,
+      };
+
+  factory ExerciseLog.fromJson(Map<String, dynamic> json) => ExerciseLog(
+        exercise: Exercise.fromJson(json['exercise'] as Map<String, dynamic>),
+        completedSets: json['completedSets'] as int,
+        totalReps: json['totalReps'] as int,
+      );
 }
