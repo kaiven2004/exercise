@@ -1,7 +1,7 @@
-import 'package:excise/data/models/models.dart';
+﻿import 'package:excise/data/models/models.dart';
+import 'package:excise/data/repositories/local_repositories.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -12,7 +12,7 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   List<TrainingSession> _history = [];
   bool _loading = true;
-  static const _key = 'training_history';
+  final _histRepo = LocalTrainingHistoryRepository();
 
   @override
   void initState() {
@@ -21,27 +21,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> _loadHistory() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsons = prefs.getStringList(_key) ?? [];
+    await _histRepo.init();
     setState(() {
-      _history = jsons
-          .map(
-            (s) => TrainingSession(
-              id: s,
-              date: DateTime.now(),
-              sectionName: '',
-              categoryPath: '',
-              exercises: [],
-            ),
-          )
-          .toList();
+      _history = _histRepo.getHistory();
       _loading = false;
     });
   }
 
   Future<void> _clearHistory() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_key);
+    await _histRepo.clearHistory();
     setState(() => _history = []);
   }
 
@@ -111,6 +99,13 @@ class _HistoryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final timeStr =
         '${session.date.month}月${session.date.day}日 ${session.date.hour.toString().padLeft(2, '0')}:${session.date.minute.toString().padLeft(2, '0')}';
+    final exerciseNames = session.exercises
+        .map((e) => e.exercise.name)
+        .take(3)
+        .join('、');
+    final exerciseDesc = exerciseNames.isNotEmpty
+        ? exerciseNames
+        : '训练记录';
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: Padding(
@@ -147,12 +142,12 @@ class _HistoryCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    session.categoryPath.isNotEmpty
-                        ? session.categoryPath
-                        : '训练记录',
+                    exerciseDesc,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
