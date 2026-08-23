@@ -1,4 +1,4 @@
-/// 训练板块枚举
+﻿/// 训练板块枚举
 enum WorkoutSection {
   strength,
   functional,
@@ -208,4 +208,67 @@ class ExerciseLog {
         completedSets: json['completedSets'] as int,
         totalReps: json['totalReps'] as int,
       );
+}
+
+/// 身体测量记录
+class BodyMeasurement {
+  final String id;
+  final DateTime date;
+  final double weight;
+  final double bodyFatPercent;
+  final double chest;
+  final double waist;
+  final double hip;
+  final double arm;
+  final double thigh;
+
+  const BodyMeasurement({
+    required this.id,
+    required this.date,
+    this.weight = 0,
+    this.bodyFatPercent = 0,
+    this.chest = 0,
+    this.waist = 0,
+    this.hip = 0,
+    this.arm = 0,
+    this.thigh = 0,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'date': date.toIso8601String(),
+        'weight': weight,
+        'bodyFatPercent': bodyFatPercent,
+        'chest': chest,
+        'waist': waist,
+        'hip': hip,
+        'arm': arm,
+        'thigh': thigh,
+      };
+
+  factory BodyMeasurement.fromJson(Map<String, dynamic> json) => BodyMeasurement(
+        id: json['id'] as String,
+        date: DateTime.parse(json['date'] as String),
+        weight: (json['weight'] as num).toDouble(),
+        bodyFatPercent: (json['bodyFatPercent'] as num?)?.toDouble() ?? 0,
+        chest: (json['chest'] as num?)?.toDouble() ?? 0,
+        waist: (json['waist'] as num?)?.toDouble() ?? 0,
+        hip: (json['hip'] as num?)?.toDouble() ?? 0,
+        arm: (json['arm'] as num?)?.toDouble() ?? 0,
+        thigh: (json['thigh'] as num?)?.toDouble() ?? 0,
+      );
+
+  BodyMeasurement copyWith({double? weight, double? bodyFatPercent, double? chest, double? waist, double? hip, double? arm, double? thigh}) {
+    return BodyMeasurement(
+      id: id,
+      date: date,
+      weight: weight ?? this.weight,
+      bodyFatPercent: bodyFatPercent ?? this.bodyFatPercent,
+      chest: chest ?? this.chest,
+      waist: waist ?? this.waist,
+      hip: hip ?? this.hip,
+      arm: arm ?? this.arm,
+      thigh: thigh ?? this.thigh,
+    );
+  }
 }

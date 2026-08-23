@@ -7,6 +7,7 @@ import 'package:excise/ui/screens/search_screen.dart';
 import 'package:excise/ui/screens/favorites_screen.dart';
 import 'package:excise/ui/screens/history_screen.dart';
 import 'package:excise/ui/screens/custom_plan_list_screen.dart';
+import 'package:excise/ui/screens/body_stats_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -50,6 +51,10 @@ class _MainScreenState extends State<MainScreen>
               titlePadding: const EdgeInsets.only(left: 16, bottom: 50),
             ),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.monitor_heart, size: 22),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BodyStatsScreen())),
+              ),
               IconButton(
                 icon: const SvgIcon(assetName: 'search', size: 22),
                 onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen())),
@@ -143,7 +148,6 @@ class _SectionTabView extends StatelessWidget {
                   exerciseCount: _countExercises(repo, cat),
                   onTap: () {
                     if (cat.subCategories.isEmpty) {
-                      // 无子分类，直接跳转动作列表
                       Navigator.push(context, MaterialPageRoute(
                         builder: (_) => ExerciseListScreen(
                           category: cat,
