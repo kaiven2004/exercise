@@ -306,7 +306,7 @@ class _RecordCard extends StatelessWidget {
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(measurement.weight > 0 ? measurement.weight.toStringAsFixed(1) + ' kg' : '无体重数据', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 2),
-              Text(_formatDate(measurement.date), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              Text(measurement.date.year.toString() + '-' + measurement.date.month.toString().padLeft(2, '0') + '-' + measurement.date.day.toString().padLeft(2, '0'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               if (measurement.bodyFatPercent > 0) Text('体脂 ' + measurement.bodyFatPercent.toStringAsFixed(1) + '%  ·  胸' + measurement.chest.toStringAsFixed(1) + 'cm  ·  腰' + measurement.waist.toStringAsFixed(1) + 'cm', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             ])),
             IconButton(icon: const Icon(Icons.delete_outline, size: 20), onPressed: onTapDelete, color: Colors.red[300]),
@@ -317,3 +317,4 @@ class _RecordCard extends StatelessWidget {
   }
 
 }
+

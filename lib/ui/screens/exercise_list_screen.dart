@@ -1,9 +1,10 @@
-﻿import 'package:excise/data/models/models.dart';
+import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
 import 'package:excise/ui/screens/category_screen.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
+import 'package:excise/app/theme.dart';
 import 'package:flutter/material.dart';
 
 class ExerciseListScreen extends StatefulWidget {
@@ -25,6 +26,7 @@ class ExerciseListScreen extends StatefulWidget {
 class _ExerciseListScreenState extends State<ExerciseListScreen> {
   late final SampleExerciseRepository _repo;
   late final ExerciseOverrideRepository _overrideRepo;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -34,79 +36,122 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
     _overrideRepo.init();
   }
 
+  List<Exercise> get _filteredExercises {
+    var exercises = _repo.getExercises(widget.category.id);
+    if (_searchQuery.isNotEmpty) {
+      exercises = exercises.where((e) =>
+        e.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+        e.categoryPath.toLowerCase().contains(_searchQuery.toLowerCase())
+      ).toList();
+    }
+    return exercises;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final exercises = _repo.getExercises(widget.category.id);
+    final subCategories = widget.category.subCategories;
     final path = _buildPath();
+    final sectionColors = {
+      WorkoutSection.strength: AppTheme.primary,
+      WorkoutSection.functional: const Color(0xFF34C759),
+      WorkoutSection.yoga: const Color(0xFFAF52DE),
+    };
+    final color = sectionColors[widget.section] ?? AppTheme.primary;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              widget.category.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+      backgroundColor: AppTheme.bgMain,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 110,
+            pinned: true,
+            backgroundColor: Colors.white,
+            foregroundColor: AppTheme.textPrimary,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(widget.category.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                  Text(path, style: theme.textTheme.bodySmall?.copyWith(color: AppTheme.textTertiary)),
+                ],
+              ),
+              titlePadding: const EdgeInsets.only(left: 16, bottom: 8),
             ),
-            Text(
-              path,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            leading: IconButton(
+              icon: const Icon(Icons.chevron_left, size: 28),
+              onPressed: () => Navigator.pop(context),
+            ),
+            actions: [
+              IconButton(icon: const Icon(Icons.favorite_border, size: 22), onPressed: () {}),
+            ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(52),
+              child: Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: subCategories.isNotEmpty
+                      ? SizedBox(
+                          height: 36,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              _FilterChip(label: '全部', isSelected: true, color: color, onTap: () {}),
+                              ...subCategories.map((sub) => Padding(
+                                padding: const EdgeInsets.only(left: 6),
+                                child: _FilterChip(label: sub.name, isSelected: false, color: color, onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(
+                                    builder: (_) => ExerciseListScreen(category: sub, parentCategory: widget.category, section: widget.section),
+                                  ));
+                                }),
+                              )),
+                            ],
+                          ),
+                        )
+                      : TextField(
+                          decoration: InputDecoration(
+                            hintText: '搜索 ${widget.category.name} 动作...',
+                            prefixIcon: const Icon(Icons.search, size: 18, color: AppTheme.textTertiary),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? IconButton(icon: const Icon(Icons.clear, size: 18), onPressed: () => setState(() => _searchQuery = ''))
+                                : null,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                            filled: true,
+                            fillColor: AppTheme.bgGrouped,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                            isDense: true,
+                          ),
+                          onChanged: (v) => setState(() => _searchQuery = v),
+                        ),
+                ),
               ),
             ),
-          ],
-        ),
-        leading: IconButton(
-          icon: const SvgIcon(assetName: 'arrow_right', size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: widget.category.subCategories.isNotEmpty
-          ? ListView(
-              padding: const EdgeInsets.all(16),
-              children: widget.category.subCategories.map((sub) {
-                final exercises = _repo.getExercises(sub.id);
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: CategoryCard(
-                    icon: sub.svgIcon,
-                    name: sub.name,
-                    exerciseCount: exercises.length,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ExerciseListScreen(
-                          category: sub,
-                          parentCategory: widget.category,
-                          section: widget.section,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+          ),
+          if (subCategories.isEmpty)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final ex = _filteredExercises[index];
+                  return _ModernExerciseCard(
+                    exercise: ex,
+                    overrideRepo: _overrideRepo,
+                    color: color,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ExerciseDetailScreen(exercise: ex))),
+                  );
+                }, childCount: _filteredExercises.length),
+              ),
             )
-          : exercises.isEmpty
-              ? _EmptyState(category: widget.category)
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: exercises.length,
-                  itemBuilder: (context, index) {
-                    final ex = exercises[index];
-                    return _ExerciseCard(
-                      exercise: ex,
-                      overrideRepo: _overrideRepo,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ExerciseDetailScreen(exercise: ex),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+          else
+            SliverToBoxAdapter(
+              child: _filteredExercises.isEmpty
+                  ? _EmptyState(category: widget.category)
+                  : const SizedBox.shrink(),
+            ),
+        ],
+      ),
     );
   }
 
@@ -118,95 +163,117 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
   }
 }
 
-class _ExerciseCard extends StatelessWidget {
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final Color color;
+  final VoidCallback onTap;
+  const _FilterChip({required this.label, required this.isSelected, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: isSelected ? color : AppTheme.bgGrouped,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Text(label, style: TextStyle(fontSize: 13, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, color: isSelected ? Colors.white : AppTheme.textSecondary)),
+      ),
+    );
+  }
+}
+
+class _ModernExerciseCard extends StatelessWidget {
   final Exercise exercise;
   final ExerciseOverrideRepository overrideRepo;
+  final Color color;
   final VoidCallback onTap;
-  const _ExerciseCard({required this.exercise, required this.overrideRepo, required this.onTap});
+  const _ModernExerciseCard({required this.exercise, required this.overrideRepo, required this.color, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final sets = overrideRepo.getEffectiveSets(exercise.id, exercise.sets);
     final reps = overrideRepo.getEffectiveReps(exercise.id, exercise.reps);
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFE5E5EA), width: 0.5),
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: exercise.imageUrl.isNotEmpty
+                      ? (exercise.imageUrl.startsWith("assets/")
+                          ? Image.asset(exercise.imageUrl, width: 32, height: 32, fit: BoxFit.cover)
+                          : Image.network(exercise.imageUrl, width: 32, height: 32, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _iconWidget()))
+                      : _iconWidget(),
                 ),
-                child: exercise.imageUrl.isNotEmpty
-                    ? (exercise.imageUrl.startsWith("assets/")
-                        ? Image.asset(exercise.imageUrl, width: 36, height: 36, fit: BoxFit.cover)
-                        : Image.network(exercise.imageUrl, width: 36, height: 36, fit: BoxFit.cover, errorBuilder: (_, __, ___) => SvgIcon(assetName: exercise.imageSvg, size: 36, color: theme.colorScheme.primary)))
-                    : SvgIcon(
-                        assetName: exercise.imageSvg,
-                        size: 36,
-                        color: theme.colorScheme.primary,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(exercise.name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, fontSize: 15)),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          _StatBadge(label: '$sets组', color: color),
+                          const SizedBox(width: 6),
+                          _StatBadge(label: '$reps次', color: color),
+                          if (overrideRepo.getOverrideWeight(exercise.id) != null && overrideRepo.getOverrideWeight(exercise.id) != '0') ...[
+                            const SizedBox(width: 6),
+                            _StatBadge(label: '${overrideRepo.getOverrideWeight(exercise.id)}kg', color: color),
+                          ],
+                        ],
                       ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      exercise.name,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      exercise.categoryPath,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '训练部位  ' + exercise.categoryPath.split(' / ').last,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SvgIcon(assetName: 'arrow_right', size: 18),
-            ],
+                const SizedBox(width: 8),
+                Icon(Icons.chevron_right, size: 18, color: AppTheme.textTertiary),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  Widget _iconWidget() {
+    return SvgIcon(assetName: exercise.imageSvg, size: 28, color: Color(0xFF007AFF));
+  }
 }
 
-class _StatChip extends StatelessWidget {
+class _StatBadge extends StatelessWidget {
   final String label;
-  final String? value;
-  const _StatChip({required this.label, this.value});
-
+  final Color color;
+  const _StatBadge({required this.label, required this.color});
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text('$label ${value ?? ' '}', style: theme.textTheme.bodySmall),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+      child: Text(label, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w500)),
     );
   }
 }
@@ -214,34 +281,25 @@ class _StatChip extends StatelessWidget {
 class _EmptyState extends StatelessWidget {
   final TrainingCategory category;
   const _EmptyState({required this.category});
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgIcon(
-            assetName: 'exercise_default',
-            size: 72,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(height: 16),
-          Text(
-                    '暂无动作数据',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${category.name} 的动作数据将在后续更新',
-            style: theme.textTheme.bodySmall,
-            textAlign: TextAlign.center,
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgIcon(assetName: 'exercise_default', size: 64, color: AppTheme.textTertiary),
+            const SizedBox(height: 16),
+            Text('暂无动作数据', style: theme.textTheme.titleMedium?.copyWith(color: AppTheme.textTertiary)),
+            const SizedBox(height: 8),
+            Text('${category.name} 的动作数据将在后续更新', style: theme.textTheme.bodySmall, textAlign: TextAlign.center),
+          ],
+        ),
       ),
     );
   }
 }
+
+
