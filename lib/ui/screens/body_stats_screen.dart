@@ -58,7 +58,7 @@ class _BodyStatsScreenState extends State<BodyStatsScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('删除记录'),
-        content: Text('确定删除  的体重 kg 记录？'),
+        content: Text('确定删除 ' + _formatDate(m.date) + ' 的体重 ' + m.weight.toStringAsFixed(1) + 'kg 记录？'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('取消')),
           TextButton(onPressed: () => Navigator.pop(context, true), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text('删除')),
@@ -72,7 +72,7 @@ class _BodyStatsScreenState extends State<BodyStatsScreen> {
   }
 
   String _formatDate(DateTime d) {
-    return '\-\-';
+    return d.year.toString() + '-' + d.month.toString().padLeft(2, '0') + '-' + d.day.toString().padLeft(2, '0');
   }
 
   @override
@@ -304,10 +304,10 @@ class _RecordCard extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(measurement.weight > 0 ? '\ kg' : '无体重数据', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+              Text(measurement.weight > 0 ? measurement.weight.toStringAsFixed(1) + ' kg' : '无体重数据', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 2),
               Text(_formatDate(measurement.date), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-              if (measurement.bodyFatPercent > 0) Text('体脂 \%  ·  胸\cm  ·  腰\cm', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              if (measurement.bodyFatPercent > 0) Text('体脂 ' + measurement.bodyFatPercent.toStringAsFixed(1) + '%  ·  胸' + measurement.chest.toStringAsFixed(1) + 'cm  ·  腰' + measurement.waist.toStringAsFixed(1) + 'cm', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             ])),
             IconButton(icon: const Icon(Icons.delete_outline, size: 20), onPressed: onTapDelete, color: Colors.red[300]),
           ]),
@@ -316,7 +316,4 @@ class _RecordCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime d) {
-    return '\-\-';
-  }
 }
