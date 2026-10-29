@@ -3,6 +3,7 @@ import 'package:excise/data/repositories/custom_plan_repository.dart';
 import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
+import 'package:excise/ui/widgets/exercise_image.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -275,16 +276,13 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        leading: Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(10),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: ExerciseImage(exercise: item.exercise, fit: BoxFit.cover),
                           ),
-                          child: item.exercise.imageUrl.isNotEmpty
-                              ? ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.asset(item.exercise.imageUrl, width: 28, height: 28, fit: BoxFit.cover))
-                              : SvgIcon(assetName: item.exercise.imageSvg, size: 28, color: theme.colorScheme.primary),
                         ),
                         title: Text(item.exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                         subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -522,8 +520,14 @@ class _ExercisePickerState extends State<_ExercisePicker> {
                       final ex = _results[index];
                       final excluded = widget.excludeIds.contains(ex.id);
                       return ListTile(
-                        leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
-                          child: Center(child: SvgIcon(assetName: ex.imageSvg, size: 22, color: theme.colorScheme.primary))),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: ExerciseImage(exercise: ex, fit: BoxFit.cover),
+                          ),
+                        ),
                         title: Text(ex.name),
                         subtitle: Text(ex.categoryPath),
                         trailing: excluded ? const Text('已添加', style: TextStyle(color: Colors.grey)): null,

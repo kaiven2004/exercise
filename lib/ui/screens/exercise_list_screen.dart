@@ -2,7 +2,7 @@ import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
-import 'package:excise/ui/screens/category_screen.dart';
+import 'package:excise/ui/widgets/exercise_image.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:excise/app/theme.dart';
 import 'package:flutter/material.dart';
@@ -215,18 +215,13 @@ class _ModernExerciseCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: ExerciseImage(exercise: exercise, fit: BoxFit.cover),
                   ),
-                  child: exercise.imageUrl.isNotEmpty
-                      ? (exercise.imageUrl.startsWith("assets/")
-                          ? Image.asset(exercise.imageUrl, width: 32, height: 32, fit: BoxFit.cover)
-                          : Image.network(exercise.imageUrl, width: 32, height: 32, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _iconWidget()))
-                      : _iconWidget(),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -257,10 +252,6 @@ class _ModernExerciseCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _iconWidget() {
-    return SvgIcon(assetName: exercise.imageSvg, size: 28, color: Color(0xFF007AFF));
   }
 }
 

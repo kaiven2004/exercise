@@ -28,7 +28,7 @@ const List<TrainingCategory> kStrengthCategories = [
           TrainingCategory(id: 'shoulder_front', name: '前束', section: WorkoutSection.strength, svgIcon: 'shoulder_front'),
           TrainingCategory(id: 'shoulder_mid', name: '中束', section: WorkoutSection.strength, svgIcon: 'shoulder_mid'),
           TrainingCategory(id: 'shoulder_rear', name: '后束', section: WorkoutSection.strength, svgIcon: 'shoulder_rear'),
-          TrainingCategory(id: 'shoulder_rotator', name: '肩袖肌群', section: WorkoutSection.strength, svgIcon: 'shoulder_rotator'),
+          TrainingCategory(id: 'shoulder_rotator', name: '肩袖肌群', section: WorkoutSection.strength, svgIcon: 'shoulder'),
         ],
       ),
       TrainingCategory(
@@ -38,9 +38,9 @@ const List<TrainingCategory> kStrengthCategories = [
         svgIcon: 'back',
         subCategories: [
           TrainingCategory(id: 'back_lats', name: '背阔肌', section: WorkoutSection.strength, svgIcon: 'back_lats'),
-          TrainingCategory(id: 'back_upper', name: '上背厚度', section: WorkoutSection.strength, svgIcon: 'back_upper'),
-          TrainingCategory(id: 'back_traps_lower', name: '斜方下束', section: WorkoutSection.strength, svgIcon: 'back_traps_lower'),
-          TrainingCategory(id: 'back_lower', name: '下背/竖脊肌', section: WorkoutSection.strength, svgIcon: 'back_lower'),
+          TrainingCategory(id: 'back_upper', name: '上背厚度', section: WorkoutSection.strength, svgIcon: 'back'),
+          TrainingCategory(id: 'back_traps_lower', name: '斜方下束', section: WorkoutSection.strength, svgIcon: 'back_traps'),
+          TrainingCategory(id: 'back_lower', name: '下背/竖脊肌', section: WorkoutSection.strength, svgIcon: 'back'),
         ],
       ),
       TrainingCategory(
@@ -49,9 +49,9 @@ const List<TrainingCategory> kStrengthCategories = [
         section: WorkoutSection.strength,
         svgIcon: 'arm',
         subCategories: [
-          TrainingCategory(id: 'arms_biceps', name: '肱二头肌', section: WorkoutSection.strength, svgIcon: 'biceps'),
-          TrainingCategory(id: 'arms_triceps', name: '肱三头肌', section: WorkoutSection.strength, svgIcon: 'triceps'),
-          TrainingCategory(id: 'arms_forearm', name: '前臂', section: WorkoutSection.strength, svgIcon: 'forearm'),
+          TrainingCategory(id: 'arms_biceps', name: '肱二头肌', section: WorkoutSection.strength, svgIcon: 'arm'),
+          TrainingCategory(id: 'arms_triceps', name: '肱三头肌', section: WorkoutSection.strength, svgIcon: 'arm'),
+          TrainingCategory(id: 'arms_forearm', name: '前臂', section: WorkoutSection.strength, svgIcon: 'arm'),
         ],
       ),
     ],
@@ -65,6 +65,7 @@ const List<TrainingCategory> kStrengthCategories = [
       TrainingCategory(id: 'leg_quads', name: '股四头肌', section: WorkoutSection.strength, svgIcon: 'leg_quads'),
       TrainingCategory(id: 'leg_hamstrings', name: '腘绳肌', section: WorkoutSection.strength, svgIcon: 'leg_hamstrings'),
       TrainingCategory(id: 'leg_glutes', name: '臀部训练', section: WorkoutSection.strength, svgIcon: 'leg_glutes'),
+      TrainingCategory(id: 'leg_adductors', name: '内收肌群', section: WorkoutSection.strength, svgIcon: 'leg'),
       TrainingCategory(id: 'leg_calves', name: '小腿训练', section: WorkoutSection.strength, svgIcon: 'leg'),
     ],
   ),
@@ -76,8 +77,8 @@ const List<TrainingCategory> kStrengthCategories = [
     subCategories: [
       TrainingCategory(id: 'core_abs', name: '腹直肌', section: WorkoutSection.strength, svgIcon: 'core_abs'),
       TrainingCategory(id: 'core_obliques', name: '腹斜肌', section: WorkoutSection.strength, svgIcon: 'core_obliques'),
-      TrainingCategory(id: 'core_deep', name: '深层核心', section: WorkoutSection.strength, svgIcon: 'core_deep'),
-      TrainingCategory(id: 'core_antiflex', name: '抗伸展', section: WorkoutSection.strength, svgIcon: 'core_antiflex'),
+      TrainingCategory(id: 'core_deep', name: '深层核心', section: WorkoutSection.strength, svgIcon: 'core'),
+      TrainingCategory(id: 'core_antiflex', name: '抗伸展', section: WorkoutSection.strength, svgIcon: 'core'),
     ],
   ),
 ];
@@ -93,7 +94,7 @@ const List<TrainingCategory> kFunctionalCategories = [
   TrainingCategory(id: 'func_grip', name: '悬吊抓握', section: WorkoutSection.functional, svgIcon: 'functional', subCategories: []),
   TrainingCategory(id: 'func_flow', name: '动物流', section: WorkoutSection.functional, svgIcon: 'functional', subCategories: []),
   TrainingCategory(id: 'func_metabolic', name: '代谢力量', section: WorkoutSection.functional, svgIcon: 'functional', subCategories: []),
-  TrainingCategory(id: 'func_breath', name: '呼吸训练', section: WorkoutSection.functional, svgIcon: 'breath', subCategories: []),
+  TrainingCategory(id: 'func_breath', name: '呼吸训练', section: WorkoutSection.functional, svgIcon: 'core', subCategories: []),
 ];
 
 /// 瑜伽分类（含子分类）

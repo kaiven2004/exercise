@@ -1,6 +1,7 @@
 ﻿import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/local_repositories.dart';
+import 'package:excise/ui/widgets/exercise_image.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -191,21 +192,19 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
           ] else ...[
             Container(
               width: double.infinity,
-              height: 200,
+              height: 220,
               decoration: BoxDecoration(
                 color: theme.colorScheme.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Center(
-                child: ex.imageUrl.isNotEmpty
-                    ? (ex.imageUrl.startsWith("assets/")
-                        ? Image.asset(ex.imageUrl, width: 100, height: 100, fit: BoxFit.cover)
-                        : Image.network(ex.imageUrl, width: 100, height: 100, fit: BoxFit.cover, errorBuilder: (_, __, ___) => SvgIcon(assetName: ex.imageSvg, size: 100, color: theme.colorScheme.primary)))
-                    : SvgIcon(
-                        assetName: ex.imageSvg,
-                        size: 100,
-                        color: theme.colorScheme.primary,
-                      ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: ExerciseImage(
+                  exercise: ex,
+                  animated: true,
+                  fit: BoxFit.contain,
+                  iconScale: 0.4,
+                ),
               ),
             ),
             const SizedBox(height: 16),

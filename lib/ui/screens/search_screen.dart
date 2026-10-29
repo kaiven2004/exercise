@@ -1,7 +1,7 @@
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
-import 'package:excise/ui/widgets/svg_icons.dart';
+import 'package:excise/ui/widgets/exercise_image.dart';
 import 'package:excise/app/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -63,8 +63,14 @@ class _SearchResultCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Material(color: Colors.transparent, child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(12), child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE5E5EA), width: 0.5)),
       child: Row(children: [
-        Container(width: 44, height: 44, decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-          child: exercise.imageUrl.isNotEmpty ? (exercise.imageUrl.startsWith('assets/') ? Image.asset(exercise.imageUrl, width: 26, height: 26, fit: BoxFit.cover) : Image.network(exercise.imageUrl, width: 26, height: 26, fit: BoxFit.cover, errorBuilder: (_, __, ___) => SvgIcon(assetName: exercise.imageSvg, size: 22, color: AppTheme.primary))) : SvgIcon(assetName: exercise.imageSvg, size: 22, color: AppTheme.primary)),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: SizedBox(
+            width: 44,
+            height: 44,
+            child: ExerciseImage(exercise: exercise, fit: BoxFit.cover),
+          ),
+        ),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),

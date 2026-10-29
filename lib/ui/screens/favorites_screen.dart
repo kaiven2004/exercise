@@ -3,7 +3,7 @@ import 'package:excise/data/repositories/custom_plan_repository.dart';
 import 'package:excise/data/repositories/local_repositories.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
-import 'package:excise/ui/widgets/svg_icons.dart';
+import 'package:excise/ui/widgets/exercise_image.dart';
 import 'package:excise/app/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -174,10 +174,13 @@ class _FavoriteCard extends StatelessWidget {
           if (isMultiSelect)
             Padding(padding: const EdgeInsets.only(right: 10), child: Checkbox(value: isSelected, onChanged: (_) => onToggleSelect(), activeColor: AppTheme.primary))
           else
-            Container(width: 48, height: 48, decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-              child: exercise.imageUrl.isNotEmpty
-                  ? (exercise.imageUrl.startsWith("assets/") ? Image.asset(exercise.imageUrl, width: 28, height: 28, fit: BoxFit.cover) : Image.network(exercise.imageUrl, width: 28, height: 28, fit: BoxFit.cover, errorBuilder: (_, __, ___) => SvgIcon(assetName: exercise.imageSvg, size: 24, color: AppTheme.primary)))
-                  : SvgIcon(assetName: exercise.imageSvg, size: 24, color: AppTheme.primary),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: ExerciseImage(exercise: exercise, fit: BoxFit.cover),
+              ),
             ),
           const SizedBox(width: 12),
           Expanded(
