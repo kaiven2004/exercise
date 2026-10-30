@@ -2,7 +2,6 @@
 import 'package:excise/data/repositories/custom_plan_repository.dart';
 import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
-import 'package:excise/ui/screens/exercise_detail_screen.dart';
 import 'package:excise/ui/widgets/exercise_image.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ class CustomPlanEditorScreen extends StatefulWidget {
 
 class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
   late final LocalCustomPlanRepository _repo;
-  late final SampleExerciseRepository _exerciseRepo;
   late final ExerciseOverrideRepository _overrideRepo;
   late String _planName;
   late List<CustomExerciseItem> _exercises;
@@ -28,11 +26,11 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
   void initState() {
     super.initState();
     _repo = LocalCustomPlanRepository();
-    _exerciseRepo = SampleExerciseRepository();
     _overrideRepo = ExerciseOverrideRepository();
     _overrideRepo.init();
     _planName = widget.plan?.name ?? '新计划';
     _exercises = widget.plan?.exercises.toList() ?? [];
+    _exercises.sort((a, b) => a.order.compareTo(b.order));
   }
 
   Future<void> _save() async {
@@ -42,12 +40,16 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
     }
     if (mounted) setState(() => _saving = true);
     final now = DateTime.now();
+    // 拖拽后按当前顺序重写 order，重开计划仍保持排序。
+    final ordered = [
+      for (var i = 0; i < _exercises.length; i++) _exercises[i].copyWith(order: i),
+    ];
     final plan = CustomPlan(
       id: widget.plan?.id ?? now.millisecondsSinceEpoch.toString(),
       name: _planName,
       createdAt: widget.plan?.createdAt ?? now,
       updatedAt: now,
-      exercises: _exercises,
+      exercises: ordered,
     );
     await _repo.init();
     await _repo.savePlan(plan);
@@ -239,7 +241,10 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             children: [
-              Text('${_exercises.length} 个动作', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+              Text(
+                '${_exercises.length} 个动作 · 长按拖动排序',
+                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
               const Spacer(),
               TextButton.icon(
                 icon: const SvgIcon(assetName: 'favorite', size: 16),
@@ -264,25 +269,45 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
                     style: ElevatedButton.styleFrom(backgroundColor: theme.colorScheme.primary),
                   ),
                 ]))
-              : ListView.builder(
+              : ReorderableListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
+                  buildDefaultDragHandles: false,
                   itemCount: _exercises.length,
+                  onReorderItem: (oldIndex, newIndex) {
+                    setState(() {
+                      final item = _exercises.removeAt(oldIndex);
+                      _exercises.insert(newIndex, item);
+                    });
+                  },
                   itemBuilder: (context, index) {
                     final item = _exercises[index];
                     final hasSetConfigs = item.setConfigs != null && item.setConfigs!.isNotEmpty;
                     return Card(
-                      elevation: 1,
+                      key: ObjectKey(item),
+                      elevation: 0,
                       margin: const EdgeInsets.only(bottom: 10),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: SizedBox(
-                            width: 48,
-                            height: 48,
-                            child: ExerciseImage(exercise: item.exercise, fit: BoxFit.cover),
-                          ),
+                        contentPadding: const EdgeInsets.fromLTRB(8, 8, 6, 8),
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ReorderableDragStartListener(
+                              index: index,
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 4),
+                                child: Icon(Icons.drag_indicator_rounded, size: 20, color: Color(0xFFB0B4BA)),
+                              ),
+                            ),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: SizedBox(
+                                width: 46,
+                                height: 46,
+                                child: ExerciseImage(exercise: item.exercise, fit: BoxFit.cover),
+                              ),
+                            ),
+                          ],
                         ),
                         title: Text(item.exercise.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                         subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -302,13 +327,21 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
                         trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                           if (hasSetConfigs)
                             Container(
-                              margin: const EdgeInsets.only(right: 6),
+                              margin: const EdgeInsets.only(right: 4),
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
                               child: const Text('各组不同', style: TextStyle(fontSize: 10, color: Color(0xFF1565C0))),
                             ),
-                          IconButton(icon: const SvgIcon(assetName: 'favorite', size: 18), onPressed: () => _editExercise(index)),
-                          IconButton(icon: const SvgIcon(assetName: 'history', size: 18), onPressed: () => _removeExercise(index)),
+                          IconButton(
+                            tooltip: '编辑',
+                            icon: const Icon(Icons.edit_outlined, size: 19, color: Color(0xFF6B7280)),
+                            onPressed: () => _editExercise(index),
+                          ),
+                          IconButton(
+                            tooltip: '删除',
+                            icon: const Icon(Icons.delete_outline_rounded, size: 19, color: Color(0xFF9CA3AF)),
+                            onPressed: () => _removeExercise(index),
+                          ),
                         ]),
                       ),
                     );
@@ -494,7 +527,6 @@ class _ExercisePickerState extends State<_ExercisePicker> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(

@@ -1,34 +1,44 @@
 import 'package:excise/app/app_scope.dart';
+import 'package:excise/app/theme.dart';
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/models/workout_models.dart';
 import 'package:excise/data/repositories/custom_plan_repository.dart';
+import 'package:excise/data/workout_templates.dart';
 import 'package:excise/ui/screens/custom_plan_editor_screen.dart';
 import 'package:excise/ui/screens/workout_runner_screen.dart';
-import 'package:excise/ui/widgets/svg_icons.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:flutter/material.dart';
 
+/// 计划 Tab：模板库 + 我的计划。
 class CustomPlanListScreen extends StatefulWidget {
   const CustomPlanListScreen({super.key});
+
   @override
   State<CustomPlanListScreen> createState() => _CustomPlanListScreenState();
 }
 
 class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
-  late final LocalCustomPlanRepository _repo;
+  LocalCustomPlanRepository? _repo;
   List<CustomPlan> _plans = [];
+  List<WorkoutSession> _sessions = const [];
   bool _loading = true;
 
   @override
-  void initState() {
-    super.initState();
-    _repo = LocalCustomPlanRepository();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final repo = AppScope.of(context).plans;
+    if (identical(repo, _repo)) return;
+    _repo = repo;
     _loadPlans();
   }
 
   Future<void> _loadPlans() async {
-    await _repo.init();
+    final services = AppScope.of(context);
+    await _repo?.init();
+    if (!mounted) return;
     setState(() {
-      _plans = _repo.getPlans();
+      _plans = _repo?.getPlans() ?? const [];
+      _sessions = services.workouts.getSessions();
       _loading = false;
     });
   }
@@ -41,14 +51,43 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
         content: Text('确定要删除计划「${plan.name}」吗？'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('删除', style: TextStyle(color: Colors.red))),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('删除', style: TextStyle(color: AppTheme.accentRed)),
+          ),
         ],
       ),
     );
-    if (confirmed == true && mounted) {
-      await _repo.deletePlan(plan.id);
-      _loadPlans();
-    }
+    if (confirmed != true || !mounted) return;
+    await _repo?.deletePlan(plan.id);
+    if (mounted) _loadPlans();
+  }
+
+  Future<void> _duplicatePlan(CustomPlan plan) async {
+    await _repo?.duplicatePlan(plan);
+    if (!mounted) return;
+    _loadPlans();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('已复制「${plan.name}」')),
+    );
+  }
+
+  Future<void> _useTemplate(WorkoutTemplate template) async {
+    final repo = _repo;
+    if (repo == null) return;
+    final now = DateTime.now();
+    final plan = buildPlanFromTemplate(
+      template,
+      id: 'plan_${template.id}_${now.millisecondsSinceEpoch}',
+      now: now,
+    );
+    await repo.savePlan(plan);
+    if (!mounted) return;
+    await _loadPlans();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('已生成计划「${plan.name}」，点计划卡片开始')),
+    );
   }
 
   Future<void> _startPlan(CustomPlan plan) async {
@@ -108,97 +147,215 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
     if (mounted) _loadPlans();
   }
 
+  Future<void> _openEditor({CustomPlan? plan}) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CustomPlanEditorScreen(plan: plan, onSave: () => _loadPlans()),
+      ),
+    );
+    if (mounted) _loadPlans();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('自定义计划')),
+      backgroundColor: AppTheme.bgMain,
+      appBar: AppBar(
+        title: const Text('计划'),
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimary,
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _plans.isEmpty
-          ? _EmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _plans.length,
-              itemBuilder: (context, index) {
-                final plan = _plans[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _PlanCard(
-                    plan: plan,
-                    onTap: () => _startPlan(plan),
-                    onEdit: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => CustomPlanEditorScreen(plan: plan, onSave: () => _loadPlans())),
-                    ),
-                    onDelete: () => _deletePlan(plan),
-                  ),
-                );
-              },
+          : ListView(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 96),
+              children: [
+                _sectionHeader('模板库', '一键生成我的计划'),
+                const SizedBox(height: 10),
+                _templateRow(),
+                const SizedBox(height: 24),
+                _sectionHeader('我的计划', '${_plans.length} 个'),
+                const SizedBox(height: 10),
+                if (_plans.isEmpty)
+                  _emptyPlans()
+                else
+                  for (final plan in _plans) ...[
+                    _planCard(plan),
+                    const SizedBox(height: 10),
+                  ],
+              ],
             ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => CustomPlanEditorScreen(plan: null, onSave: () => _loadPlans())),
-        ),
-        icon: const SvgIcon(assetName: 'favorite', size: 18),
+        onPressed: () => _openEditor(),
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add_rounded, size: 20),
         label: const Text('新建计划'),
       ),
     );
   }
-}
 
-class _PlanCard extends StatelessWidget {
-  final CustomPlan plan;
-  final VoidCallback onTap;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-  const _PlanCard({required this.plan, required this.onTap, required this.onEdit, required this.onDelete});
+  Widget _sectionHeader(String title, String subtitle) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary)),
+        const Spacer(),
+        Text(subtitle, style: const TextStyle(fontSize: 12, color: AppTheme.textTertiary)),
+      ],
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
+  Widget _templateRow() {
+    return SizedBox(
+      height: 136,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: kWorkoutTemplates.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          final template = kWorkoutTemplates[index];
+          final exercises = template.resolveExercises();
+          final minutes = estimateMinutes(buildWorkoutExercises(exercises));
+          return _TemplateCard(
+            template: template,
+            exerciseCount: exercises.length,
+            minutes: minutes,
+            accent: [AppTheme.primary, AppTheme.accent, AppTheme.accentWarm, AppTheme.accentPurple][index % 4],
+            onUse: () => _useTemplate(template),
+          );
+        },
+      ),
+    );
+  }
+
+  int _estimatedMinutes(CustomPlan plan) {
+    final exercises = <WorkoutExercise>[];
+    for (final item in plan.exercises) {
+      final weight = double.tryParse(item.weight) ?? 0;
+      exercises.add(WorkoutExercise(
+        exercise: item.exercise,
+        sets: List.generate(
+          item.sets.clamp(1, 12).toInt(),
+          (_) => WorkoutSet(weight: weight, reps: item.reps.clamp(1, 100).toInt()),
+        ),
+      ));
+    }
+    return estimateMinutes(exercises);
+  }
+
+  WorkoutSession? _lastSession(CustomPlan plan) {
+    for (final session in _sessions) {
+      if (session.planId == plan.id) return session;
+    }
+    return null;
+  }
+
+  Widget _planCard(CustomPlan plan) {
+    final last = _lastSession(plan);
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
+        onTap: () => _startPlan(plan),
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.divider.withValues(alpha: 0.45)),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(plan.name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${plan.exercises.length} 个动作 · ${plan.updatedAt.month}月${plan.updatedAt.day}日',
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ],
+                    child: Text(
+                      plan.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary),
                     ),
                   ),
-                  IconButton(icon: const SvgIcon(assetName: 'favorite', size: 18), onPressed: onEdit),
-                  IconButton(icon: const SvgIcon(assetName: 'history', size: 18), onPressed: onDelete),
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_horiz_rounded, size: 20, color: AppTheme.textTertiary),
+                    tooltip: '更多',
+                    onSelected: (value) {
+                      if (value == 'edit') _openEditor(plan: plan);
+                      if (value == 'duplicate') _duplicatePlan(plan);
+                      if (value == 'delete') _deletePlan(plan);
+                    },
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(value: 'edit', child: Text('编辑')),
+                      PopupMenuItem(value: 'duplicate', child: Text('复制')),
+                      PopupMenuItem(value: 'delete', child: Text('删除')),
+                    ],
+                  ),
                 ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${plan.exercises.length} 个动作 · 约 ${_estimatedMinutes(plan)} 分钟',
+                style: const TextStyle(fontSize: 12, color: AppTheme.textTertiary),
               ),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
-                children: plan.exercises.take(5).map((item) => Chip(
-                  label: Text(item.exercise.name, style: const TextStyle(fontSize: 11)),
-                  visualDensity: VisualDensity.compact,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.4))),
+                children: plan.exercises.take(4).map((item) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: AppTheme.bgMain,
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  child: Text(
+                    item.exercise.name,
+                    style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+                  ),
                 )).toList(),
               ),
-              if (plan.exercises.length > 5) Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text('+${plan.exercises.length - 5} 更多', style: theme.textTheme.bodySmall),
+              if (plan.exercises.length > 4)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    '+${plan.exercises.length - 4} 个',
+                    style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary),
+                  ),
+                ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(
+                    last == null ? Icons.schedule_rounded : Icons.check_circle_outline_rounded,
+                    size: 14,
+                    color: last == null ? AppTheme.textTertiary : AppTheme.accent,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    last == null
+                        ? '还没练过'
+                        : '上次 ${DateFormat('M月d日').format(last.startedAt)} · ${last.totalSets} 组',
+                    style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary.withValues(alpha: 0.09),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.play_arrow_rounded, size: 15, color: AppTheme.primary),
+                        SizedBox(width: 2),
+                        Text('开始', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.primary)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
               ),
             ],
           ),
@@ -206,21 +363,105 @@ class _PlanCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _emptyPlans() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.divider.withValues(alpha: 0.45)),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.event_note_outlined, size: 38, color: AppTheme.textTertiary),
+          const SizedBox(height: 10),
+          const Text('还没有自己的计划', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+          const SizedBox(height: 4),
+          const Text(
+            '用上面的模板一键生成，或新建一个计划',
+            style: TextStyle(fontSize: 12, color: AppTheme.textTertiary),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _EmptyState extends StatelessWidget {
+class _TemplateCard extends StatelessWidget {
+  final WorkoutTemplate template;
+  final int exerciseCount;
+  final int minutes;
+  final Color accent;
+  final VoidCallback onUse;
+
+  const _TemplateCard({
+    required this.template,
+    required this.exerciseCount,
+    required this.minutes,
+    required this.accent,
+    required this.onUse,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
+    return Container(
+      width: 208,
+      padding: const EdgeInsets.fromLTRB(14, 13, 14, 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.divider.withValues(alpha: 0.45)),
+      ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SvgIcon(assetName: 'strength', size: 72, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(height: 16),
-          Text('还没有自定义计划', style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Row(
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(9)),
+                child: Icon(Icons.fitness_center_rounded, size: 16, color: accent),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  template.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            template.tagline,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary),
+          ),
+          const Spacer(),
+          Text(
+            '$exerciseCount 个动作 · 约 $minutes 分钟',
+            style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+          ),
           const SizedBox(height: 8),
-          Text('点击右下角按钮创建你的第一个训练计划', style: theme.textTheme.bodySmall),
+          SizedBox(
+            width: double.infinity,
+            height: 32,
+            child: FilledButton(
+              onPressed: onUse,
+              style: FilledButton.styleFrom(
+                backgroundColor: accent,
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+              ),
+              child: const Text('使用模板', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+            ),
+          ),
         ],
       ),
     );

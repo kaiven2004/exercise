@@ -110,6 +110,36 @@ List<WorkoutExercise> buildWorkoutExercises(
   }).toList();
 }
 
+/// 把模板转成「我的计划」。默认组次沿用模板生成规则。
+CustomPlan buildPlanFromTemplate(
+  WorkoutTemplate template, {
+  required String id,
+  DateTime? now,
+}) {
+  final created = now ?? DateTime.now();
+  final workout = buildWorkoutExercises(template.resolveExercises());
+  final items = <CustomExerciseItem>[];
+  for (var i = 0; i < workout.length; i++) {
+    final exercise = workout[i];
+    final first = exercise.sets.isEmpty ? null : exercise.sets.first;
+    items.add(CustomExerciseItem(
+      exercise: exercise.exercise,
+      sets: exercise.sets.length,
+      reps: first?.reps ?? 12,
+      restSeconds: exercise.exercise.restSeconds,
+      weight: first == null || first.weight <= 0 ? '0' : '${first.weight}',
+      order: i,
+    ));
+  }
+  return CustomPlan(
+    id: id,
+    name: template.name,
+    createdAt: created,
+    updatedAt: created,
+    exercises: items,
+  );
+}
+
 int estimateMinutes(List<WorkoutExercise> exercises) {
   var seconds = 5 * 60; // 热身与换器械
   for (final exercise in exercises) {
