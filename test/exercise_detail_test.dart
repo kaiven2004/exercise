@@ -9,6 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   testWidgets('详情页展示上次表现、替代动作与两个 CTA', (tester) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     SharedPreferences.setMockInitialValues({});
     await initializeDateFormatting('zh_CN', null);
     final services = await AppServices.create();
