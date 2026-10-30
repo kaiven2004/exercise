@@ -1,8 +1,9 @@
+import 'package:excise/app/app_scope.dart';
 import 'package:excise/data/models/models.dart';
+import 'package:excise/data/models/workout_models.dart';
 import 'package:excise/data/repositories/custom_plan_repository.dart';
-import 'package:excise/data/repositories/local_repositories.dart';
 import 'package:excise/ui/screens/custom_plan_editor_screen.dart';
-import 'package:excise/ui/screens/custom_plan_runner_screen.dart';
+import 'package:excise/ui/screens/workout_runner_screen.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -50,6 +51,63 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
     }
   }
 
+  Future<void> _startPlan(CustomPlan plan) async {
+    final services = AppScope.of(context);
+    final exercises = <WorkoutExercise>[];
+    for (final item in plan.exercises) {
+      final configs = item.setConfigs;
+      final List<WorkoutSet> sets;
+      if (configs != null && configs.isNotEmpty) {
+        sets = configs
+            .map((c) => WorkoutSet(weight: c.weight, reps: c.reps))
+            .toList();
+      } else {
+        final weight = double.tryParse(item.weight) ?? 0;
+        sets = List.generate(
+          item.sets.clamp(1, 12).toInt(),
+          (_) => WorkoutSet(weight: weight, reps: item.reps.clamp(1, 100).toInt()),
+        );
+      }
+      exercises.add(WorkoutExercise(exercise: item.exercise, sets: sets));
+    }
+    if (exercises.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('计划里还没有动作')),
+      );
+      return;
+    }
+
+    final existing = services.workouts.getDraft();
+    if (existing != null && existing.hasProgress) {
+      final replace = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('还有未完成的训练'),
+          content: const Text('开始这个计划会覆盖当前草稿。'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('覆盖')),
+          ],
+        ),
+      );
+      if (replace != true) return;
+    }
+
+    final draft = WorkoutDraft(
+      name: plan.name,
+      planId: plan.id,
+      startedAt: DateTime.now(),
+      exercises: exercises,
+    );
+    await services.workouts.saveDraft(draft);
+    if (!mounted) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => WorkoutRunnerScreen(initialDraft: draft)),
+    );
+    if (mounted) _loadPlans();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -68,10 +126,7 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: _PlanCard(
                     plan: plan,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => CustomPlanRunnerScreen(plan: plan)),
-                    ),
+                    onTap: () => _startPlan(plan),
                     onEdit: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => CustomPlanEditorScreen(plan: plan, onSave: () => _loadPlans())),
