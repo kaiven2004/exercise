@@ -1,14 +1,16 @@
+import 'package:excise/app/app_scope.dart';
 import 'package:excise/app/theme.dart';
 import 'package:excise/ui/screens/body_stats_screen.dart';
 import 'package:excise/ui/screens/favorites_screen.dart';
 import 'package:flutter/material.dart';
 
-/// 我的：收藏、身体数据、单位与关于。收藏不再占用底部导航。
+/// 我的：收藏、身体数据、训练偏好与关于。收藏不再占用底部导航。
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final settings = AppScope.of(context).settings;
     return Scaffold(
       backgroundColor: AppTheme.bgMain,
       body: SafeArea(
@@ -44,19 +46,22 @@ class ProfileScreen extends StatelessWidget {
             ]),
             const SizedBox(height: 16),
             _group([
-              _row(
+              _infoRow(
                 icon: Icons.straighten_rounded,
                 color: AppTheme.primary,
                 title: '重量单位',
                 subtitle: '公斤 (kg)',
-                onTap: () => _notYet(context, '单位切换'),
               ),
-              _row(
-                icon: Icons.notifications_none_rounded,
-                color: AppTheme.accentWarm,
-                title: '训练提醒',
-                subtitle: '即将支持',
-                onTap: () => _notYet(context, '训练提醒'),
+              ListenableBuilder(
+                listenable: settings,
+                builder: (context, _) => _switchRow(
+                  icon: Icons.timer_outlined,
+                  color: AppTheme.accentWarm,
+                  title: '自动休息',
+                  subtitle: settings.restEnabled ? '完成一组后自动开始休息计时' : '已关闭，完成一组后直接进入下一组',
+                  value: settings.restEnabled,
+                  onChanged: settings.setRestEnabled,
+                ),
               ),
             ]),
             const SizedBox(height: 16),
@@ -99,6 +104,15 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Widget _leading(IconData icon, Color color) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(11)),
+      child: Icon(icon, size: 21, color: color),
+    );
+  }
+
   Widget _row({
     required IconData icon,
     required Color color,
@@ -115,12 +129,7 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
           child: Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(11)),
-                child: Icon(icon, size: 21, color: color),
-              ),
+              _leading(icon, color),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -140,9 +149,61 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _notYet(BuildContext context, String name) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$name会在后续版本开放')),
+  /// 只展示当前值，不做跳转，不再用「即将支持」占位。
+  Widget _infoRow({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 12, 16, 12),
+      child: Row(
+        children: [
+          _leading(icon, color),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _switchRow({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 8, 10, 8),
+      child: Row(
+        children: [
+          _leading(icon, color),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary)),
+              ],
+            ),
+          ),
+          Switch(value: value, onChanged: onChanged),
+        ],
+      ),
     );
   }
 }

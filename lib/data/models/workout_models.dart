@@ -78,6 +78,31 @@ class WorkoutExercise {
     return total;
   }
 
+  /// 完成组里没有记重量的次数（自重动作）。重量为 0 时容量恒为 0，
+  /// 用这个指标替代展示，避免「练了 19 组、容量 0kg」。
+  int get bodyweightReps {
+    var total = 0;
+    for (final set in sets) {
+      if (set.completed && set.weight <= 0) total += set.reps;
+    }
+    return total;
+  }
+
+  /// 把重量写到所有未完成的组；已完成的组保持原样。
+  void applyWeightToUncompleted(double weight) {
+    for (final set in sets) {
+      if (!set.completed) set.weight = weight;
+    }
+  }
+
+  /// 给还没有填重量的未完成组补默认值（不覆盖用户已改过的组）。
+  void seedWeight(double weight) {
+    if (weight <= 0) return;
+    for (final set in sets) {
+      if (!set.completed && set.weight <= 0) set.weight = weight;
+    }
+  }
+
   WorkoutSet? get bestSet {
     WorkoutSet? best;
     for (final set in sets) {
@@ -141,6 +166,9 @@ class WorkoutSession {
   double get totalVolume => exercises.fold(0.0, (sum, e) => sum + e.volume);
 
   int get totalReps => exercises.fold(0, (sum, e) => sum + e.totalReps);
+
+  /// 全场自重次数。用于重量为 0 时替代「容量」展示。
+  int get totalBodyweightReps => exercises.fold(0, (sum, e) => sum + e.bodyweightReps);
 
   int get bodyweightSets => exercises.fold(
         0,

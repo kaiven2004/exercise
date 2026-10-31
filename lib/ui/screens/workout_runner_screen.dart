@@ -6,9 +6,11 @@ import 'package:excise/data/exercises/exercise_meta.dart';
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/models/workout_models.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
+import 'package:excise/data/services/rest_reminder.dart';
 import 'package:excise/ui/screens/workout_summary_screen.dart';
 import 'package:excise/ui/widgets/exercise_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -36,6 +38,9 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
   bool _resting = false;
   bool _restEnabled = true;
   bool _finishing = false;
+  bool _settingsLoaded = false;
+  AppLifecycleState? _lifecycle;
+  RestReminder? _reminder;
 
   int _restTotalSeconds = 60;
   DateTime? _restEnd;
@@ -95,6 +100,7 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
     WidgetsBinding.instance.removeObserver(this);
     _restTimer?.cancel();
     _clockTimer?.cancel();
+    unawaited(_reminder?.cancel() ?? Future<void>.value());
     try {
       WakelockPlus.disable();
     } catch (_) {}
@@ -102,7 +108,18 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_settingsLoaded) return;
+    _settingsLoaded = true;
+    final services = AppScope.of(context);
+    _restEnabled = services.settings.restEnabled;
+    _reminder = services.restReminder;
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _lifecycle = state;
     if (state == AppLifecycleState.resumed && _resting) {
       _tickRest();
     }
@@ -549,6 +566,7 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
           TextButton(
             onPressed: () {
               setState(() => _restEnabled = false);
+              unawaited(AppScope.of(context).settings.setRestEnabled(false));
               _skipRest();
             },
             style: TextButton.styleFrom(foregroundColor: _muted),
@@ -573,6 +591,8 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
     _restTimer?.cancel();
     _restTimer = Timer.periodic(const Duration(milliseconds: 200), (_) => _tickRest());
     setState(() => _resting = true);
+    // 第一次休息时申请通知权限，后台也能收到结束提醒。
+    unawaited(_reminder?.ensurePermission() ?? Future<void>.value());
   }
 
   void _tickRest() {
@@ -607,12 +627,23 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
         _restRemaining = Duration.zero;
       });
     }
-    if (vibrate) {
-      try {
-        if (await Vibration.hasVibrator()) {
-          Vibration.vibrate(pattern: [0, 250, 90, 250]);
-        }
-      } catch (_) {}
+    final reminder = _reminder;
+    if (reminder == null) return;
+    if (!vibrate) {
+      await reminder.cancel();
+      return;
+    }
+    try {
+      if (await Vibration.hasVibrator()) {
+        Vibration.vibrate(pattern: [0, 250, 90, 250]);
+      }
+    } catch (_) {}
+    try {
+      await SystemSound.play(SystemSoundType.alert);
+    } catch (_) {}
+    // 前台有画面和声音，后台才补一条通知。
+    if (_lifecycle != AppLifecycleState.resumed) {
+      await reminder.showRestFinished();
     }
   }
 
@@ -648,7 +679,7 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
     final controller = TextEditingController(
       text: weight ? _fmtWeight(_currentSet.weight) : '${_currentSet.reps}',
     );
-    final value = await showDialog<String>(
+    final result = await showDialog<(String, bool)>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(weight ? '输入重量 (kg)' : '输入$_repsUnit'),
@@ -660,19 +691,34 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
-          FilledButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('确定')),
+          if (weight)
+            TextButton(
+              onPressed: () => Navigator.pop(context, (controller.text, true)),
+              child: const Text('应用到全部组'),
+            ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, (controller.text, false)),
+            child: const Text('确定'),
+          ),
         ],
       ),
     );
-    if (value == null) return;
+    if (result == null) return;
+    final (text, applyAll) = result;
     if (weight) {
-      final parsed = double.tryParse(value.trim());
-      if (parsed != null) {
-        setState(() => _currentSet.weight = parsed.clamp(0.0, 500.0).toDouble());
-        _persist();
-      }
+      final parsed = double.tryParse(text.trim());
+      if (parsed == null) return;
+      final value = parsed.clamp(0.0, 500.0).toDouble();
+      setState(() {
+        if (applyAll) {
+          _currentExercise.applyWeightToUncompleted(value);
+        } else {
+          _currentSet.weight = value;
+        }
+      });
+      _persist();
     } else {
-      final parsed = int.tryParse(value.trim());
+      final parsed = int.tryParse(text.trim());
       if (parsed != null) {
         setState(() => _currentSet.reps = parsed.clamp(1, 100).toInt());
         _persist();
@@ -683,6 +729,7 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
   Future<void> _completeSet() async {
     final set = _currentSet;
     if (set.completed) return;
+    final carriedWeight = set.weight;
     set
       ..completed = true
       ..completedAt = DateTime.now();
@@ -692,6 +739,10 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
       await _persist();
       await _finishWorkout();
       return;
+    }
+    // 同一动作继续下一组时沿用本组重量；用户单独填过的组不覆盖。
+    if (target.$1 == _exerciseIndex) {
+      _draft.exercises[target.$1].seedWeight(carriedWeight);
     }
     setState(() {
       _exerciseIndex = target.$1;

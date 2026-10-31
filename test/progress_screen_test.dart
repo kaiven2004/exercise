@@ -69,6 +69,27 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('整周只有自重训练时用次数替代容量', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await initializeDateFormatting('zh_CN', null);
+    final services = await AppServices.create();
+    await services.workouts.saveSession(_session('s4', DateTime.now(), 0, 12));
+
+    await tester.pumpWidget(
+      AppScope(
+        services: services,
+        child: const MaterialApp(home: ProgressScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('自重次数'), findsOneWidget);
+    expect(find.text('本周自重次数'), findsOneWidget);
+    expect(find.text('还没有数据'), findsNothing);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('从进度列表进入单次训练复盘', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await initializeDateFormatting('zh_CN', null);

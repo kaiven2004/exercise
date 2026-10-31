@@ -340,6 +340,7 @@ class _TodayScreenState extends State<TodayScreen> {
     final monday = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
     final weekSessions = sessions.where((s) => !s.startedAt.isBefore(monday)).toList();
     final volume = weekSessions.fold<double>(0, (sum, s) => sum + s.totalVolume);
+    final bodyweightReps = weekSessions.fold<int>(0, (sum, s) => sum + s.totalBodyweightReps);
     final streak = _streakWeeks(sessions);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -352,7 +353,10 @@ class _TodayScreenState extends State<TodayScreen> {
         children: [
           _stat('训练', '${weekSessions.length}', '次'),
           _statDivider(),
-          _stat('容量', _formatVolume(volume), ''),
+          if (volume > 0 || bodyweightReps == 0)
+            _stat('容量', _formatVolume(volume), '')
+          else
+            _stat('自重', '$bodyweightReps', '次'),
           _statDivider(),
           _stat('连续', '$streak', '周'),
         ],

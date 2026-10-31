@@ -388,6 +388,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
   Widget _weekCard(List<WorkoutSession> sessions) {
     final week = _thisWeek(sessions);
     final volume = week.fold<double>(0, (sum, s) => sum + s.totalVolume);
+    final bodyweightReps = week.fold<int>(0, (sum, s) => sum + s.totalBodyweightReps);
     final sets = week.fold<int>(0, (sum, s) => sum + s.totalSets);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -402,7 +403,10 @@ class _ProgressScreenState extends State<ProgressScreen> {
           _divider(),
           _stat('完成组数', '$sets', '组'),
           _divider(),
-          _stat('总容量', _fmtVolume(volume), ''),
+          if (volume > 0 || bodyweightReps == 0)
+            _stat('总容量', _fmtVolume(volume), '')
+          else
+            _stat('自重次数', '$bodyweightReps', '次'),
         ],
       ),
     );
@@ -443,13 +447,23 @@ class _ProgressScreenState extends State<ProgressScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final monday = today.subtract(Duration(days: now.weekday - 1));
-    final values = List<double>.filled(7, 0);
+    final volumeValues = List<double>.filled(7, 0);
+    final repsValues = List<double>.filled(7, 0);
     for (final session in sessions) {
       final day = DateTime(session.startedAt.year, session.startedAt.month, session.startedAt.day);
       final index = day.difference(monday).inDays;
-      if (index >= 0 && index < 7) values[index] += session.totalVolume;
+      if (index >= 0 && index < 7) {
+        volumeValues[index] += session.totalVolume;
+        repsValues[index] += session.totalBodyweightReps;
+      }
     }
+    // 整周都没有重量记录时改用自重次数，避免柱状图永远是空的。
+    final hasVolume = volumeValues.any((v) => v > 0);
+    final hasReps = repsValues.any((v) => v > 0);
+    final useReps = !hasVolume && hasReps;
+    final values = useReps ? repsValues : volumeValues;
     final maxValue = values.reduce((a, b) => a > b ? a : b);
+    final total = values.reduce((a, b) => a + b);
     const labels = ['一', '二', '三', '四', '五', '六', '日'];
 
     return Container(
@@ -464,9 +478,17 @@ class _ProgressScreenState extends State<ProgressScreen> {
         children: [
           Row(
             children: [
-              const Text('本周容量', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+              Text(
+                useReps ? '本周自重次数' : '本周容量',
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+              ),
               const Spacer(),
-              Text(maxValue <= 0 ? '还没有数据' : _fmtVolume(values.reduce((a, b) => a + b)), style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary)),
+              Text(
+                maxValue <= 0
+                    ? '还没有数据'
+                    : (useReps ? '${total.toStringAsFixed(0)} 次' : _fmtVolume(total)),
+                style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary),
+              ),
             ],
           ),
           const SizedBox(height: 14),

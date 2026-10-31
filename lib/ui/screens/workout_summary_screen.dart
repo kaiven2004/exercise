@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:excise/app/app_scope.dart';
 import 'package:excise/app/theme.dart';
 import 'package:excise/data/exercises/exercise_meta.dart';
@@ -29,6 +31,7 @@ class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
   int _rpe = 0;
   bool _saving = false;
   bool _allowPop = false;
+  bool _persisted = false;
 
   @override
   void initState() {
@@ -69,6 +72,14 @@ class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
     _prsLoaded = true;
     final history = AppScope.of(context).workouts.getSessions();
     _prs = PersonalRecordService.detect(_preview, history);
+    // 进入总结页即落库并清草稿，避免直接返回时记录丢失。
+    unawaited(_autoPersist());
+  }
+
+  Future<void> _autoPersist() async {
+    if (_persisted || _exercises.isEmpty) return;
+    _persisted = true;
+    await _persistSession();
   }
 
   @override
@@ -86,12 +97,14 @@ class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
 
   double get _totalVolume => _exercises.fold(0.0, (sum, e) => sum + e.volume);
 
+  int get _totalBodyweightReps => _exercises.fold(0, (sum, e) => sum + e.bodyweightReps);
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: _allowPop,
       onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) _confirmLeave();
+        if (!didPop) _saveAndLeave();
       },
       child: Scaffold(
         backgroundColor: AppTheme.bgMain,
@@ -233,7 +246,10 @@ class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
           _divider(),
           _stat('完成', '$_totalSets', '组'),
           _divider(),
-          _stat('容量', _fmtVolume(_totalVolume), ''),
+          if (_totalVolume > 0)
+            _stat('容量', _fmtVolume(_totalVolume), '')
+          else
+            _stat('自重', '$_totalBodyweightReps', '次'),
           _divider(),
           _stat('新纪录', '${_prs.length}', '项'),
         ],
@@ -516,6 +532,13 @@ class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
     );
   }
 
+  Future<void> _persistSession() async {
+    if (_exercises.isEmpty) return;
+    final services = AppScope.of(context);
+    await services.workouts.saveSession(_buildSession());
+    await services.workouts.clearDraft();
+  }
+
   Future<void> _save({required bool repeat}) async {
     if (_saving) return;
     if (_exercises.isEmpty) {
@@ -529,6 +552,7 @@ class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
     final session = _buildSession();
     await services.workouts.saveSession(session);
     await services.workouts.clearDraft();
+    _persisted = true;
     if (!mounted) return;
 
     if (!repeat) {
@@ -559,23 +583,11 @@ class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
     );
   }
 
-  Future<void> _confirmLeave() async {
-    final leave = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('还没保存本次训练'),
-        content: const Text('离开后记录会保留为草稿，下次可以从「今日训练」继续。'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('继续查看')),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppTheme.accentRed),
-            child: const Text('离开'),
-          ),
-        ],
-      ),
-    );
-    if (leave == true && mounted) _popNow();
+  /// 返回时先保存当前 RPE/备注，再退出；记录在进入页面时已经落库。
+  Future<void> _saveAndLeave() async {
+    await _persistSession();
+    if (!mounted) return;
+    _popNow();
   }
 
   /// PopScope 会拦截普通 pop，先允许退出，再在下一帧执行。

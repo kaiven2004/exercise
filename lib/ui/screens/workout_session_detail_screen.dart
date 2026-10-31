@@ -90,7 +90,10 @@ class WorkoutSessionDetailScreen extends StatelessWidget {
           _divider(),
           _stat('完成', '${session.totalSets}', '组'),
           _divider(),
-          _stat('容量', _fmtVolume(session.totalVolume), ''),
+          if (session.totalVolume > 0 || session.totalBodyweightReps == 0)
+            _stat('容量', _fmtVolume(session.totalVolume), '')
+          else
+            _stat('自重', '${session.totalBodyweightReps}', '次'),
         ],
       ),
     );
