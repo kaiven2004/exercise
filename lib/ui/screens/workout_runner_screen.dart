@@ -332,7 +332,12 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
   }
 
   Widget _tipsSection(Exercise exercise) {
-    final tips = exercise.tips;
+    // 自定义计划里只存动作 ID/名称，要点仍回到动作库查。
+    var tips = exercise.tips;
+    if (tips.isEmpty) {
+      final matches = _allExercises().where((e) => e.id == exercise.id);
+      if (matches.isNotEmpty) tips = matches.first.tips;
+    }
     final canExpand = tips.length > 1;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

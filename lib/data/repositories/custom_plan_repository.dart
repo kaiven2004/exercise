@@ -15,7 +15,15 @@ class LocalCustomPlanRepository extends ChangeNotifier implements CustomPlanRepo
   @override
   List<CustomPlan> getPlans() {
     final jsons = _prefs?.getStringList(_key) ?? [];
-    return jsons.map((s) => _fromJson(jsonDecode(s) as Map<String, dynamic>)).toList();
+    final plans = <CustomPlan>[];
+    for (final s in jsons) {
+      try {
+        plans.add(_fromJson(jsonDecode(s) as Map<String, dynamic>));
+      } catch (_) {
+        // 单条数据坏掉不应该让整个计划页打不开。
+      }
+    }
+    return plans;
   }
 
   @override
@@ -109,14 +117,13 @@ class LocalCustomPlanRepository extends ChangeNotifier implements CustomPlanRepo
         setConfigs: setConfigs,
       );
     }).toList();
-    final weekdaysRaw = json['scheduledWeekdays'] as List<dynamic>?;
+    final weekdaysRaw = json['scheduledWeekdays'] as List<dynamic>? ?? const <dynamic>[];
     final weekdays = weekdaysRaw
-            ?.map((e) => (e as num).toInt())
-            .where((e) => e >= 1 && e <= 7)
-            .toSet()
-            .toList() ??
-        const <int>[];
-    weekdays.sort();
+        .map((e) => (e as num).toInt())
+        .where((e) => e >= 1 && e <= 7)
+        .toSet()
+        .toList()
+      ..sort();
     return CustomPlan(
       id: json['id'] as String,
       name: json['name'] as String,

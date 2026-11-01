@@ -75,6 +75,26 @@ void main() {
     );
   });
 
+  test('旧版本计划缺少排期字段时仍能读取和继续保存', () async {
+    SharedPreferences.setMockInitialValues({
+      'custom_plans': [
+        '{"id":"legacy_plan","name":"旧计划","createdAt":"2026-08-24T01:00:00.000","updatedAt":"2026-08-24T01:00:00.000","exercises":[{"exerciseId":"10001","exerciseName":"上斜杠铃卧推","exerciseCategoryPath":"力量训练 / 胸部训练 / 上胸","exerciseImageSvg":"上胸","imageSvg":"","sets":3,"reps":12,"restSeconds":"60","weight":"","order":0,"setConfigs":null}]}',
+        'not-json',
+      ],
+    });
+    final repo = LocalCustomPlanRepository();
+    await repo.init();
+
+    final plans = repo.getPlans();
+    expect(plans.length, 1);
+    expect(plans.first.id, 'legacy_plan');
+    expect(plans.first.scheduledWeekdays, isEmpty);
+
+    // 读取旧计划后还能正常保存新计划。
+    await repo.savePlan(buildPlanFromTemplate(kWorkoutTemplates.first, id: 'plan_after_legacy'));
+    expect(repo.getPlans().length, 2);
+  });
+
   test('计划排期能保存并重新读取，旧计划默认为未排期', () async {
     final repo = LocalCustomPlanRepository();
     await repo.init();

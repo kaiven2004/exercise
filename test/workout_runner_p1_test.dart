@@ -94,6 +94,34 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('从计划开始训练时，动作要点会从动作库补齐', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final services = await AppServices.create();
+    // 计划里保存的动作只带 ID 和名称，没有要点。
+    const fromPlan = Exercise(
+      id: '10151',
+      name: '平板支撑',
+      categoryPath: '力量训练 / 核心训练 / 深层核心',
+      description: '',
+    );
+    final draft = _draft(fromPlan, [WorkoutSet(reps: 30)]);
+
+    await tester.pumpWidget(
+      AppScope(
+        services: services,
+        child: MaterialApp(home: WorkoutRunnerScreen(initialDraft: draft)),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('肘撑身体成直线'), findsOneWidget);
+    await tester.tap(find.text('动作要点'));
+    await tester.pump();
+    expect(find.textContaining('等长抗伸展'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('组行可以标记热身并按上次一半给重量建议', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final services = await AppServices.create();
