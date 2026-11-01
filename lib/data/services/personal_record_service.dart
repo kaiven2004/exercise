@@ -67,7 +67,7 @@ class PersonalRecordService {
     Iterable<WorkoutSession> history, {
     String? excludeSessionId,
   }) {
-    final completed = current.sets.where((s) => s.completed).toList();
+    final completed = current.sets.where((s) => s.completed && !s.isWarmup).toList();
     if (completed.isEmpty) return null;
 
     final weighted = completed.where((s) => s.weight > 0).toList();
@@ -82,7 +82,7 @@ class PersonalRecordService {
         for (final exercise in session.exercises) {
           if (exercise.exercise.id != current.exercise.id) continue;
           for (final set in exercise.sets) {
-            if (!set.completed || set.weight <= 0) continue;
+            if (!set.completed || set.isWarmup || set.weight <= 0) continue;
             final value = estimatedOneRepMax(set.weight, set.reps);
             if (previous == null || value > previous) previous = value;
           }
@@ -108,7 +108,7 @@ class PersonalRecordService {
       for (final exercise in session.exercises) {
         if (exercise.exercise.id != current.exercise.id) continue;
         for (final set in exercise.sets) {
-          if (!set.completed || set.weight > 0) continue;
+          if (!set.completed || set.isWarmup || set.weight > 0) continue;
           if (previous == null || set.reps > previous) previous = set.reps;
         }
       }

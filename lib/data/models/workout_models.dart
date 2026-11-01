@@ -7,11 +7,15 @@ class WorkoutSet {
   bool completed;
   DateTime? completedAt;
 
+  /// 热身组只用于找感觉，不计入容量、PR 和肌群统计。
+  bool isWarmup;
+
   WorkoutSet({
     this.weight = 0,
     this.reps = 0,
     this.completed = false,
     this.completedAt,
+    this.isWarmup = false,
   });
 
   WorkoutSet copyWith({
@@ -20,12 +24,14 @@ class WorkoutSet {
     bool? completed,
     DateTime? completedAt,
     bool clearCompletedAt = false,
+    bool? isWarmup,
   }) {
     return WorkoutSet(
       weight: weight ?? this.weight,
       reps: reps ?? this.reps,
       completed: completed ?? this.completed,
       completedAt: clearCompletedAt ? null : (completedAt ?? this.completedAt),
+      isWarmup: isWarmup ?? this.isWarmup,
     );
   }
 
@@ -34,6 +40,7 @@ class WorkoutSet {
         'reps': reps,
         'completed': completed,
         'completedAt': completedAt?.toIso8601String(),
+        'isWarmup': isWarmup,
       };
 
   factory WorkoutSet.fromJson(Map<String, dynamic> json) => WorkoutSet(
@@ -43,6 +50,7 @@ class WorkoutSet {
         completedAt: json['completedAt'] == null
             ? null
             : DateTime.tryParse(json['completedAt'] as String),
+        isWarmup: json['isWarmup'] as bool? ?? false,
       );
 }
 
@@ -59,12 +67,19 @@ class WorkoutExercise {
   });
 
   int get completedSets => sets.where((s) => s.completed).length;
+
+  /// 正式组（不含热身）的完成数，用于容量、PR 和肌群统计。
+  int get completedWorkingSets =>
+      sets.where((s) => s.completed && !s.isWarmup).length;
+
+  int get warmupSets => sets.where((s) => s.completed && s.isWarmup).length;
+
   bool get isFinished => completedSets == sets.length && sets.isNotEmpty;
 
   double get volume {
     var total = 0.0;
     for (final set in sets) {
-      if (!set.completed) continue;
+      if (!set.completed || set.isWarmup) continue;
       total += set.weight * set.reps;
     }
     return total;
@@ -83,30 +98,30 @@ class WorkoutExercise {
   int get bodyweightReps {
     var total = 0;
     for (final set in sets) {
-      if (set.completed && set.weight <= 0) total += set.reps;
+      if (set.completed && !set.isWarmup && set.weight <= 0) total += set.reps;
     }
     return total;
   }
 
-  /// 把重量写到所有未完成的组；已完成的组保持原样。
+  /// 把重量写到所有未完成的正式组；已完成的组与热身组保持原样。
   void applyWeightToUncompleted(double weight) {
     for (final set in sets) {
-      if (!set.completed) set.weight = weight;
+      if (!set.completed && !set.isWarmup) set.weight = weight;
     }
   }
 
-  /// 给还没有填重量的未完成组补默认值（不覆盖用户已改过的组）。
+  /// 给还没有填重量的未完成正式组补默认值（不覆盖用户已改过的组）。
   void seedWeight(double weight) {
     if (weight <= 0) return;
     for (final set in sets) {
-      if (!set.completed && set.weight <= 0) set.weight = weight;
+      if (!set.completed && !set.isWarmup && set.weight <= 0) set.weight = weight;
     }
   }
 
   WorkoutSet? get bestSet {
     WorkoutSet? best;
     for (final set in sets) {
-      if (!set.completed) continue;
+      if (!set.completed || set.isWarmup) continue;
       if (best == null ||
           set.weight > best.weight ||
           (set.weight == best.weight && set.reps > best.reps)) {

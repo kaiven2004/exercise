@@ -49,6 +49,7 @@ class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
                       reps: s.reps,
                       completed: true,
                       completedAt: s.completedAt,
+                      isWarmup: s.isWarmup,
                     ))
                 .toList(),
             note: e.note,
@@ -333,9 +334,9 @@ class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
     final counts = <String, int>{};
     for (final exercise in _exercises) {
       final muscle = metaFor(exercise.exercise).primaryMuscle;
-      counts[muscle] = (counts[muscle] ?? 0) + exercise.completedSets;
+      counts[muscle] = (counts[muscle] ?? 0) + exercise.completedWorkingSets;
     }
-    final entries = counts.entries.toList()
+    final entries = counts.entries.where((e) => e.value > 0).toList()
       ..sort((a, b) {
         final ia = kMuscleGroupOrder.indexOf(a.key);
         final ib = kMuscleGroupOrder.indexOf(b.key);

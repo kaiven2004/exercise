@@ -1,7 +1,9 @@
-﻿import 'package:excise/data/models/models.dart';
+﻿import 'package:excise/app/app_scope.dart';
+import 'package:excise/data/models/models.dart';
 import 'package:excise/data/repositories/custom_plan_repository.dart';
 import 'package:excise/data/repositories/exercise_override_repository.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
+import 'package:excise/data/workout_templates.dart';
 import 'package:excise/ui/widgets/exercise_image.dart';
 import 'package:excise/ui/widgets/svg_icons.dart';
 import 'package:flutter/material.dart';
@@ -16,21 +18,36 @@ class CustomPlanEditorScreen extends StatefulWidget {
 }
 
 class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
-  late final LocalCustomPlanRepository _repo;
+  LocalCustomPlanRepository? _repo;
   late final ExerciseOverrideRepository _overrideRepo;
+  late final TextEditingController _nameController;
   late String _planName;
   late List<CustomExerciseItem> _exercises;
+  late List<int> _weekdays;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    _repo = LocalCustomPlanRepository();
     _overrideRepo = ExerciseOverrideRepository();
     _overrideRepo.init();
     _planName = widget.plan?.name ?? '新计划';
+    _nameController = TextEditingController(text: _planName);
     _exercises = widget.plan?.exercises.toList() ?? [];
     _exercises.sort((a, b) => a.order.compareTo(b.order));
+    _weekdays = widget.plan?.scheduledWeekdays.toList() ?? [];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _repo ??= AppScope.of(context).plans;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   Future<void> _save() async {
@@ -38,6 +55,8 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('请至少添加一个动作')));
       return;
     }
+    final repo = _repo;
+    if (repo == null) return;
     if (mounted) setState(() => _saving = true);
     final now = DateTime.now();
     // 拖拽后按当前顺序重写 order，重开计划仍保持排序。
@@ -50,14 +69,26 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
       createdAt: widget.plan?.createdAt ?? now,
       updatedAt: now,
       exercises: ordered,
+      scheduledWeekdays: _weekdays,
     );
-    await _repo.init();
-    await _repo.savePlan(plan);
+    await repo.init();
+    await repo.savePlan(plan);
     if (mounted) {
       setState(() => _saving = false);
       Navigator.pop(context);
       widget.onSave();
     }
+  }
+
+  void _toggleWeekday(int weekday) {
+    setState(() {
+      if (_weekdays.contains(weekday)) {
+        _weekdays.remove(weekday);
+      } else {
+        _weekdays.add(weekday);
+      }
+      _weekdays.sort();
+    });
   }
 
   Future<void> _addExercise() async {
@@ -224,6 +255,7 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: TextField(
+            controller: _nameController,
             decoration: InputDecoration(
               hintText: '计划名称',
               hintStyle: const TextStyle(color: Colors.grey),
@@ -234,7 +266,39 @@ class _CustomPlanEditorScreenState extends State<CustomPlanEditorScreen> {
             ),
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             onChanged: (v) => _planName = v,
-            controller: TextEditingController(text: _planName),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text('排期', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  const SizedBox(width: 8),
+                  Text(
+                    _weekdays.isEmpty ? '未排期（首页不会提醒）' : scheduleLabel(_weekdays),
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: [
+                  for (var day = 1; day <= 7; day++)
+                    FilterChip(
+                      label: Text('周${kWeekdayShortLabels[day - 1]}', style: const TextStyle(fontSize: 11)),
+                      selected: _weekdays.contains(day),
+                      showCheckmark: false,
+                      visualDensity: VisualDensity.compact,
+                      onSelected: (_) => _toggleWeekday(day),
+                    ),
+                ],
+              ),
+            ],
           ),
         ),
         Padding(

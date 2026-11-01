@@ -1,5 +1,6 @@
 import 'package:excise/app/app_scope.dart';
 import 'package:excise/app/theme.dart';
+import 'package:excise/data/exercises/exercise_meta.dart';
 import 'package:excise/data/models/workout_models.dart';
 import 'package:excise/data/services/personal_record_service.dart';
 import 'package:excise/ui/screens/body_stats_screen.dart';
@@ -34,17 +35,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
             final selectedId = options.any((o) => o.id == _selectedExerciseId)
                 ? _selectedExerciseId
                 : (options.isEmpty ? null : options.first.id);
-            final points = selectedId == null
+            _ExerciseOption? selected;
+            for (final option in options) {
+              if (option.id == selectedId) selected = option;
+            }
+            final points = selected == null
                 ? const <_StrengthPoint>[]
-                : _strengthPoints(sessions, selectedId);
-            final selected = selectedId == null
-                ? null
-                : () {
-                    for (final option in options) {
-                      if (option.id == selectedId) return option;
-                    }
-                    return null;
-                  }();
+                : _strengthPoints(sessions, selected);
+            final records = _personalRecords(sessions);
             return ListView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
               children: [
@@ -55,6 +53,10 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 _weekCard(sessions),
                 const SizedBox(height: 18),
                 _strengthCard(options, selected, points),
+                const SizedBox(height: 18),
+                _muscleCard(sessions),
+                const SizedBox(height: 18),
+                _recordCard(records),
                 const SizedBox(height: 18),
                 _volumeChart(sessions),
                 const SizedBox(height: 22),
@@ -73,20 +75,31 @@ class _ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  /// 有重量记录的动作用于力量曲线，按训练次数从多到少。
+  /// 有正式组记录的动作用于趋势图：有重量看 1RM，自重看单组最佳次数。
   List<_ExerciseOption> _strengthOptions(List<WorkoutSession> sessions) {
     final names = <String, String>{};
     final counts = <String, int>{};
+    final bodyweight = <String, bool>{};
     for (final session in sessions) {
       for (final exercise in session.exercises) {
-        final hasWeight = exercise.sets.any((s) => s.completed && s.weight > 0);
-        if (!hasWeight) continue;
-        names[exercise.exercise.id] = exercise.exercise.name;
-        counts[exercise.exercise.id] = (counts[exercise.exercise.id] ?? 0) + 1;
+        final working = exercise.sets
+            .where((s) => s.completed && !s.isWarmup && s.reps > 0)
+            .toList();
+        if (working.isEmpty) continue;
+        final id = exercise.exercise.id;
+        names[id] = exercise.exercise.name;
+        counts[id] = (counts[id] ?? 0) + 1;
+        final weighted = working.any((s) => s.weight > 0);
+        bodyweight[id] = (bodyweight[id] ?? true) && !weighted;
       }
     }
     final options = counts.entries
-        .map((e) => _ExerciseOption(id: e.key, name: names[e.key] ?? e.key, sessionCount: e.value))
+        .map((e) => _ExerciseOption(
+              id: e.key,
+              name: names[e.key] ?? e.key,
+              sessionCount: e.value,
+              bodyweight: bodyweight[e.key] ?? false,
+            ))
         .toList();
     options.sort((a, b) {
       final byCount = b.sessionCount.compareTo(a.sessionCount);
@@ -95,24 +108,41 @@ class _ProgressScreenState extends State<ProgressScreen> {
     return options;
   }
 
-  /// 一个动作每次训练里最强的估算 1RM。
-  List<_StrengthPoint> _strengthPoints(List<WorkoutSession> sessions, String exerciseId) {
+  /// 一个动作每次训练里的最佳表现。
+  List<_StrengthPoint> _strengthPoints(List<WorkoutSession> sessions, _ExerciseOption option) {
     final points = <_StrengthPoint>[];
     for (final session in sessions) {
       WorkoutExercise? target;
       for (final exercise in session.exercises) {
-        if (exercise.exercise.id == exerciseId) {
+        if (exercise.exercise.id == option.id) {
           target = exercise;
           break;
         }
       }
       if (target == null) continue;
 
+      if (option.bodyweight) {
+        var bestReps = 0;
+        for (final set in target.sets) {
+          if (!set.completed || set.isWarmup || set.weight > 0) continue;
+          if (set.reps > bestReps) bestReps = set.reps;
+        }
+        if (bestReps <= 0) continue;
+        points.add(_StrengthPoint(
+          date: session.startedAt,
+          value: bestReps.toDouble(),
+          weight: 0,
+          reps: bestReps,
+          bodyweight: true,
+        ));
+        continue;
+      }
+
       double bestValue = 0;
       double bestWeight = 0;
       var bestReps = 0;
       for (final set in target.sets) {
-        if (!set.completed || set.weight <= 0) continue;
+        if (!set.completed || set.isWarmup || set.weight <= 0) continue;
         final value = PersonalRecordService.estimatedOneRepMax(set.weight, set.reps);
         if (value > bestValue) {
           bestValue = value;
@@ -123,9 +153,10 @@ class _ProgressScreenState extends State<ProgressScreen> {
       if (bestValue <= 0) continue;
       points.add(_StrengthPoint(
         date: session.startedAt,
-        estimatedOneRepMax: bestValue,
+        value: bestValue,
         weight: bestWeight,
         reps: bestReps,
+        bodyweight: false,
       ));
     }
     points.sort((a, b) => a.date.compareTo(b.date));
@@ -137,6 +168,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
     _ExerciseOption? selected,
     List<_StrengthPoint> points,
   ) {
+    final bodyweight = selected?.bodyweight ?? false;
+    final title = bodyweight ? '自重趋势' : '力量曲线';
+    final unit = bodyweight ? '次' : 'kg';
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       decoration: BoxDecoration(
@@ -151,7 +185,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
             children: [
               const Icon(Icons.show_chart_rounded, size: 17, color: AppTheme.primary),
               const SizedBox(width: 6),
-              const Text('力量曲线', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+              Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
               const Spacer(),
               if (options.isNotEmpty && selected != null) _exerciseSelector(selected, options),
             ],
@@ -162,27 +196,33 @@ class _ProgressScreenState extends State<ProgressScreen> {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 options.isEmpty
-                    ? '完成一次有重量的动作后，这里会显示力量趋势'
-                    : '「${selected?.name ?? ''}」再练一次，就能看到估算 1RM 曲线',
+                    ? '完成一次训练后，这里会显示力量或自重趋势'
+                    : selected == null
+                        ? '完成一次这个动作后，这里会显示趋势'
+                        : bodyweight
+                            ? '「${selected.name}」再练一次，就能看到次数曲线'
+                            : '「${selected.name}」再练一次，就能看到估算 1RM 曲线',
                 style: const TextStyle(fontSize: 12, color: AppTheme.textTertiary, height: 1.5),
               ),
             )
           else ...[
-            _strengthChart(points),
+            _strengthChart(points, bodyweight),
             const SizedBox(height: 10),
             Row(
               children: [
                 Text(
-                  '最新 ${points.last.estimatedOneRepMax.toStringAsFixed(1)} kg',
+                  bodyweight
+                      ? '最新 ${points.last.reps} 次'
+                      : '最新 ${points.last.value.toStringAsFixed(1)} kg',
                   style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  _strengthChangeLabel(points),
+                  _strengthChangeLabel(points, unit),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: points.last.estimatedOneRepMax >= points.first.estimatedOneRepMax
+                    color: points.last.value >= points.first.value
                         ? AppTheme.accent
                         : AppTheme.accentRed,
                   ),
@@ -193,7 +233,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
             ),
             const SizedBox(height: 2),
             Text(
-              '最佳组 ${_fmtWeight(points.last.weight)} kg × ${points.last.reps}',
+              bodyweight
+                  ? '最佳单组 ${points.last.reps} 次'
+                  : '最佳组 ${_fmtWeight(points.last.weight)} kg × ${points.last.reps}',
               style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary),
             ),
           ],
@@ -231,8 +273,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  Widget _strengthChart(List<_StrengthPoint> points) {
-    final values = points.map((p) => p.estimatedOneRepMax).toList();
+  Widget _strengthChart(List<_StrengthPoint> points, bool bodyweight) {
+    final values = points.map((p) => p.value).toList();
     final minValue = values.reduce((a, b) => a < b ? a : b);
     final maxValue = values.reduce((a, b) => a > b ? a : b);
     final span = (maxValue - minValue).clamp(1.0, double.infinity).toDouble();
@@ -241,7 +283,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
     final maxY = maxValue + padding;
     final interval = ((maxY - minY) / 3).clamp(1.0, double.infinity).toDouble();
     final spots = points.asMap().entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value.estimatedOneRepMax))
+        .map((e) => FlSpot(e.key.toDouble(), e.value.value))
         .toList();
 
     return SizedBox(
@@ -264,7 +306,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 reservedSize: 34,
                 interval: interval,
                 getTitlesWidget: (value, meta) => Text(
-                  value.toStringAsFixed(0),
+                  bodyweight ? value.toInt().toString() : value.toStringAsFixed(0),
                   style: const TextStyle(fontSize: 9, color: AppTheme.textTertiary),
                 ),
               ),
@@ -315,11 +357,227 @@ class _ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  String _strengthChangeLabel(List<_StrengthPoint> points) {
-    final change = points.last.estimatedOneRepMax - points.first.estimatedOneRepMax;
+  String _strengthChangeLabel(List<_StrengthPoint> points, String unit) {
+    final change = points.last.value - points.first.value;
     if (change.abs() < 0.05) return '与首次持平';
     final sign = change > 0 ? '+' : '';
-    return '较首次 $sign${change.toStringAsFixed(1)} kg';
+    return '较首次 $sign${change.toStringAsFixed(1)} $unit';
+  }
+
+  /// 本周正式组按主要肌群汇总，热身组不计入。
+  Widget _muscleCard(List<WorkoutSession> sessions) {
+    final week = _thisWeek(sessions);
+    final counts = <String, int>{};
+    for (final session in week) {
+      for (final exercise in session.exercises) {
+        final sets = exercise.sets.where((s) => s.completed && !s.isWarmup).length;
+        if (sets <= 0) continue;
+        final muscle = metaFor(exercise.exercise).primaryMuscle;
+        counts[muscle] = (counts[muscle] ?? 0) + sets;
+      }
+    }
+    final entries = counts.entries.toList()
+      ..sort((a, b) {
+        final ia = kMuscleGroupOrder.indexOf(a.key);
+        final ib = kMuscleGroupOrder.indexOf(b.key);
+        return (ia < 0 ? 99 : ia).compareTo(ib < 0 ? 99 : ib);
+      });
+    final total = entries.fold<int>(0, (sum, e) => sum + e.value);
+    final maxSets = entries.isEmpty ? 1 : entries.map((e) => e.value).reduce((a, b) => a > b ? a : b);
+    const colors = [
+      AppTheme.primary,
+      AppTheme.accent,
+      AppTheme.accentWarm,
+      AppTheme.accentPurple,
+      AppTheme.accentTeal,
+    ];
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.divider.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.donut_small_rounded, size: 17, color: AppTheme.primary),
+              const SizedBox(width: 6),
+              const Text('本周肌群分布', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+              const Spacer(),
+              Text('$total 组', style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (entries.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 14),
+              child: Text('本周还没有完成正式组', style: TextStyle(fontSize: 12, color: AppTheme.textTertiary)),
+            )
+          else
+            for (var i = 0; i < entries.length; i++)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 40,
+                      child: Text(entries[i].key, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                    ),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: entries[i].value / maxSets,
+                          minHeight: 8,
+                          backgroundColor: const Color(0xFFF0F1F4),
+                          color: colors[i % colors.length],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 44,
+                      child: Text(
+                        '${entries[i].value} 组',
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+        ],
+      ),
+    );
+  }
+
+  /// 所有动作的历史最佳：有重量按估算 1RM，自重按单组次数。
+  List<_RecordEntry> _personalRecords(List<WorkoutSession> sessions) {
+    final weighted = <String, _RecordEntry>{};
+    final bodyweight = <String, _RecordEntry>{};
+    for (final session in sessions) {
+      for (final exercise in session.exercises) {
+        final id = exercise.exercise.id;
+        for (final set in exercise.sets) {
+          if (!set.completed || set.isWarmup || set.reps <= 0) continue;
+          if (set.weight > 0) {
+            final value = PersonalRecordService.estimatedOneRepMax(set.weight, set.reps);
+            final existing = weighted[id];
+            if (existing == null ||
+                value > existing.value + 0.05 ||
+                (value >= existing.value - 0.05 && set.reps > existing.reps)) {
+              weighted[id] = _RecordEntry(
+                exerciseId: id,
+                name: exercise.exercise.name,
+                bodyweight: false,
+                weight: set.weight,
+                reps: set.reps,
+                value: value,
+                date: session.startedAt,
+              );
+            }
+          } else {
+            final existing = bodyweight[id];
+            if (existing == null || set.reps > existing.reps) {
+              bodyweight[id] = _RecordEntry(
+                exerciseId: id,
+                name: exercise.exercise.name,
+                bodyweight: true,
+                weight: 0,
+                reps: set.reps,
+                value: set.reps.toDouble(),
+                date: session.startedAt,
+              );
+            }
+          }
+        }
+      }
+    }
+    // 同一动作既有重量又有自重记录时，优先展示重量纪录。
+    final merged = <String, _RecordEntry>{...bodyweight, ...weighted};
+    final records = merged.values.toList()..sort((a, b) => b.date.compareTo(a.date));
+    return records;
+  }
+
+  Widget _recordCard(List<_RecordEntry> records) {
+    final top = records.take(5).toList();
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.divider.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.emoji_events_rounded, size: 17, color: Color(0xFFFF9500)),
+              const SizedBox(width: 6),
+              const Text('个人纪录', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+              const Spacer(),
+              Text('${records.length} 项', style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (top.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Text('完成带次数记录的训练后，这里会汇总个人纪录', style: TextStyle(fontSize: 12, color: AppTheme.textTertiary)),
+            )
+          else
+            for (var i = 0; i < top.length; i++)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF9500).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${i + 1}',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFFFF9500)),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            top[i].name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                          ),
+                          const SizedBox(height: 1),
+                          Text(
+                            '${top[i].setLabel} · ${top[i].recordLabel}',
+                            style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      DateFormat('M月d日').format(top[i].date),
+                      style: const TextStyle(fontSize: 10, color: AppTheme.textTertiary),
+                    ),
+                  ],
+                ),
+              ),
+        ],
+      ),
+    );
   }
 
   Future<void> _pickExercise(List<_ExerciseOption> options, String selectedId) async {
@@ -355,7 +613,10 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         color: active ? AppTheme.primary : AppTheme.textPrimary,
                       ),
                     ),
-                    subtitle: Text('${option.sessionCount} 次训练', style: const TextStyle(fontSize: 11)),
+                    subtitle: Text(
+                      '${option.sessionCount} 次训练${option.bodyweight ? ' · 自重' : ''}',
+                      style: const TextStyle(fontSize: 11),
+                    ),
                     trailing: active ? const Icon(Icons.check_rounded, size: 18, color: AppTheme.primary) : null,
                     onTap: () => Navigator.pop(context, option.id),
                   );
@@ -689,24 +950,59 @@ class _ExerciseOption {
   final String id;
   final String name;
   final int sessionCount;
+  final bool bodyweight;
 
   const _ExerciseOption({
     required this.id,
     required this.name,
     required this.sessionCount,
+    required this.bodyweight,
   });
 }
 
 class _StrengthPoint {
   final DateTime date;
-  final double estimatedOneRepMax;
+  final double value;
   final double weight;
   final int reps;
+  final bool bodyweight;
 
   const _StrengthPoint({
     required this.date,
-    required this.estimatedOneRepMax,
+    required this.value,
     required this.weight,
     required this.reps,
+    required this.bodyweight,
   });
+}
+
+class _RecordEntry {
+  final String exerciseId;
+  final String name;
+  final bool bodyweight;
+  final double weight;
+  final int reps;
+  final double value;
+  final DateTime date;
+
+  const _RecordEntry({
+    required this.exerciseId,
+    required this.name,
+    required this.bodyweight,
+    required this.weight,
+    required this.reps,
+    required this.value,
+    required this.date,
+  });
+
+  String get setLabel {
+    if (bodyweight) return '$reps 次';
+    final w = weight == weight.roundToDouble() ? weight.toInt().toString() : weight.toStringAsFixed(1);
+    return '$w kg × $reps';
+  }
+
+  String get recordLabel {
+    if (bodyweight) return '最佳 $reps 次';
+    return '估算 1RM ${value.toStringAsFixed(1)} kg';
+  }
 }

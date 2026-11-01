@@ -97,6 +97,38 @@ void main() {
       expect(pr.reps, 25);
     });
 
+    test('热身组不参与 PR 判定，历史里的热身成绩也不算', () {
+      final history = [
+        _session('old', DateTime(2026, 1, 1), [
+          WorkoutExercise(
+            exercise: bench,
+            sets: [
+              WorkoutSet(weight: 100, reps: 10, completed: true, isWarmup: true),
+              WorkoutSet(weight: 60, reps: 8, completed: true),
+            ],
+          ),
+        ]),
+      ];
+      // 当前组看起来破了 100×10 的纪录，但那是热身组。
+      final current = WorkoutExercise(
+        exercise: bench,
+        sets: [
+          WorkoutSet(weight: 70, reps: 8, completed: true, isWarmup: true),
+          WorkoutSet(weight: 62.5, reps: 8, completed: true),
+        ],
+      );
+      final pr = PersonalRecordService.detectForExercise(current, history);
+      expect(pr, isNotNull);
+      expect(pr!.weight, 62.5);
+
+      // 只有热身组时不会产生 PR。
+      final warmupOnly = WorkoutExercise(
+        exercise: bench,
+        sets: [WorkoutSet(weight: 120, reps: 5, completed: true, isWarmup: true)],
+      );
+      expect(PersonalRecordService.detectForExercise(warmupOnly, history), isNull);
+    });
+
     test('整场训练会跳过当前会话自身', () {
       final current = _session(
         'current',

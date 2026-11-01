@@ -92,24 +92,8 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
 
   Future<void> _startPlan(CustomPlan plan) async {
     final services = AppScope.of(context);
-    final exercises = <WorkoutExercise>[];
-    for (final item in plan.exercises) {
-      final configs = item.setConfigs;
-      final List<WorkoutSet> sets;
-      if (configs != null && configs.isNotEmpty) {
-        sets = configs
-            .map((c) => WorkoutSet(weight: c.weight, reps: c.reps))
-            .toList();
-      } else {
-        final weight = double.tryParse(item.weight) ?? 0;
-        sets = List.generate(
-          item.sets.clamp(1, 12).toInt(),
-          (_) => WorkoutSet(weight: weight, reps: item.reps.clamp(1, 100).toInt()),
-        );
-      }
-      exercises.add(WorkoutExercise(exercise: item.exercise, sets: sets));
-    }
-    if (exercises.isEmpty) {
+    final draft = buildDraftFromPlan(plan);
+    if (draft.exercises.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('计划里还没有动作')),
       );
@@ -132,12 +116,6 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
       if (replace != true) return;
     }
 
-    final draft = WorkoutDraft(
-      name: plan.name,
-      planId: plan.id,
-      startedAt: DateTime.now(),
-      exercises: exercises,
-    );
     await services.workouts.saveDraft(draft);
     if (!mounted) return;
     await Navigator.push(
@@ -159,6 +137,13 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now().weekday;
+    final orderedPlans = [..._plans]..sort((a, b) {
+        final aToday = a.isScheduledOn(today) ? 0 : 1;
+        final bToday = b.isScheduledOn(today) ? 0 : 1;
+        if (aToday != bToday) return aToday.compareTo(bToday);
+        return b.updatedAt.compareTo(a.updatedAt);
+      });
     return Scaffold(
       backgroundColor: AppTheme.bgMain,
       appBar: AppBar(
@@ -180,7 +165,7 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
                 if (_plans.isEmpty)
                   _emptyPlans()
                 else
-                  for (final plan in _plans) ...[
+                  for (final plan in orderedPlans) ...[
                     _planCard(plan),
                     const SizedBox(height: 10),
                   ],
@@ -231,18 +216,7 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
   }
 
   int _estimatedMinutes(CustomPlan plan) {
-    final exercises = <WorkoutExercise>[];
-    for (final item in plan.exercises) {
-      final weight = double.tryParse(item.weight) ?? 0;
-      exercises.add(WorkoutExercise(
-        exercise: item.exercise,
-        sets: List.generate(
-          item.sets.clamp(1, 12).toInt(),
-          (_) => WorkoutSet(weight: weight, reps: item.reps.clamp(1, 100).toInt()),
-        ),
-      ));
-    }
-    return estimateMinutes(exercises);
+    return estimateMinutes(buildDraftFromPlan(plan).exercises);
   }
 
   WorkoutSession? _lastSession(CustomPlan plan) {
@@ -254,6 +228,7 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
 
   Widget _planCard(CustomPlan plan) {
     final last = _lastSession(plan);
+    final scheduledToday = plan.isScheduledOn(DateTime.now().weekday);
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
@@ -264,7 +239,11 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
           padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.divider.withValues(alpha: 0.45)),
+            border: Border.all(
+              color: scheduledToday
+                  ? AppTheme.primary.withValues(alpha: 0.45)
+                  : AppTheme.divider.withValues(alpha: 0.45),
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,6 +258,16 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary),
                     ),
                   ),
+                  if (scheduledToday)
+                    Container(
+                      margin: const EdgeInsets.only(left: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text('今天', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.primary)),
+                    ),
                   PopupMenuButton<String>(
                     icon: const Icon(Icons.more_horiz_rounded, size: 20, color: AppTheme.textTertiary),
                     tooltip: '更多',
@@ -297,7 +286,7 @@ class _CustomPlanListScreenState extends State<CustomPlanListScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                '${plan.exercises.length} 个动作 · 约 ${_estimatedMinutes(plan)} 分钟',
+                '${plan.exercises.length} 个动作 · 约 ${_estimatedMinutes(plan)} 分钟 · ${scheduleLabel(plan.scheduledWeekdays)}',
                 style: const TextStyle(fontSize: 12, color: AppTheme.textTertiary),
               ),
               const SizedBox(height: 10),

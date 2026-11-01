@@ -52,16 +52,18 @@ void main() {
     final latest = PersonalRecordService.estimatedOneRepMax(65, 8);
 
     expect(find.text('力量曲线'), findsOneWidget);
-    expect(find.text('平板杠铃卧推'), findsOneWidget);
+    expect(find.text('平板杠铃卧推'), findsWidgets);
     expect(find.text('最新 ${latest.toStringAsFixed(1)} kg'), findsOneWidget);
     expect(
       find.text('较首次 +${(latest - first).toStringAsFixed(1)} kg'),
       findsOneWidget,
     );
     expect(find.text('2 次记录'), findsOneWidget);
+    expect(find.text('本周肌群分布'), findsOneWidget);
+    expect(find.text('个人纪录'), findsOneWidget);
 
     // 打开动作选择器
-    await tester.tap(find.text('平板杠铃卧推'));
+    await tester.tap(find.text('平板杠铃卧推').first);
     await tester.pumpAndSettle();
     expect(find.text('选择动作'), findsOneWidget);
     expect(find.text('2 次训练'), findsOneWidget);
@@ -85,7 +87,37 @@ void main() {
 
     expect(find.text('自重次数'), findsOneWidget);
     expect(find.text('本周自重次数'), findsOneWidget);
+    expect(find.text('自重趋势'), findsOneWidget);
     expect(find.text('还没有数据'), findsNothing);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('自重动作再练一次后显示次数趋势', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await initializeDateFormatting('zh_CN', null);
+    final services = await AppServices.create();
+    await services.workouts.saveSession(
+      _session('b1', DateTime.now().subtract(const Duration(days: 7)), 0, 15),
+    );
+    await services.workouts.saveSession(_session('b2', DateTime.now(), 0, 20));
+
+    await tester.pumpWidget(
+      AppScope(
+        services: services,
+        child: const MaterialApp(home: ProgressScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('自重趋势'), findsOneWidget);
+    expect(find.text('最新 20 次'), findsOneWidget);
+    expect(find.text('较首次 +5.0 次'), findsOneWidget);
+    expect(find.text('最佳单组 20 次'), findsOneWidget);
+    expect(find.text('2 次记录'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('个人纪录'), 300);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('最佳 20 次'), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -106,6 +138,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.scrollUntilVisible(find.text('上肢推拉'), 300);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('上肢推拉'));
     await tester.pumpAndSettle();
 

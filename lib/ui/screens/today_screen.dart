@@ -1,6 +1,8 @@
 import 'package:excise/app/app_scope.dart';
 import 'package:excise/app/theme.dart';
+import 'package:excise/data/models/models.dart';
 import 'package:excise/data/models/workout_models.dart';
+import 'package:excise/data/repositories/custom_plan_repository.dart';
 import 'package:excise/data/workout_templates.dart';
 import 'package:excise/ui/screens/library_home_screen.dart';
 import 'package:excise/ui/screens/quick_start_screen.dart';
@@ -18,13 +20,39 @@ class TodayScreen extends StatefulWidget {
 
 class _TodayScreenState extends State<TodayScreen> {
   bool _checkedStartup = false;
+  LocalCustomPlanRepository? _plansRepo;
+  List<CustomPlan> _plans = const [];
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final repo = AppScope.of(context).plans;
+    if (!identical(repo, _plansRepo)) {
+      _plansRepo?.removeListener(_onPlansChanged);
+      _plansRepo = repo..addListener(_onPlansChanged);
+      _loadPlans();
+    }
     if (_checkedStartup) return;
     _checkedStartup = true;
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkStartup());
+  }
+
+  @override
+  void dispose() {
+    _plansRepo?.removeListener(_onPlansChanged);
+    super.dispose();
+  }
+
+  void _onPlansChanged() {
+    _loadPlans();
+  }
+
+  Future<void> _loadPlans() async {
+    final repo = _plansRepo;
+    if (repo == null) return;
+    await repo.init();
+    if (!mounted) return;
+    setState(() => _plans = repo.getPlans());
   }
 
   Future<void> _checkStartup() async {
@@ -79,7 +107,7 @@ class _TodayScreenState extends State<TodayScreen> {
                 children: [
                   _header(),
                   const SizedBox(height: 18),
-                  _mainCard(draft, sessions),
+                  _mainCard(draft, sessions, _plans),
                   const SizedBox(height: 18),
                   _quickStartCard(),
                   const SizedBox(height: 22),
@@ -166,7 +194,7 @@ class _TodayScreenState extends State<TodayScreen> {
     );
   }
 
-  Widget _mainCard(WorkoutDraft? draft, List<WorkoutSession> sessions) {
+  Widget _mainCard(WorkoutDraft? draft, List<WorkoutSession> sessions, List<CustomPlan> plans) {
     if (draft != null && draft.exercises.isNotEmpty) {
       final elapsed = DateTime.now().difference(draft.startedAt).inMinutes;
       return _darkCard(
@@ -177,6 +205,27 @@ class _TodayScreenState extends State<TodayScreen> {
         onAction: () => _openRunner(draft),
       );
     }
+
+    // 今天有排期时优先推今天的计划，练习记录里已经练过则提示再练一次。
+    final today = DateTime.now().weekday;
+    final scheduled = plans.where((p) => p.isScheduledOn(today)).toList();
+    if (scheduled.isNotEmpty) {
+      final plan = scheduled.first;
+      final doneToday = sessions.any(
+        (s) => s.planId == plan.id && _isSameDay(s.startedAt, DateTime.now()),
+      );
+      final workout = buildDraftFromPlan(plan, startedAt: DateTime.now());
+      final minutes = estimateMinutes(workout.exercises);
+      final extra = scheduled.length > 1 ? ' · 今天还有 ${scheduled.length - 1} 个计划' : '';
+      return _darkCard(
+        eyebrow: doneToday ? '今天的计划 · 已完成' : '今天的计划',
+        title: plan.name,
+        subtitle: '${plan.exercises.length} 个动作 · 约 $minutes 分钟$extra',
+        actionLabel: doneToday ? '再练一次' : '开始训练',
+        onAction: () => _startPlan(plan),
+      );
+    }
+
     final last = sessions.isEmpty ? null : sessions.first;
     return _darkCard(
       eyebrow: '今天练什么',
@@ -187,6 +236,20 @@ class _TodayScreenState extends State<TodayScreen> {
       actionLabel: '快速开始',
       onAction: _openQuickStart,
     );
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
+  Future<void> _startPlan(CustomPlan plan) async {
+    final draft = buildDraftFromPlan(plan);
+    if (draft.exercises.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('计划里还没有动作')),
+      );
+      return;
+    }
+    await _startWorkout(draft);
   }
 
   Widget _darkCard({

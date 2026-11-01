@@ -1,14 +1,15 @@
 ﻿import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
 import 'repositories.dart';
 
-class LocalCustomPlanRepository implements CustomPlanRepository {
+class LocalCustomPlanRepository extends ChangeNotifier implements CustomPlanRepository {
   static const _key = 'custom_plans';
   SharedPreferences? _prefs;
 
   Future<void> init() async {
-    _prefs = await SharedPreferences.getInstance();
+    _prefs ??= await SharedPreferences.getInstance();
   }
 
   @override
@@ -37,6 +38,7 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
       plans.add(plan);
     }
     await _prefs!.setStringList(_key, plans.map((p) => jsonEncode(_toJson(p))).toList());
+    notifyListeners();
   }
 
   @override
@@ -44,6 +46,7 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
     if (_prefs == null) return;
     final plans = getPlans().where((p) => p.id != id).toList();
     await _prefs!.setStringList(_key, plans.map((p) => jsonEncode(_toJson(p))).toList());
+    notifyListeners();
   }
 
   @override
@@ -54,6 +57,7 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       exercises: plan.exercises,
+      scheduledWeekdays: plan.scheduledWeekdays,
     );
     await savePlan(dup);
   }
@@ -64,6 +68,7 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
       'name': plan.name,
       'createdAt': plan.createdAt.toIso8601String(),
       'updatedAt': plan.updatedAt.toIso8601String(),
+      'scheduledWeekdays': plan.scheduledWeekdays,
       'exercises': plan.exercises.map((e) => {
         'exerciseId': e.exercise.id,
         'exerciseName': e.exercise.name,
@@ -104,12 +109,21 @@ class LocalCustomPlanRepository implements CustomPlanRepository {
         setConfigs: setConfigs,
       );
     }).toList();
+    final weekdaysRaw = json['scheduledWeekdays'] as List<dynamic>?;
+    final weekdays = weekdaysRaw
+            ?.map((e) => (e as num).toInt())
+            .where((e) => e >= 1 && e <= 7)
+            .toSet()
+            .toList() ??
+        const <int>[];
+    weekdays.sort();
     return CustomPlan(
       id: json['id'] as String,
       name: json['name'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       exercises: exercises,
+      scheduledWeekdays: weekdays,
     );
   }
 }

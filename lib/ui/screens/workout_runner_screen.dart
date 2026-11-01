@@ -49,9 +49,19 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
   Timer? _clockTimer;
   Duration _elapsed = Duration.zero;
 
+  Timer? _holdTimer;
+  DateTime? _holdEnd;
+  int _holdTarget = 0;
+  Duration _holdRemaining = Duration.zero;
+  bool _holdRunning = false;
+  bool _tipsExpanded = false;
+
   WorkoutExercise get _currentExercise => _draft.exercises[_exerciseIndex];
   WorkoutSet get _currentSet => _currentExercise.sets[_setIndex];
   bool get _isHold => _isHoldExercise(_currentExercise.exercise);
+
+  /// 等长动作的计划秒数，跟 reps 共用同一个字段。
+  int get _holdSecondsTarget => _currentSet.reps.clamp(1, 600).toInt();
 
   @override
   void initState() {
@@ -100,6 +110,7 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
     WidgetsBinding.instance.removeObserver(this);
     _restTimer?.cancel();
     _clockTimer?.cancel();
+    _holdTimer?.cancel();
     unawaited(_reminder?.cancel() ?? Future<void>.value());
     try {
       WakelockPlus.disable();
@@ -122,6 +133,9 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
     _lifecycle = state;
     if (state == AppLifecycleState.resumed && _resting) {
       _tickRest();
+    }
+    if (state == AppLifecycleState.resumed && _holdRunning) {
+      _tickHold();
     }
   }
 
@@ -184,6 +198,10 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
             children: [
               _exerciseCard(meta, last),
+              if (_isHold) ...[
+                const SizedBox(height: 12),
+                _holdCard(),
+              ],
               const SizedBox(height: 12),
               _setsCard(),
               const SizedBox(height: 12),
@@ -306,6 +324,156 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
               ),
             ],
           ),
+          const SizedBox(height: 4),
+          _tipsSection(exercise),
+        ],
+      ),
+    );
+  }
+
+  Widget _tipsSection(Exercise exercise) {
+    final tips = exercise.tips;
+    final canExpand = tips.length > 1;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(height: 18, color: _line),
+        Row(
+          children: [
+            const Icon(Icons.lightbulb_outline_rounded, size: 15, color: _muted),
+            const SizedBox(width: 6),
+            InkWell(
+              onTap: tips.isEmpty ? null : () => setState(() => _tipsExpanded = !_tipsExpanded),
+              borderRadius: BorderRadius.circular(6),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('动作要点', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _text)),
+                    if (canExpand) ...[
+                      const SizedBox(width: 2),
+                      Icon(
+                        _tipsExpanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                        size: 16,
+                        color: _muted,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const Spacer(),
+            InkWell(
+              onTap: _swapExercise,
+              borderRadius: BorderRadius.circular(6),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.swap_horiz_rounded, size: 14, color: _muted),
+                    SizedBox(width: 2),
+                    Text('替代动作', style: TextStyle(fontSize: 11, color: _muted)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (tips.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Text('暂无要点，按自己的节奏完成', style: TextStyle(fontSize: 11, color: _muted)),
+          )
+        else
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: canExpand ? () => setState(() => _tipsExpanded = !_tipsExpanded) : null,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Text(
+                _tipsExpanded ? tips.map((t) => '· $t').join('\n') : tips.first,
+                maxLines: _tipsExpanded ? null : 2,
+                overflow: _tipsExpanded ? null : TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 11, color: _muted, height: 1.55),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _holdCard() {
+    final target = _holdSecondsTarget;
+    final hasSession = _holdRunning || _holdRemaining > Duration.zero;
+    final remaining = hasSession ? _holdRemaining.inSeconds.clamp(0, 9999) : target;
+    final progress = target <= 0 ? 0.0 : (1 - remaining / target).clamp(0.0, 1.0);
+    final label = _holdRunning ? '暂停' : (hasSession && remaining < target ? '继续' : '开始计时');
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(color: _card, borderRadius: BorderRadius.circular(18), border: Border.all(color: _line)),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.timer_outlined, size: 15, color: _muted),
+              const SizedBox(width: 6),
+              const Text('等长保持', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _text)),
+              const Spacer(),
+              Text('目标 $target 秒', style: const TextStyle(fontSize: 11, color: _muted)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text(
+                '$remaining',
+                style: const TextStyle(
+                  fontSize: 34,
+                  height: 1,
+                  fontWeight: FontWeight.w700,
+                  color: _text,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: Text('秒', style: TextStyle(fontSize: 11, color: _muted)),
+              ),
+              const Spacer(),
+              SizedBox(
+                height: 36,
+                child: FilledButton(
+                  onPressed: _toggleHold,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppTheme.primary,
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+                  ),
+                  child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                ),
+              ),
+              const SizedBox(width: 6),
+              IconButton(
+                tooltip: '重置计时',
+                onPressed: _resetHold,
+                icon: const Icon(Icons.refresh_rounded, size: 19),
+                color: _muted,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 5,
+              backgroundColor: _line,
+              color: AppTheme.primary,
+            ),
+          ),
         ],
       ),
     );
@@ -393,7 +561,13 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
               width: 44,
               child: Text(
                 '第 ${index + 1} 组',
-                style: TextStyle(fontSize: 12, color: isCurrent ? _text : _muted, fontWeight: isCurrent ? FontWeight.w600 : FontWeight.w400),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: set.isWarmup
+                      ? const Color(0xFFFFB020)
+                      : (isCurrent ? _text : _muted),
+                  fontWeight: isCurrent || set.isWarmup ? FontWeight.w600 : FontWeight.w400,
+                ),
               ),
             ),
             Expanded(
@@ -406,6 +580,31 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
                 ),
               ),
             ),
+            InkWell(
+              onTap: () => _toggleWarmup(index),
+              borderRadius: BorderRadius.circular(5),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                decoration: BoxDecoration(
+                  color: set.isWarmup ? const Color(0xFFFFB020).withValues(alpha: 0.2) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                    color: set.isWarmup
+                        ? const Color(0xFFFFB020).withValues(alpha: 0.6)
+                        : _line,
+                  ),
+                ),
+                child: Text(
+                  '热身',
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: set.isWarmup ? const Color(0xFFFFB020) : _muted,
+                    fontWeight: set.isWarmup ? FontWeight.w700 : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
             if (set.completed)
               const Icon(Icons.check_circle_rounded, size: 20, color: _success)
             else
@@ -648,12 +847,96 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
   }
 
   // ---------------------------------------------------------------------------
+  // 等长动作计时
+  // ---------------------------------------------------------------------------
+
+  void _toggleHold() {
+    if (_holdRunning) {
+      _pauseHold();
+      return;
+    }
+    final target = _holdSecondsTarget;
+    if (_holdRemaining <= Duration.zero || _holdTarget != target) {
+      _holdTarget = target;
+      _holdRemaining = Duration(seconds: target);
+    }
+    _holdEnd = DateTime.now().add(_holdRemaining);
+    _holdTimer?.cancel();
+    _holdTimer = Timer.periodic(const Duration(milliseconds: 200), (_) => _tickHold());
+    setState(() => _holdRunning = true);
+  }
+
+  void _pauseHold() {
+    _holdTimer?.cancel();
+    final end = _holdEnd;
+    if (end != null) {
+      final remaining = end.difference(DateTime.now());
+      _holdRemaining = remaining.isNegative ? Duration.zero : remaining;
+    }
+    setState(() {
+      _holdRunning = false;
+      _holdEnd = null;
+    });
+  }
+
+  void _tickHold() {
+    if (!mounted) return;
+    final end = _holdEnd;
+    if (end == null) return;
+    final remaining = end.difference(DateTime.now());
+    if (remaining <= Duration.zero) {
+      _finishHold();
+      return;
+    }
+    setState(() => _holdRemaining = remaining);
+  }
+
+  void _finishHold() {
+    _holdTimer?.cancel();
+    if (!mounted) return;
+    final target = _holdTarget;
+    setState(() {
+      _holdRunning = false;
+      _holdEnd = null;
+      _holdRemaining = Duration.zero;
+      if (target > 0) _currentSet.reps = target;
+    });
+    _showMessage('计时结束，已记录 $target 秒');
+    unawaited(_persist());
+    unawaited(_holdFeedback());
+  }
+
+  Future<void> _holdFeedback() async {
+    try {
+      if (await Vibration.hasVibrator()) {
+        Vibration.vibrate(pattern: [0, 180, 80, 180]);
+      }
+    } catch (_) {}
+    try {
+      await SystemSound.play(SystemSoundType.alert);
+    } catch (_) {}
+  }
+
+  void _resetHold() {
+    setState(_cancelHold);
+  }
+
+  void _cancelHold() {
+    _holdTimer?.cancel();
+    _holdRunning = false;
+    _holdEnd = null;
+    _holdRemaining = Duration.zero;
+    _holdTarget = 0;
+  }
+
+  // ---------------------------------------------------------------------------
   // 组操作
   // ---------------------------------------------------------------------------
 
   void _selectSet(int index) {
     final set = _currentExercise.sets[index];
     setState(() {
+      _cancelHold();
       _setIndex = index;
       if (set.completed) {
         set.completed = false;
@@ -661,6 +944,33 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
       }
     });
     _persist();
+  }
+
+  void _toggleWarmup(int index) {
+    final set = _currentExercise.sets[index];
+    final last = AppScope.of(context).workouts.getLastPerformance(_currentExercise.exercise.id);
+    var suggested = 0.0;
+    var fromLast = false;
+    setState(() {
+      set.isWarmup = !set.isWarmup;
+      if (set.isWarmup && !set.completed) {
+        // 优先按上次正式组的一半给建议；没有历史时退回当前重量的一半。
+        final reference = (last != null && last.weight > 0)
+            ? last.weight
+            : (set.weight > 0 ? set.weight : 0.0);
+        if (reference > 0) {
+          fromLast = last != null && last.weight > 0;
+          suggested = ((reference * 0.5) * 2).round() / 2;
+          set.weight = suggested;
+        }
+      }
+    });
+    _persist();
+    if (suggested > 0) {
+      _showMessage(
+        '热身组建议 ${_fmtWeight(suggested)} kg（${fromLast ? '上次' : '当前重量'}的一半）',
+      );
+    }
   }
 
   void _changeWeight(double delta) {
@@ -671,7 +981,10 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
 
   void _changeReps(int delta) {
     final value = (_currentSet.reps + delta).clamp(1, 100).toInt();
-    setState(() => _currentSet.reps = value);
+    setState(() {
+      _cancelHold();
+      _currentSet.reps = value;
+    });
     _persist();
   }
 
@@ -720,7 +1033,10 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
     } else {
       final parsed = int.tryParse(text.trim());
       if (parsed != null) {
-        setState(() => _currentSet.reps = parsed.clamp(1, 100).toInt());
+        setState(() {
+          _cancelHold();
+          _currentSet.reps = parsed.clamp(1, 100).toInt();
+        });
         _persist();
       }
     }
@@ -729,7 +1045,7 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
   Future<void> _completeSet() async {
     final set = _currentSet;
     if (set.completed) return;
-    final carriedWeight = set.weight;
+    final carriedWeight = set.isWarmup ? 0.0 : set.weight;
     set
       ..completed = true
       ..completedAt = DateTime.now();
@@ -745,6 +1061,8 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
       _draft.exercises[target.$1].seedWeight(carriedWeight);
     }
     setState(() {
+      _cancelHold();
+      _tipsExpanded = false;
       _exerciseIndex = target.$1;
       _setIndex = target.$2;
     });
@@ -769,6 +1087,7 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
     final last = sets.isEmpty ? WorkoutSet(reps: 8) : sets.last;
     final added = WorkoutSet(weight: last.weight, reps: last.reps);
     setState(() {
+      _cancelHold();
       _currentExercise.sets.add(added);
       _setIndex = _currentExercise.sets.length - 1;
     });
@@ -779,6 +1098,8 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
     final next = (_exerciseIndex + delta).clamp(0, _draft.exercises.length - 1);
     if (next == _exerciseIndex) return;
     setState(() {
+      _cancelHold();
+      _tipsExpanded = false;
       _exerciseIndex = next;
       _setIndex = _firstUncompletedSetIndex(_exerciseIndex);
     });
@@ -800,6 +1121,8 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
       return;
     }
     setState(() {
+      _cancelHold();
+      _tipsExpanded = false;
       _exerciseIndex = next;
       _setIndex = _firstUncompletedSetIndex(next);
     });
@@ -881,6 +1204,8 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
       } else {
         _draft.exercises[_exerciseIndex] = replacement;
       }
+      _cancelHold();
+      _tipsExpanded = false;
       _setIndex = 0;
     });
     await _persist();

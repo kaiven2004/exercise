@@ -140,6 +140,42 @@ CustomPlan buildPlanFromTemplate(
   );
 }
 
+/// 周一至周日的短标签，索引 0 对应周一（weekday 1）。
+const List<String> kWeekdayShortLabels = ['一', '二', '三', '四', '五', '六', '日'];
+
+/// 排期展示文案，例如「周一、周三」「每天」「未排期」。
+String scheduleLabel(Iterable<int> weekdays) {
+  final sorted = weekdays.where((d) => d >= 1 && d <= 7).toSet().toList()..sort();
+  if (sorted.isEmpty) return '未排期';
+  if (sorted.length == 7) return '每天';
+  return sorted.map((d) => '周${kWeekdayShortLabels[d - 1]}').join('、');
+}
+
+/// 把「我的计划」转成可开始的训练草稿，计划 Tab 和首页共用。
+WorkoutDraft buildDraftFromPlan(CustomPlan plan, {DateTime? startedAt}) {
+  final exercises = <WorkoutExercise>[];
+  for (final item in plan.exercises) {
+    final configs = item.setConfigs;
+    final List<WorkoutSet> sets;
+    if (configs != null && configs.isNotEmpty) {
+      sets = configs.map((c) => WorkoutSet(weight: c.weight, reps: c.reps)).toList();
+    } else {
+      final weight = double.tryParse(item.weight) ?? 0;
+      sets = List.generate(
+        item.sets.clamp(1, 12).toInt(),
+        (_) => WorkoutSet(weight: weight, reps: item.reps.clamp(1, 100).toInt()),
+      );
+    }
+    exercises.add(WorkoutExercise(exercise: item.exercise, sets: sets));
+  }
+  return WorkoutDraft(
+    name: plan.name,
+    planId: plan.id,
+    startedAt: startedAt ?? DateTime.now(),
+    exercises: exercises,
+  );
+}
+
 int estimateMinutes(List<WorkoutExercise> exercises) {
   var seconds = 5 * 60; // 热身与换器械
   for (final exercise in exercises) {

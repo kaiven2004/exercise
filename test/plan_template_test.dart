@@ -75,6 +75,37 @@ void main() {
     );
   });
 
+  test('计划排期能保存并重新读取，旧计划默认为未排期', () async {
+    final repo = LocalCustomPlanRepository();
+    await repo.init();
+    final plan = buildPlanFromTemplate(kWorkoutTemplates.first, id: 'plan_scheduled')
+        .copyWith(scheduledWeekdays: [5, 1, 3]);
+    await repo.savePlan(plan);
+
+    final reopened = LocalCustomPlanRepository();
+    await reopened.init();
+    final loaded = reopened.getPlan('plan_scheduled');
+    expect(loaded, isNotNull);
+    expect(loaded!.scheduledWeekdays, [1, 3, 5]);
+    expect(loaded.isScheduledOn(3), isTrue);
+    expect(loaded.isScheduledOn(2), isFalse);
+
+    final legacy = buildPlanFromTemplate(kWorkoutTemplates.first, id: 'plan_legacy');
+    expect(legacy.scheduledWeekdays, isEmpty);
+  });
+
+  test('计划可以转换成可开始的训练草稿', () {
+    final plan = buildPlanFromTemplate(kWorkoutTemplates.first, id: 'plan_draft')
+        .copyWith(scheduledWeekdays: [DateTime.now().weekday]);
+    final draft = buildDraftFromPlan(plan);
+    expect(draft.name, plan.name);
+    expect(draft.planId, plan.id);
+    expect(draft.exercises.length, plan.exercises.length);
+    expect(draft.exercises.first.sets.length, plan.exercises.first.sets);
+    expect(draft.exercises.first.sets.first.reps, plan.exercises.first.reps);
+    expect(draft.exercises.first.sets.any((s) => s.completed), isFalse);
+  });
+
   test('删除计划后不会再出现在列表里', () async {
     final repo = LocalCustomPlanRepository();
     await repo.init();

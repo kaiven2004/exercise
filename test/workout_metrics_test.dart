@@ -48,6 +48,47 @@ void main() {
     });
   });
 
+  group('热身组', () {
+    test('不计入容量、自重次数和最佳组', () {
+      final exercise = build([
+        WorkoutSet(weight: 20, reps: 10, completed: true, isWarmup: true),
+        WorkoutSet(weight: 20, reps: 10, completed: true, isWarmup: true),
+        WorkoutSet(weight: 60, reps: 8, completed: true),
+        WorkoutSet(weight: 0, reps: 12, completed: true),
+      ]);
+      expect(exercise.completedSets, 4);
+      expect(exercise.completedWorkingSets, 2);
+      expect(exercise.volume, 60 * 8);
+      expect(exercise.bodyweightReps, 12);
+      expect(exercise.bestSet?.weight, 60);
+      expect(exercise.warmupSets, 2);
+    });
+
+    test('批量重量与沿用重量都跳过热身组', () {
+      final exercise = build([
+        WorkoutSet(weight: 20, reps: 10, isWarmup: true),
+        WorkoutSet(reps: 8),
+        WorkoutSet(reps: 8),
+      ]);
+      exercise.applyWeightToUncompleted(60);
+      expect(exercise.sets[0].weight, 20);
+      expect(exercise.sets[1].weight, 60);
+
+      final seeded = build([
+        WorkoutSet(reps: 10, isWarmup: true),
+        WorkoutSet(reps: 10),
+      ]);
+      seeded.seedWeight(50);
+      expect(seeded.sets[0].weight, 0);
+      expect(seeded.sets[1].weight, 50);
+    });
+
+    test('旧 JSON 没有热身字段时默认为正式组', () {
+      final set = WorkoutSet.fromJson({'weight': 40, 'reps': 10, 'completed': true});
+      expect(set.isWarmup, isFalse);
+    });
+  });
+
   group('重量批量应用', () {
     test('应用到全部组只覆盖未完成组', () {
       final exercise = build([

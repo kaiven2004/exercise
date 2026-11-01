@@ -133,21 +133,32 @@ class CustomPlan {
   final DateTime updatedAt;
   final List<CustomExerciseItem> exercises;
 
+  /// 计划排期：1 = 周一 … 7 = 周日。空列表表示还没排期。
+  final List<int> scheduledWeekdays;
+
   const CustomPlan({
     required this.id,
     required this.name,
     required this.createdAt,
     required this.updatedAt,
     required this.exercises,
+    this.scheduledWeekdays = const [],
   });
 
-  CustomPlan copyWith({String? name, List<CustomExerciseItem>? exercises}) {
+  bool isScheduledOn(int weekday) => scheduledWeekdays.contains(weekday);
+
+  CustomPlan copyWith({
+    String? name,
+    List<CustomExerciseItem>? exercises,
+    List<int>? scheduledWeekdays,
+  }) {
     return CustomPlan(
       id: id,
       name: name ?? this.name,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
       exercises: exercises ?? this.exercises,
+      scheduledWeekdays: scheduledWeekdays ?? this.scheduledWeekdays,
     );
   }
 }

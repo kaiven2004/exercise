@@ -155,10 +155,11 @@ class WorkoutSessionDetailScreen extends StatelessWidget {
                     child: Text('第 ${i + 1} 组', style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary)),
                   ),
                   Text(
-                    sets[i].weight > 0
-                        ? '${_fmtWeight(sets[i].weight)} kg × ${sets[i].reps}'
-                        : '自重 × ${sets[i].reps}',
-                    style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary),
+                    '${sets[i].isWarmup ? '热身 · ' : ''}${sets[i].weight > 0 ? '${_fmtWeight(sets[i].weight)} kg × ${sets[i].reps}' : '自重 × ${sets[i].reps}'}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: sets[i].isWarmup ? const Color(0xFFB26A00) : AppTheme.textSecondary,
+                    ),
                   ),
                 ],
               ),
