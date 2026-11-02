@@ -1,8 +1,6 @@
 # Excise - 健身训练应用
 
-> 当前版本: v21 (2026-08-15) | 189个训练动作 | 178张本地配图
-
-# Excise - 健身训练应用
+> 当前版本: v22 (2026-11-02) | 231 个训练动作 | 157 个动作示范 GIF
 
 力量训练 · 功能训练 · 瑜伽训练 · 自定义计划
 
@@ -42,3 +40,9 @@
 
     flutter build apk --debug
     adb install -r build/app/outputs/flutter-apk/app-debug.apk
+
+## 动作素材来源
+
+- 动作示范图来自 [yuhonas/free-exercise-db](https://github.com/yuhonas/free-exercise-db)，以 Unlicense（公共领域）发布。
+- 每个动作取该库的两张示范照片（起始位、结束位），合成两帧 GIF 并由首帧生成列表缩略图。
+- 抽检发现示范图与动作不符的条目会回退为 SVG 占位，不放错图。

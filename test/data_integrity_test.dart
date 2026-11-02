@@ -139,6 +139,25 @@ void main() {
       }
     });
 
+    test('图片目录没有孤立文件', () {
+      final gifs = Directory('assets/images')
+          .listSync()
+          .whereType<File>()
+          .map((f) => f.uri.pathSegments.last)
+          .where((n) => n.endsWith('.gif'))
+          .toSet();
+      expect(gifs, kExerciseGifs.values.toSet(), reason: '存在不在索引里的 GIF');
+
+      final thumbs = Directory('assets/images/thumbs')
+          .listSync()
+          .whereType<File>()
+          .map((f) => f.uri.pathSegments.last)
+          .where((n) => n.endsWith('.png'))
+          .toSet();
+      expect(thumbs, kExerciseGifs.keys.map((id) => '$id.png').toSet(),
+          reason: '存在不在索引里的缩略图');
+    });
+
     test('抽检标记的动作都是真实存在的 GIF', () {
       final ids = _all.map((e) => e.id).toSet();
       for (final id in kMismatchedGifIds) {
@@ -146,6 +165,30 @@ void main() {
         expect(ids.contains(id), isTrue, reason: '$id 不对应任何动作');
         expect(getExerciseGif(id), isNull, reason: '$id 应回退 SVG');
         expect(getExerciseThumb(id), isNull, reason: '$id 应回退 SVG');
+      }
+    });
+
+    test('腿臀、核心、水平拉与常见手臂动作都有示范图', () {
+      const ids = {
+        '10115', // 杠铃背深蹲
+        '10118', // 哑铃箭步蹲
+        '10124', // 罗马尼亚硬拉
+        '10225', // 杠铃相扑硬拉
+        '10226', // 绳索臀拉
+        '10143', // 悬垂举腿
+        '10151', // 平板支撑
+        '10232', // 反向划船
+        '10233', // 胸支撑哑铃划船
+        '10129', // 杠铃臀推
+        '10227', // 坐姿髋外展器械
+        '10230', // 单腿站姿提踵
+        '10096', // 杠铃站姿弯举
+        '10054', // 坐姿哑铃推举
+        '10029', // 对握平板哑铃卧推
+      };
+      for (final id in ids) {
+        expect(getExerciseGif(id), isNotNull, reason: '$id 缺少示范 GIF');
+        expect(getExerciseThumb(id), isNotNull, reason: '$id 缺少缩略图');
       }
     });
 

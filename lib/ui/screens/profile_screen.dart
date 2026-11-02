@@ -75,7 +75,10 @@ class ProfileScreen extends StatelessWidget {
                   context: context,
                   applicationName: 'Excise',
                   applicationVersion: 'v1',
-                  applicationLegalese: '本地优先的训练工具，不做账号与云同步。',
+                  applicationLegalese:
+                      '本地优先的训练工具，不做账号与云同步。\n\n'
+                      '部分动作示范图来自 free-exercise-db（Unlicense / 公共领域）\n'
+                      'https://github.com/yuhonas/free-exercise-db',
                 ),
               ),
             ]),
