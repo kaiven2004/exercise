@@ -43,8 +43,8 @@ Set<String> _categoryNames() {
 void main() {
   group('动作数据完整性', () {
     test('动作总数与 ID 唯一', () {
-      // 防止误删：当前基线 215 条。改动数据时若增减，需同步更新这个数字。
-      expect(_all.length, 215, reason: '动作总数变化，请确认是有意改动');
+      // 防止误删：当前基线 231 条。改动数据时若增减，需同步更新这个数字。
+      expect(_all.length, 231, reason: '动作总数变化，请确认是有意改动');
       final ids = _all.map((e) => e.id).toList();
       expect(ids.toSet().length, ids.length, reason: '存在重复 ID');
     });

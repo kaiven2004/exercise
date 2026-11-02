@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:excise/app/app_scope.dart';
 import 'package:excise/app/theme.dart';
+import 'package:excise/data/exercises/exercise_alternatives.dart';
 import 'package:excise/data/exercises/exercise_meta.dart';
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/models/workout_models.dart';
@@ -1139,10 +1140,12 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
     final muscle = metaFor(current).primaryMuscle;
     final usedIds = _draft.exercises.map((e) => e.exercise.id).toSet();
     final all = _allExercises();
-    final alternatives = all
-        .where((e) => metaFor(e).primaryMuscle == muscle && !usedIds.contains(e.id))
-        .take(40)
-        .toList();
+    final alternatives = alternativesFor(
+      exercise: current,
+      all: all,
+      excludeIds: usedIds,
+      limit: 24,
+    );
     if (alternatives.isEmpty) {
       _showMessage('该肌群没有可替换的动作');
       return;
@@ -1181,7 +1184,10 @@ class _WorkoutRunnerScreenState extends State<WorkoutRunnerScreen> with WidgetsB
                       ),
                     ),
                     title: Text(exercise.name, style: const TextStyle(color: _text, fontSize: 14)),
-                    subtitle: Text(metaFor(exercise).equipment.label, style: const TextStyle(color: _muted, fontSize: 11)),
+                    subtitle: Text(
+                      '${metaFor(exercise).equipment.label} · ${movementPatternFor(exercise).label}',
+                      style: const TextStyle(color: _muted, fontSize: 11),
+                    ),
                     onTap: () => Navigator.pop(context, exercise),
                   );
                 },

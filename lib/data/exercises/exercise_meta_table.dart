@@ -118,6 +118,10 @@ const Map<String, ExerciseMeta> kExerciseMetaTable = {
   '10087': ExerciseMeta(equipment: Equipment.cable, compound: true, primaryMuscle: '背'),
   '10088': ExerciseMeta(equipment: Equipment.machine, compound: true, primaryMuscle: '背'),
   '10089': ExerciseMeta(equipment: Equipment.machine, compound: true, primaryMuscle: '背'),
+  '10232': ExerciseMeta(equipment: Equipment.bodyweight, compound: true, primaryMuscle: '背'),
+  '10233': ExerciseMeta(equipment: Equipment.dumbbell, compound: true, primaryMuscle: '背'),
+  '10234': ExerciseMeta(equipment: Equipment.barbell, compound: true, primaryMuscle: '背'),
+  '10235': ExerciseMeta(equipment: Equipment.band, compound: true, primaryMuscle: '背'),
 
   // 力量训练 / 背部训练 / 斜方下束
   '10090': ExerciseMeta(equipment: Equipment.dumbbell, compound: false, primaryMuscle: '背'),
@@ -164,12 +168,17 @@ const Map<String, ExerciseMeta> kExerciseMetaTable = {
   '10121': ExerciseMeta(equipment: Equipment.machine, compound: true, primaryMuscle: '腿'),
   '10122': ExerciseMeta(equipment: Equipment.machine, compound: true, primaryMuscle: '腿'),
   '10123': ExerciseMeta(equipment: Equipment.machine, compound: false, primaryMuscle: '腿'),
+  '10220': ExerciseMeta(equipment: Equipment.dumbbell, compound: true, primaryMuscle: '腿'),
+  '10221': ExerciseMeta(equipment: Equipment.barbell, compound: true, primaryMuscle: '腿'),
+  '10222': ExerciseMeta(equipment: Equipment.machine, compound: true, primaryMuscle: '腿'),
 
   // 力量训练 / 下肢训练 / 腘绳肌
   '10124': ExerciseMeta(equipment: Equipment.barbell, compound: true, primaryMuscle: '腿'),
   '10125': ExerciseMeta(equipment: Equipment.barbell, compound: true, primaryMuscle: '腿'),
   '10126': ExerciseMeta(equipment: Equipment.machine, compound: false, primaryMuscle: '腿'),
   '10127': ExerciseMeta(equipment: Equipment.machine, compound: false, primaryMuscle: '腿'),
+  '10223': ExerciseMeta(equipment: Equipment.dumbbell, compound: true, primaryMuscle: '腿'),
+  '10224': ExerciseMeta(equipment: Equipment.machine, compound: false, primaryMuscle: '腿'),
 
   // 力量训练 / 下肢训练 / 臀部训练
   '10129': ExerciseMeta(equipment: Equipment.barbell, compound: true, primaryMuscle: '臀'),
@@ -180,6 +189,11 @@ const Map<String, ExerciseMeta> kExerciseMetaTable = {
   '10134': ExerciseMeta(equipment: Equipment.machine, compound: true, primaryMuscle: '臀'),
   '10135': ExerciseMeta(equipment: Equipment.machine, compound: true, primaryMuscle: '臀'),
   '10136': ExerciseMeta(equipment: Equipment.cable, compound: false, primaryMuscle: '臀'),
+  '10225': ExerciseMeta(equipment: Equipment.barbell, compound: true, primaryMuscle: '臀'),
+  '10226': ExerciseMeta(equipment: Equipment.cable, compound: true, primaryMuscle: '臀'),
+  '10227': ExerciseMeta(equipment: Equipment.machine, compound: false, primaryMuscle: '臀'),
+  '10228': ExerciseMeta(equipment: Equipment.band, compound: false, primaryMuscle: '臀'),
+  '10229': ExerciseMeta(equipment: Equipment.dumbbell, compound: true, primaryMuscle: '臀'),
 
   // 力量训练 / 下肢训练 / 内收肌群
   '10137': ExerciseMeta(equipment: Equipment.machine, compound: false, primaryMuscle: '腿'),
@@ -189,6 +203,8 @@ const Map<String, ExerciseMeta> kExerciseMetaTable = {
   '10139': ExerciseMeta(equipment: Equipment.machine, compound: false, primaryMuscle: '腿'),
   '10140': ExerciseMeta(equipment: Equipment.machine, compound: false, primaryMuscle: '腿'),
   '10141': ExerciseMeta(equipment: Equipment.machine, compound: false, primaryMuscle: '腿'),
+  '10230': ExerciseMeta(equipment: Equipment.bodyweight, compound: false, primaryMuscle: '腿'),
+  '10231': ExerciseMeta(equipment: Equipment.dumbbell, compound: false, primaryMuscle: '腿'),
 
   // 力量训练 / 核心训练 / 腹直肌
   '10143': ExerciseMeta(equipment: Equipment.bodyweight, compound: false, primaryMuscle: '核心'),

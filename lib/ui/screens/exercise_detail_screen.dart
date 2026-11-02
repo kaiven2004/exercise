@@ -1,5 +1,6 @@
 ﻿import 'package:excise/app/app_scope.dart';
 import 'package:excise/app/theme.dart';
+import 'package:excise/data/exercises/exercise_alternatives.dart';
 import 'package:excise/data/exercises/exercise_meta.dart';
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/models/workout_models.dart';
@@ -474,16 +475,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
   }
 
   List<Exercise> _alternatives(Exercise ex) {
-    final parts = ex.categoryPath.split(' / ');
-    final leaf = parts.isEmpty ? '' : parts.last;
-    final all = _exerciseRepo.getExercises('all');
-    final sameLeaf = all
-        .where((e) => e.id != ex.id && e.categoryPath.split(' / ').last == leaf)
-        .toList();
-    final pool = sameLeaf.length >= 3
-        ? sameLeaf
-        : all.where((e) => e.id != ex.id && metaFor(e).primaryMuscle == metaFor(ex).primaryMuscle).toList();
-    return pool.take(6).toList();
+    return alternativesFor(
+      exercise: ex,
+      all: _exerciseRepo.getExercises('all'),
+    );
   }
 
   Future<void> _startWithExercise(Exercise ex) async {

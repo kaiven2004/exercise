@@ -10,7 +10,7 @@ void main() {
   test('父分类包含全部子分类动作', () {
     final upper = kStrengthCategories.first;
     final results = exercisesUnderCategory(all, upper);
-    expect(results.length, 121);
+    expect(results.length, 125);
     expect(results.any((e) => e.id == '10001'), isTrue);
     expect(results.any((e) => e.id == '10074'), isTrue);
     expect(results.any((e) => e.id == '10096'), isTrue);

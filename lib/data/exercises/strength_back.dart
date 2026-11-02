@@ -1,6 +1,6 @@
 import '../models/models.dart';
 
-/// 力量训练 / 背部训练：背阔肌 (10074-10080) + 上背厚度 (10081-10089) + 斜方下束 (10090-10091) + 下背/竖脊肌 (10092-10095)
+/// 力量训练 / 背部训练：背阔肌 (10074-10080) + 上背厚度 (10081-10089, 10232-10235) + 斜方下束 (10090-10091) + 下背/竖脊肌 (10092-10095)
 const List<Exercise> kStrengthBackExercises = [
   Exercise(id: '10074', name: '宽握引体向上', categoryPath: '力量训练 / 背部训练 / 背阔肌', description: '双手宽握单杠，起始完全悬挂，肩胛骨下沉；把胸口往单杠方向拉，不要只靠手臂拽；顶峰胸打开，慢下放。侧重腋下上部背阔，打造背的最宽点。可腰间挂负重片做负重引体。', tips: ['双手宽握单杠','起始完全悬挂肩胛骨下沉','胸口往单杠方向拉','顶峰胸打开慢下放'], sets: 4, reps: 8, restSeconds: '60', difficulty: '中级', imageSvg: '背阔肌', imageUrl: '', videoPath: '', weight: '0'),
   Exercise(id: '10075', name: '窄握对握引体向上', categoryPath: '力量训练 / 背部训练 / 背阔肌', description: '对握（手掌相对）握距与肩同宽。发力轨迹更靠身体两侧偏下，强化下部背阔、大圆肌，让背下沿收紧，V形底部更清晰，二头参与会增加。', tips: ['对握手掌相对','握距与肩同宽','强化下部背阔大圆肌','二头参与增加'], sets: 3, reps: 10, restSeconds: '60', difficulty: '中级', imageSvg: '背阔肌', imageUrl: '', videoPath: '', weight: '0'),
@@ -19,6 +19,10 @@ const List<Exercise> kStrengthBackExercises = [
   Exercise(id: '10087', name: '单臂绳索划船', categoryPath: '力量训练 / 背部训练 / 上背厚度', description: '单握绳索把手，身体侧站，把手拉向髋部，补强单侧上背薄弱。', tips: ['单握绳索把手','身体侧站','把手拉向髋部','补强单侧薄弱'], sets: 3, reps: 12, restSeconds: '45', difficulty: '中级', imageSvg: '上背厚度', imageUrl: '', videoPath: '', weight: '0'),
   Exercise(id: '10088', name: '海豹划船（俯卧器械划船）', categoryPath: '力量训练 / 背部训练 / 上背厚度', description: '身体趴在斜垫上，手臂向下抓把手，向身体方向拉；躯干被垫子承托，腰部几乎零压力，腰容易酸的人绝佳选择。', tips: ['身体趴在斜垫上','手臂向下抓把手','腰部几乎零压力','腰容易酸人群首选'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '上背厚度', imageUrl: '', videoPath: '', weight: '0'),
   Exercise(id: '10089', name: '坐姿器械划船机', categoryPath: '力量训练 / 背部训练 / 上背厚度', description: '固定轨迹，背靠或不靠背；不靠背版本会更多调用背部稳定，靠背版更孤立上背，适合力竭组堆容量。', tips: ['固定轨迹','不靠背版调用稳定性','靠背版更孤立','适合力竭组堆容量'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '上背厚度', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10232', name: '反向划船', categoryPath: '力量训练 / 背部训练 / 上背厚度', description: '把杠铃架在腰部高度，仰卧握住杠铃，身体保持一条直线，把胸口拉向杠铃。自重水平拉，对引体向上还做不了的人很友好。', tips: ['杠铃架在腰部高度','身体保持一条直线','胸口拉向杠铃','不要塌腰'], sets: 3, reps: 10, restSeconds: '60', difficulty: '中级', imageSvg: '上背厚度', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10233', name: '胸支撑哑铃划船', categoryPath: '力量训练 / 背部训练 / 上背厚度', description: '趴在三十到四十五度上斜凳上，双手握哑铃向髋部方向划船，胸口贴住凳子。躯干被支撑，腰部零压力，能更专注夹紧肩胛骨。', tips: ['趴在上斜凳上','胸口贴住凳子','哑铃划向髋部','肩胛骨夹紧'], sets: 3, reps: 10, restSeconds: '60', difficulty: '初级', imageSvg: '上背厚度', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10234', name: '单臂地雷管划船', categoryPath: '力量训练 / 背部训练 / 上背厚度', description: '杠铃一端固定在地雷管，单手握杠铃另一端，俯身向后划船，肘部贴近身体。单侧水平拉，轨迹稳定，能补左右背厚度差。', tips: ['杠铃一端固定','单手握杠铃','肘部贴近身体','补左右背厚度差'], sets: 3, reps: 10, restSeconds: '60', difficulty: '中级', imageSvg: '上背厚度', imageUrl: '', videoPath: '', weight: '0'),
+  Exercise(id: '10235', name: '弹力带坐姿划船', categoryPath: '力量训练 / 背部训练 / 上背厚度', description: '坐姿，弹力带绕过脚掌或固定点，双手向腹部方向拉，肩胛骨向后夹紧。没有绳索器械时也能练水平拉，张力随距离增加。', tips: ['弹力带绕过脚掌','向腹部方向拉','肩胛骨向后夹紧','控制回放'], sets: 3, reps: 12, restSeconds: '45', difficulty: '初级', imageSvg: '上背厚度', imageUrl: '', videoPath: '', weight: '0'),
 
   Exercise(id: '10090', name: '俯身Y字飞鸟（哑铃）', categoryPath: '力量训练 / 背部训练 / 斜方下束', description: '身体俯身平行地面，双手呈Y字形向斜上方抬起，拇指朝上，感受肩胛骨向下向外展开。强化斜方下束，改善圆肩头前伸。', tips: ['身体俯身平行地面','双手呈Y字形抬起','拇指朝上','感受肩胛骨向下向外展开'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '斜方下束', imageUrl: '', videoPath: '', weight: '0'),
   Exercise(id: '10091', name: '绳索Y型下拉', categoryPath: '力量训练 / 背部训练 / 斜方下束', description: '滑轮高位，握把手向斜下方向拉，手肘微弯，激活斜方下束。', tips: ['滑轮调至高位','向斜下方向拉','手肘微弯','激活斜方下束'], sets: 3, reps: 15, restSeconds: '30', difficulty: '初级', imageSvg: '斜方下束', imageUrl: '', videoPath: '', weight: '0'),
