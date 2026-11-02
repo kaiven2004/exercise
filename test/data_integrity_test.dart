@@ -80,19 +80,52 @@ void main() {
       }
     });
 
-    test('没有同名同分类的重复动作', () {
+    test('没有全局重名动作', () {
       final seen = <String, String>{};
       final duplicates = <String>[];
       for (final exercise in _all) {
-        final key = '${exercise.name}|${exercise.categoryPath}';
-        final existing = seen[key];
+        final existing = seen[exercise.name];
         if (existing != null) {
-          duplicates.add('$existing / ${exercise.id} -> $key');
+          duplicates.add('$existing / ${exercise.id} -> ${exercise.name}');
         } else {
-          seen[key] = exercise.id;
+          seen[exercise.name] = exercise.id;
         }
       }
       expect(duplicates, isEmpty, reason: duplicates.join('\n'));
+    });
+
+    test('描述和要点达到最低信息量', () {
+      for (final exercise in _all) {
+        expect(exercise.description.trim().length, greaterThanOrEqualTo(20),
+            reason: '${exercise.id} (${exercise.name}) 描述过短');
+        expect(exercise.tips.length, greaterThanOrEqualTo(2),
+            reason: '${exercise.id} (${exercise.name}) 要点少于 2 条');
+      }
+    });
+
+    test('元数据表覆盖全部动作', () {
+      final ids = _all.map((e) => e.id).toSet();
+      expect(kExerciseMetaTable.keys.toSet(), ids,
+          reason: '新增或删除动作时，请同步更新 exercise_meta_table.dart');
+    });
+
+    test('元数据表的主要肌群与分类一致', () {
+      for (final exercise in _all) {
+        final meta = kExerciseMetaTable[exercise.id];
+        expect(meta, isNotNull, reason: '${exercise.id} 缺少元数据');
+        expect(meta!.primaryMuscle, primaryMuscleFor(exercise.categoryPath),
+            reason: '${exercise.id} (${exercise.name}) 主要肌群与分类不一致');
+      }
+    });
+
+    test('力量训练动作都有明确器械', () {
+      // 药球不在 Equipment 枚举中，允许归入「其他」。
+      const medicineBallIds = {'10018', '10155'};
+      for (final exercise in _all.where((e) => e.categoryPath.startsWith('力量训练'))) {
+        if (medicineBallIds.contains(exercise.id)) continue;
+        expect(metaFor(exercise).equipment, isNot(Equipment.other),
+            reason: '${exercise.id} (${exercise.name}) 器械仍为「其他」');
+      }
     });
 
     test('动作图片文件存在', () {

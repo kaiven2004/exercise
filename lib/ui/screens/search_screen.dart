@@ -1,14 +1,13 @@
 import 'package:excise/app/app_scope.dart';
 import 'package:excise/app/theme.dart';
-import 'package:excise/data/exercises/exercise_meta.dart';
 import 'package:excise/data/exercise_query.dart';
 import 'package:excise/data/models/models.dart';
 import 'package:excise/data/models/workout_models.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
 import 'package:excise/ui/screens/exercise_detail_screen.dart';
-import 'package:excise/ui/widgets/exercise_image.dart';
+import 'package:excise/ui/widgets/exercise_filter_controls.dart';
+import 'package:excise/ui/widgets/exercise_result_card.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' show DateFormat;
 
 /// 动作库搜索：关键词 + 部位 / 器械 / 难度 / 收藏筛选，支持拼音首字母。
 class SearchScreen extends StatefulWidget {
@@ -117,7 +116,10 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
           _muscleBar(),
-          _controlBar(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: ExerciseFilterControls(query: _query, onChanged: _update),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
             child: Row(
@@ -172,7 +174,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     separatorBuilder: (_, _) => const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final exercise = results[index];
-                      return _SearchResultCard(
+                      return ExerciseResultCard(
                         exercise: exercise,
                         isFavorite: _favoriteIds.contains(exercise.id),
                         last: _lastPerformances[exercise.id],
@@ -237,143 +239,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _controlBar() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Row(
-        children: [
-          Expanded(
-            child: _menuButton<String>(
-              value: _query.equipment?.name ?? 'all',
-              label: _query.equipment?.label ?? '器械',
-              active: _query.equipment != null,
-              items: [
-                const PopupMenuItem<String>(value: 'all', child: Text('全部器械')),
-                for (final equipment in Equipment.values)
-                  PopupMenuItem<String>(value: equipment.name, child: Text(equipment.label)),
-              ],
-              onSelected: (value) => _update(
-                value == 'all'
-                    ? _query.copyWith(clearEquipment: true)
-                    : _query.copyWith(
-                        equipment: Equipment.values.firstWhere((e) => e.name == value),
-                      ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _menuButton<String>(
-              value: _query.difficulty ?? 'all',
-              label: _query.difficulty ?? '难度',
-              active: _query.difficulty != null,
-              items: [
-                const PopupMenuItem<String>(value: 'all', child: Text('全部难度')),
-                for (final difficulty in kSearchDifficulties)
-                  PopupMenuItem<String>(value: difficulty, child: Text(difficulty)),
-              ],
-              onSelected: (value) => _update(
-                value == 'all'
-                    ? _query.copyWith(clearDifficulty: true)
-                    : _query.copyWith(difficulty: value),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _menuButton<ExerciseSort>(
-              value: _query.sort,
-              label: _query.sort.label,
-              active: _query.sort != ExerciseSort.recommended,
-              items: [
-                for (final sort in ExerciseSort.values)
-                  PopupMenuItem<ExerciseSort>(value: sort, child: Text(sort.label)),
-              ],
-              onSelected: (value) => _update(_query.copyWith(sort: value)),
-            ),
-          ),
-          const SizedBox(width: 6),
-          _favoriteButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget _menuButton<T>({
-    required T value,
-    required String label,
-    required bool active,
-    required List<PopupMenuEntry<T>> items,
-    required ValueChanged<T> onSelected,
-  }) {
-    return PopupMenuButton<T>(
-      itemBuilder: (context) => items,
-      onSelected: onSelected,
-      tooltip: label,
-      child: Container(
-        height: 34,
-        padding: const EdgeInsets.symmetric(horizontal: 9),
-        decoration: BoxDecoration(
-          color: active ? AppTheme.primary.withValues(alpha: 0.08) : Colors.white,
-          borderRadius: BorderRadius.circular(9),
-          border: Border.all(
-            color: active ? AppTheme.primary.withValues(alpha: 0.45) : AppTheme.divider.withValues(alpha: 0.55),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: active ? FontWeight.w600 : FontWeight.w400,
-                  color: active ? AppTheme.primary : AppTheme.textSecondary,
-                ),
-              ),
-            ),
-            const SizedBox(width: 2),
-            Icon(
-              Icons.expand_more_rounded,
-              size: 15,
-              color: active ? AppTheme.primary : AppTheme.textTertiary,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _favoriteButton() {
-    final active = _query.favoritesOnly;
-    return Tooltip(
-      message: '只看收藏',
-      child: InkWell(
-        borderRadius: BorderRadius.circular(9),
-        onTap: () => _update(_query.copyWith(favoritesOnly: !active)),
-        child: Container(
-          width: 36,
-          height: 34,
-          decoration: BoxDecoration(
-            color: active ? AppTheme.accentRed.withValues(alpha: 0.1) : Colors.white,
-            borderRadius: BorderRadius.circular(9),
-            border: Border.all(
-              color: active ? AppTheme.accentRed.withValues(alpha: 0.5) : AppTheme.divider.withValues(alpha: 0.55),
-            ),
-          ),
-          child: Icon(
-            active ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            size: 18,
-            color: active ? AppTheme.accentRed : AppTheme.textTertiary,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _emptyState() {
     return Center(
       child: Column(
@@ -398,118 +263,5 @@ class _SearchScreenState extends State<SearchScreen> {
         ],
       ),
     );
-  }
-}
-
-class _SearchResultCard extends StatelessWidget {
-  final Exercise exercise;
-  final bool isFavorite;
-  final LastPerformance? last;
-  final int usageCount;
-  final VoidCallback onTap;
-
-  const _SearchResultCard({
-    required this.exercise,
-    required this.isFavorite,
-    required this.last,
-    required this.usageCount,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final meta = metaFor(exercise);
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(13),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(13),
-        child: Container(
-          padding: const EdgeInsets.all(11),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(13),
-            border: Border.all(color: AppTheme.divider.withValues(alpha: 0.45)),
-          ),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                  width: 54,
-                  height: 54,
-                  child: ExerciseImage(exercise: exercise, fit: BoxFit.cover),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            exercise.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
-                          ),
-                        ),
-                        if (isFavorite)
-                          const Padding(
-                            padding: EdgeInsets.only(left: 4),
-                            child: Icon(Icons.favorite_rounded, size: 13, color: AppTheme.accentRed),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Wrap(
-                      spacing: 4,
-                      runSpacing: 2,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        _tag(meta.primaryMuscle, AppTheme.primary),
-                        _tag(meta.equipment.label, AppTheme.textSecondary),
-                        if (meta.compound) _tag('复合', AppTheme.accent),
-                        if (exercise.difficulty.isNotEmpty) _tag(exercise.difficulty, AppTheme.textTertiary),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _subtitle(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 4),
-              const Icon(Icons.chevron_right, size: 18, color: AppTheme.textTertiary),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _tag(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.09),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Text(label, style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w500)),
-    );
-  }
-
-  String _subtitle() {
-    if (last != null) {
-      return '上次 ${DateFormat('M月d日').format(last!.date)} · ${last!.label}';
-    }
-    if (usageCount > 0) return '练过 $usageCount 次';
-    return exercise.categoryPath;
   }
 }

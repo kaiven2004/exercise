@@ -87,6 +87,25 @@ bool _matchesQuery(Exercise exercise, String rawQuery) {
   return false;
 }
 
+/// 某个分类（含所有子分类）下的动作。
+///
+/// 分类树只存名称，动作只存 categoryPath，所以按路径分段匹配。
+List<Exercise> exercisesUnderCategory(List<Exercise> all, TrainingCategory category) {
+  final names = <String>{};
+  void collect(TrainingCategory node) {
+    names.add(node.name);
+    for (final child in node.subCategories) {
+      collect(child);
+    }
+  }
+
+  collect(category);
+  return all.where((exercise) {
+    final parts = exercise.categoryPath.split(' / ').map((p) => p.trim());
+    return parts.any(names.contains);
+  }).toList();
+}
+
 /// 按条件筛选并排序动作。
 List<Exercise> queryExercises({
   required List<Exercise> all,

@@ -1,3 +1,4 @@
+import 'package:excise/data/exercises/categories.dart';
 import 'package:excise/data/exercises/exercise_meta.dart';
 import 'package:excise/data/exercise_query.dart';
 import 'package:excise/data/repositories/sample_repository.dart';
@@ -5,6 +6,24 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final all = SampleExerciseRepository().getExercises('all');
+
+  test('父分类包含全部子分类动作', () {
+    final upper = kStrengthCategories.first;
+    final results = exercisesUnderCategory(all, upper);
+    expect(results.length, 121);
+    expect(results.any((e) => e.id == '10001'), isTrue);
+    expect(results.any((e) => e.id == '10074'), isTrue);
+    expect(results.any((e) => e.id == '10096'), isTrue);
+    // 下肢不属于上肢。
+    expect(results.any((e) => e.id == '10115'), isFalse);
+  });
+
+  test('叶子分类只包含该分类动作', () {
+    final lowerChest = kStrengthCategories.first.subCategories.first.subCategories.last;
+    final results = exercisesUnderCategory(all, lowerChest);
+    expect(results.length, 18);
+    expect(results.every((e) => e.categoryPath.endsWith('下胸')), isTrue);
+  });
 
   test('中文关键词搜索能命中上斜/平板/下斜卧推', () {
     final results = queryExercises(all: all, query: const ExerciseQuery(query: '卧推'));
